@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+infra/backups/
+*.log
+# Material real del cliente: nunca
+*.pdf
+*.jpg
+*.jpeg
+*.png
+!public/**

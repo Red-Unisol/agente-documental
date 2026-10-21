@@ -1,0 +1,43 @@
+# Agente documental · Red Unisol. Todo corre en la VPS con `docker compose up -d`.
+# Dos piezas: la app (API + panel + worker) y Postgres. HTTPS lo da el Apache de la VPS
+# con un VirtualHost que apunta a 127.0.0.1:${APP_BIND_PORT} (patrón de solicitudes-web).
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    image: redunisol/agente-documental:${TAG:-latest}
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgres://agente:${POSTGRES_PASSWORD}@db:5432/agente
+      NODE_ENV: production
+    volumes:
+      - archivos:/datos/archivos        # recibos cifrados, con borrado programado
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${APP_BIND_PORT:-3010}:3000"
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: agente
+      POSTGRES_USER: agente
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backups:/backups               # pg_dump diario (ver cron en la VPS)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agente -d agente"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "127.0.0.1:5432:5432"            # solo local, para administrar
+
+volumes:
+  pgdata:
+  archivos:
