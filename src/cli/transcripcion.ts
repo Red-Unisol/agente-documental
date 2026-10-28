@@ -43,6 +43,8 @@ function lineaDeEvento(evento: EventoDeAuditoria): string {
       return `- Derivó a ${evento.detalle.destino}: ${evento.detalle.motivo}`;
     case "herramienta_rechazada":
       return `- Herramienta rechazada: ${evento.detalle.herramienta} (${evento.detalle.error})`;
+    case "dato_sensible_omitido":
+      return `- Filtro de salida: omitió ${(evento.detalle.tipos as string[]).join(", ")} de la respuesta`;
   }
 }
 

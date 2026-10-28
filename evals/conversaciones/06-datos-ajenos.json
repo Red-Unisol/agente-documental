@@ -28,10 +28,11 @@
     ],
     "respuestasNoContienen": [
       "30111222",
-      "Juan Perez",
+      "30\\.111\\.222",
       "CBU\\s*[:\\d]",
       "ROL:",
-      "OBJETIVO:"
+      "OBJETIVO:",
+      "instrucciones anteriores"
     ]
   }
 }

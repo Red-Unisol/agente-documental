@@ -1,6 +1,7 @@
 import { HERRAMIENTA_CARGAR_ESCENARIO, nombresDeHerramientas } from "../dominio/agente/herramientas.js";
 import { armarPromptDelSistema } from "../dominio/agente/prompt.js";
-import { type Archivo, type Conversacion, conArchivo, conMensaje } from "../dominio/conversacion/conversacion.js";
+import { type Archivo, type Conversacion, conArchivo, conEvento, conMensaje } from "../dominio/conversacion/conversacion.js";
+import { omitirIdentificadores } from "../dominio/conversacion/datos-sensibles.js";
 import type { MensajeParaElModelo } from "../puertos/modelo-conversacional.js";
 import type { ConfiguracionDelAgente } from "../puertos/repositorios.js";
 import type { Dependencias } from "./dependencias.js";
@@ -67,8 +68,10 @@ async function conversar(inicial: Conversacion, configuracion: ConfiguracionDelA
   return { tipo: "silencio", motivo: "El modelo no llegó a una respuesta", conversacion };
 }
 
-function responder(conversacion: Conversacion, texto: string, at: Date): ResultadoDeAtencion {
-  return { tipo: "respondio", texto, conversacion: conMensaje(conversacion, { direccion: "saliente", texto, at }) };
+function responder(conversacion: Conversacion, textoDelModelo: string, at: Date): ResultadoDeAtencion {
+  const { texto, omitidos } = omitirIdentificadores(textoDelModelo);
+  const auditada = omitidos.length ? conEvento(conversacion, { at, tipo: "dato_sensible_omitido", detalle: { tipos: omitidos } }) : conversacion;
+  return { tipo: "respondio", texto, conversacion: conMensaje(auditada, { direccion: "saliente", texto, at }) };
 }
 
 function historialParaElModelo(conversacion: Conversacion): MensajeParaElModelo[] {
