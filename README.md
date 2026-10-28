@@ -23,7 +23,7 @@ escenarios de conversación se editan desde el panel, no en el código. Toda dec
 - Node.js 22, TypeScript, Express, Prisma, PostgreSQL, Zod
 - Panel: HTML renderizado en el servidor (sin framework)
 - OpenAI (lectura del recibo y conversación), detrás de una interfaz propia; modelo configurable por entorno
-- Bitrix24: aplicación local con alcances `crm`, `imbot`, `imopenlines`
+- Bitrix24: aplicación local con alcances `crm`, `imbot`, `imopenlines`, `imconnector`, `disk`, `user`
 - Docker / Docker Compose
 
 ## Estructura

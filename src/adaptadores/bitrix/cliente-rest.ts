@@ -39,13 +39,13 @@ export class ClienteBitrix {
     return cuerpo.result as T;
   }
 
-  async descargar(url: string): Promise<Uint8Array> {
-    // Las URLs de descarga de archivos (urlDownload) autentican con ?auth=; el header no alcanza.
-    const vigentes = await this.tokensVigentes();
-    const destino = new URL(url);
-    destino.searchParams.set("auth", vigentes.accessToken);
-    const respuesta = await fetch(destino, { headers: { authorization: `Bearer ${vigentes.accessToken}` } });
-    if (!respuesta.ok) throw new Error(`Bitrix descarga: HTTP ${respuesta.status}`);
+  // Los enlaces que vienen en los eventos del chat exigen sesión de usuario; el archivo se pide
+  // por REST (alcance disk), que devuelve un enlace firmado para la aplicación.
+  async descargarArchivo(archivoId: string): Promise<Uint8Array> {
+    const { DOWNLOAD_URL } = await this.llamar<{ DOWNLOAD_URL: string }>("disk.file.get", { id: archivoId });
+    const respuesta = await fetch(DOWNLOAD_URL);
+    const tipo = respuesta.headers.get("content-type") ?? "";
+    if (!respuesta.ok || tipo.startsWith("text/html")) throw new Error(`Bitrix descarga del archivo ${archivoId}: HTTP ${respuesta.status} ${tipo}`);
     return new Uint8Array(await respuesta.arrayBuffer());
   }
 

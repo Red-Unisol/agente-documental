@@ -70,8 +70,9 @@ export class BotDeBitrix {
     const extension = nombre.split(".").pop()?.toLowerCase() ?? "";
     const tipoMime = TIPOS_MIME[extension];
     if (!tipoMime) return undefined; // audio, video, etc.: el agente lo trata como "no se puede procesar"
-    const bytes = await this.colaboradores.cliente.descargar(hoja(primero, "urlDownload"));
-    return { id: hoja(primero, "id") || nombre, nombre, tipoMime, bytes };
+    const id = hoja(primero, "id");
+    const bytes = await this.colaboradores.cliente.descargarArchivo(id);
+    return { id, nombre, tipoMime, bytes };
   }
 
   private async responder(dialogo: string, texto: string): Promise<void> {
