@@ -1,0 +1,62 @@
+[
+  {
+    "archivo": "recibo-correcto",
+    "EMPLEADOR": "GOBIERNO DE LA PROVINCIA DE CATAMARCA · MINISTERIO DE EDUCACIÓN",
+    "DIRECCION": "San Fernando del Valle de Catamarca",
+    "CUIT": "30-99999999-7",
+    "NUMERO": "0001-00482913",
+    "PERIODO": "SEPTIEMBRE 2026",
+    "NOMBRE": "PRUEBA, MARIANA",
+    "LEGAJO": "48213",
+    "CUIL": "27-12345678-0",
+    "INGRESO": "01/03/2014",
+    "CARGO": "Maestra de grado",
+    "DEPENDENCIA": "Escuela N° 999",
+    "FECHA_PAGO": "02/10/2026"
+  },
+  {
+    "archivo": "recibo-viejo",
+    "EMPLEADOR": "GOBIERNO DE LA PROVINCIA DE CATAMARCA · MINISTERIO DE EDUCACIÓN",
+    "DIRECCION": "San Fernando del Valle de Catamarca",
+    "CUIT": "30-99999999-7",
+    "NUMERO": "0001-00471102",
+    "PERIODO": "JUNIO 2026",
+    "NOMBRE": "PRUEBA, MARIANA",
+    "LEGAJO": "48213",
+    "CUIL": "27-12345678-0",
+    "INGRESO": "01/03/2014",
+    "CARGO": "Maestra de grado",
+    "DEPENDENCIA": "Escuela N° 999",
+    "FECHA_PAGO": "02/07/2026"
+  },
+  {
+    "archivo": "recibo-otra-persona",
+    "EMPLEADOR": "GOBIERNO DE LA PROVINCIA DE CATAMARCA · MINISTERIO DE EDUCACIÓN",
+    "DIRECCION": "San Fernando del Valle de Catamarca",
+    "CUIT": "30-99999999-7",
+    "NUMERO": "0001-00482920",
+    "PERIODO": "SEPTIEMBRE 2026",
+    "NOMBRE": "PRUEBA, ROBERTO",
+    "LEGAJO": "31877",
+    "CUIL": "20-87654321-5",
+    "INGRESO": "15/08/2009",
+    "CARGO": "Preceptor",
+    "DEPENDENCIA": "Escuela N° 999",
+    "FECHA_PAGO": "02/10/2026"
+  },
+  {
+    "archivo": "recibo-bomberos",
+    "EMPLEADOR": "GOBIERNO DE LA PROVINCIA DE CATAMARCA · CUERPO DE BOMBEROS",
+    "DIRECCION": "San Fernando del Valle de Catamarca",
+    "CUIT": "30-99999999-7",
+    "NUMERO": "0001-00099321",
+    "PERIODO": "SEPTIEMBRE 2026",
+    "NOMBRE": "PRUEBA, MARIANA",
+    "LEGAJO": "7731",
+    "CUIL": "27-12345678-0",
+    "INGRESO": "01/03/2014",
+    "CARGO": "Bombero",
+    "DEPENDENCIA": "Cuartel Central",
+    "FECHA_PAGO": "02/10/2026"
+  }
+]

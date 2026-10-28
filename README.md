@@ -31,25 +31,32 @@ escenarios de conversación se editan desde el panel, no en el código. Toda dec
 ```
 src/
   dominio/        reglas de negocio y tipos; sin dependencias de infraestructura
-  aplicacion/     casos de uso
-  puertos/        interfaces hacia Bitrix, OpenAI, base de datos
-  adaptadores/    implementaciones de los puertos
-  http/           rutas Express: eventos de Bitrix, API del panel, /salud
-  panel/          frontend
-prisma/           esquema y migraciones
+    verificacion/   período, identidad, empleador, exclusiones
+    agente/         prompt, escenarios, herramientas
+    conversacion/   estado y auditoría de una conversación
+  aplicacion/     casos de uso: atender un mensaje, ejecutar una herramienta
+  puertos/        interfaces hacia el modelo, el lector de recibos, el CRM y la base
+  adaptadores/    openai (modelo y lector), memoria (simulación y tests), bitrix, prisma
+  evals/          cómo se grada una conversación de prueba
+  cli/            simulación por consola y corredor de evals
+evals/            conversaciones de prueba y recibos sintéticos
 infra/            Dockerfile, docker-compose.yml
-scripts/bitrix/   utilidades contra la API de Bitrix
+scripts/          utilidades: embudo de prueba en Bitrix, recibos sintéticos
 docs/             bitrix-embudo-prueba.md
 ```
 
 ## Correr local
 
 ```bash
-cp .env.example .env
-docker compose -f infra/docker-compose.yml up -d db
+cp .env.example .env          # alcanza con OPENAI_API_KEY para la simulación
 npm install
-npm run dev
+./scripts/generar-recibos-sinteticos.sh   # recibos ficticios para probar (requiere Chrome)
+npm run dev                   # conversación por consola; `/archivo <ruta>` adjunta un recibo
+npm run evals                 # corre evals/conversaciones/*.json y grada el resultado
+npm test                      # tests unitarios, sin red
 ```
+
+La simulación usa un CRM en memoria: muestra qué habría hecho en Bitrix sin tocarlo.
 
 ## Variables de entorno
 
