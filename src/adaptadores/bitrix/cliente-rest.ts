@@ -41,8 +41,13 @@ export class ClienteBitrix {
 
   // Los enlaces que vienen en los eventos del chat exigen sesión de usuario; el archivo se pide
   // por REST (alcance disk), que devuelve un enlace firmado para la aplicación.
-  async descargarArchivo(archivoId: string): Promise<Uint8Array> {
-    const { DOWNLOAD_URL } = await this.llamar<{ DOWNLOAD_URL: string }>("disk.file.get", { id: archivoId });
+  // Los archivos de un chat sólo los puede leer quien participa de él. El token de la
+  // aplicación (un administrador) no participa, así que la lectura se hace con el token
+  // que trae el propio evento: es del autor del mensaje, se usa sólo para esta lectura y no se guarda.
+  async descargarArchivo(archivoId: string, credencialDelEvento?: { dominio: string; accessToken: string }): Promise<Uint8Array> {
+    const { DOWNLOAD_URL } = credencialDelEvento
+      ? await this.consultarComo<{ DOWNLOAD_URL: string }>(credencialDelEvento.dominio, credencialDelEvento.accessToken, "disk.file.get", { id: archivoId })
+      : await this.llamar<{ DOWNLOAD_URL: string }>("disk.file.get", { id: archivoId });
     const respuesta = await fetch(DOWNLOAD_URL);
     const tipo = respuesta.headers.get("content-type") ?? "";
     if (!respuesta.ok || tipo.startsWith("text/html")) throw new Error(`Bitrix descarga del archivo ${archivoId}: HTTP ${respuesta.status} ${tipo}`);

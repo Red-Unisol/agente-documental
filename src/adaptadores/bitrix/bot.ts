@@ -40,19 +40,19 @@ export class BotDeBitrix {
         await this.guardarTokens(rama(evento, "auth"));
         return "tokens de instalación guardados";
       case "ONIMBOTMESSAGEADD":
-        return this.atenderMensajeDelChat(rama(evento, "data", "PARAMS"));
+        return this.atenderMensajeDelChat(rama(evento, "data", "PARAMS"), credencialDelEvento(rama(evento, "auth")));
       default:
         return "";
     }
   }
 
-  private async atenderMensajeDelChat(parametros: Anidado): Promise<string> {
+  private async atenderMensajeDelChat(parametros: Anidado, credencial?: CredencialDelEvento): Promise<string> {
     const chatId = hoja(parametros, "CHAT_ID");
     const dialogo = hoja(parametros, "DIALOG_ID");
     if (!chatId || !dialogo) return "mensaje sin chat";
 
     await this.asegurarConversacion(chatId, parametros);
-    const archivo = await this.primerArchivo(rama(parametros, "FILES"));
+    const archivo = await this.primerArchivo(rama(parametros, "FILES"), credencial);
     const texto = hoja(parametros, "MESSAGE") || (archivo ? "(archivo)" : "");
     const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(archivo && { archivo }) }, this.colaboradores.dependencias);
     try {
@@ -73,7 +73,7 @@ export class BotDeBitrix {
     await this.colaboradores.dependencias.conversaciones.guardar(nuevaConversacion(chatId, chatId, ficha));
   }
 
-  private async primerArchivo(archivos: Anidado): Promise<Archivo | undefined> {
+  private async primerArchivo(archivos: Anidado, credencial?: CredencialDelEvento): Promise<Archivo | undefined> {
     const primero = Object.values(archivos).find((a): a is Anidado => typeof a === "object");
     if (!primero) return undefined;
     const nombre = hoja(primero, "name") || "archivo";
@@ -81,7 +81,7 @@ export class BotDeBitrix {
     const tipoMime = TIPOS_MIME[extension];
     if (!tipoMime) return undefined; // audio, video, etc.: el agente lo trata como "no se puede procesar"
     const id = hoja(primero, "id");
-    const bytes = await this.colaboradores.cliente.descargarArchivo(id);
+    const bytes = await this.colaboradores.cliente.descargarArchivo(id, credencial);
     return { id, nombre, tipoMime, bytes };
   }
 
@@ -138,4 +138,14 @@ export async function registrarBot(cliente: ClienteBitrix, urlDeEventos: string)
     PROPERTIES: { NAME: "Agente documental", COLOR: "AZURE", WORK_POSITION: "Recibo de sueldo · Red Unisol" },
   });
   return Number(botId);
+}
+
+type CredencialDelEvento = { dominio: string; accessToken: string };
+
+// Token del autor del mensaje, tal como viene en el evento. Sirve para leer lo que él mismo
+// subió al chat; no se guarda ni se usa para nada más.
+function credencialDelEvento(auth: Anidado): CredencialDelEvento | undefined {
+  const dominio = hoja(auth, "domain");
+  const accessToken = hoja(auth, "access_token");
+  return dominio && accessToken ? { dominio, accessToken } : undefined;
 }
