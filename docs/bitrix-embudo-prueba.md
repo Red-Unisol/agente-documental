@@ -16,7 +16,7 @@ El agente funciona igual en prueba y en producción cambiando sólo el prefijo `
 | `C1:UC_ZH5DGU` | `C19:UC_ZH5DGU` | RESPUESTA |
 | `C1:UC_UPF4Z7` | `C19:UC_UPF4Z7` | Jubilados LP |
 | `C1:UC_53P7WJ` | `C19:UC_53P7WJ` | **DOCUMENTACION** (entrada del agente) |
-| — | `C19:REVISION_DOC` | **REVISIÓN DOCUMENTAL (agente)** · sólo en prueba, orden 85. Donde cae lo que el agente no puede decidir solo. |
+| — | `C19:REVISION_DOC` | **REVISIÓN DOCUMENTAL (agente)** · sólo en prueba, orden 85. Toda derivación del agente (recibo dudoso, caso excluido, pedido de hablar con una persona, consulta que no es de este paso) deja la negociación acá, además de transferir el chat y anotar el motivo en la línea de tiempo. |
 | `C1:UC_TJIFLR` | `C19:UC_TJIFLR` | **DOCU RECIBIDA** (salida OK) |
 | `C1:UC_D4N3Y4` | `C19:UC_D4N3Y4` | **FALTA DOCUMENTACION** (salida pendiente) |
 | `C1:EXECUTING` | `C19:EXECUTING` | OFERTA |

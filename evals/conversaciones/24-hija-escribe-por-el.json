@@ -1,0 +1,28 @@
+{
+  "nombre": "La hija escribe por el socio: le habla a ella y pide el recibo de él",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-2",
+    "nombre": "Roberto",
+    "dni": "87654321",
+    "provincia": "Córdoba",
+    "convenio": "Fiat",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "hola, soy la hija de Roberto, le ayudo con el celular. que tengo que mandar?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E1"
+    ],
+    "respuestasNoContienen": [
+      "^Hola,? Roberto|Hola Roberto"
+    ]
+  }
+}

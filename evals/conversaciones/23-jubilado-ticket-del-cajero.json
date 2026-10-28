@@ -1,0 +1,29 @@
+{
+  "nombre": "Jubilado cree que el ticket del cajero es el recibo: habla de recibo de haberes de la Caja",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-2",
+    "nombre": "Roberto",
+    "dni": "87654321",
+    "provincia": "Córdoba",
+    "convenio": "Fiat",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "el recibo me lo da el banco cuando cobro, el ticket del cajero sirve?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E2"
+    ],
+    "respuestasNoContienen": [
+      "recibo de sueldo",
+      "empleador"
+    ]
+  }
+}

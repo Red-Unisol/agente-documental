@@ -105,6 +105,9 @@ async function marcarFaltaDocumentacion({ conversacion, dependencias }: Contexto
 
 async function derivar({ conversacion, dependencias }: Contexto, { motivo, destino }: ArgumentosDe<"derivar">): Promise<ResultadoDeHerramienta> {
   if (conversacion.estado === "derivada") return { conversacion, resultado: { ok: true, nota: "Ya estaba derivada; no hace falta hacer nada más." } };
+  // Toda derivación deja la negociación en REVISIÓN DOCUMENTAL: así en el embudo se distingue
+  // de una que nadie tocó, y la persona que la toma sabe que el agente ya intervino.
+  await dependencias.crm.moverEtapa(conversacion.ficha.negociacionId, "REVISION_DOCUMENTAL");
   await dependencias.crm.transferirConversacion(conversacion.chatId, destino, motivo);
   const evento = { at: dependencias.reloj.ahora(), tipo: "derivacion" as const, detalle: { destino, motivo } };
   return { conversacion: { ...conEvento(conversacion, evento), estado: "derivada" }, resultado: { ok: true, derivadoA: destino } };
