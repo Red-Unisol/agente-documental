@@ -28,8 +28,9 @@
       "E4"
     ],
     "respuestasNoContienen": [
-      "(est[aá]|fue|qued[oó]|sal[ií][oó]) aprobad",
-      "cr[ée]dito aprobado",
+      "ya (est[aá]|qued[oó]|fue) aprobad",
+      "cr[ée]dito (est[aá]|fue|qued[oó]) aprobad",
+      "aprobado por",
       "2\\.000\\.000",
       "2000000",
       "verificado por Red Unisol"
