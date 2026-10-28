@@ -91,3 +91,20 @@ VirtualHost hacia `127.0.0.1:${APP_BIND_PORT}`. Workflow en `.github/workflows/d
 | Producción | VENTAS (`1`) | `C1:` |
 
 Cómo se creó el embudo de prueba y cómo se borra: [`docs/bitrix-embudo-prueba.md`](docs/bitrix-embudo-prueba.md).
+
+### Correr el bot dentro de Bitrix (prueba)
+
+Hace falta la aplicación local instalada en el portal (sus tokens en `BITRIX24_TOKENS_ARCHIVO`) y una URL
+pública que llegue a esta máquina (`BITRIX24_URL_PUBLICA`, por ejemplo un túnel).
+
+```bash
+npm run bitrix registrar-bot              # registra el chatbot de Canales Abiertos y guarda su id
+npm run bitrix crear-negociacion-prueba   # negociación ficticia en el embudo 19, etapa DOCUMENTACIÓN
+npm run bitrix crear-canal-prueba         # Canal Abierto nuevo atendido por el bot (no toca el canal real)
+npm run bitrix servir                     # escucha los eventos en /bitrix/eventos y atiende los chats
+```
+
+El canal de prueba se prueba desde su "Chat en vivo" (Contact Center → canal → Chat en vivo → enlace
+público). Las derivaciones van al usuario `BITRIX24_USUARIO_PRUEBA`; el motivo queda como comentario en
+la línea de tiempo de la negociación. Si el chat no viene atado a una negociación (pasa con el chat en
+vivo), se usa `BITRIX24_NEGOCIACION_PRUEBA`.

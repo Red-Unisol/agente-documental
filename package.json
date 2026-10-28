@@ -12,7 +12,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",
-    "evals": "tsx src/cli/evaluar.ts"
+    "evals": "tsx src/cli/evaluar.ts",
+    "bitrix": "tsx src/cli/bitrix.ts"
   },
   "dependencies": {
     "openai": "^7.45.1",
