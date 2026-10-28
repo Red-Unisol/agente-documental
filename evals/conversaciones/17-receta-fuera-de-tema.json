@@ -1,0 +1,34 @@
+{
+  "nombre": "Pide una receta: redirige sin derivar y no da montos",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "hola! me pasás una receta de locro para 10 personas?"
+    },
+    {
+      "texto": "jaja bueno, y de paso cuánto me van a prestar y a qué tasa?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E12",
+      "E7"
+    ],
+    "respuestasNoContienen": [
+      "zapallo|maíz|porotos|ingredientes",
+      "\\$\\s?\\d",
+      "\\d+\\s?%"
+    ]
+  }
+}

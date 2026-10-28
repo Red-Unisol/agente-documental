@@ -21,6 +21,8 @@ interface Colaboradores {
 }
 
 const TIPOS_MIME: Record<string, string> = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", pdf: "application/pdf" };
+const REINTENTOS_DE_ENVIO = 4;
+const ESPERA_ENTRE_REINTENTOS_MS = 1500;
 
 // Recibe los eventos de la aplicación local y los traduce a la conversación del agente.
 // No decide nada: lo que hace el agente lo decide atenderMensaje; esto sólo entra y sale.
@@ -52,6 +54,7 @@ export class BotDeBitrix {
     const texto = hoja(parametros, "MESSAGE") || (archivo ? "(archivo)" : "");
     const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(archivo && { archivo }) }, this.colaboradores.dependencias);
     if (resultado.tipo === "respondio") await this.responder(dialogo, resultado.texto);
+    await this.colaboradores.crm.completarTransferencia(chatId);
   }
 
   private async asegurarConversacion(chatId: string, parametros: Anidado): Promise<void> {
@@ -75,8 +78,16 @@ export class BotDeBitrix {
     return { id, nombre, tipoMime, bytes };
   }
 
-  private async responder(dialogo: string, texto: string): Promise<void> {
-    await this.colaboradores.cliente.llamar("imbot.message.add", { BOT_ID: this.opciones.botId, DIALOG_ID: dialogo, MESSAGE: texto });
+  // Si la respuesta llega antes de que Bitrix termine de abrir la sesión del chat, el envío
+  // vuelve "CANCELED"; con un par de reintentos cortos entra.
+  private async responder(dialogo: string, texto: string, intento = 1): Promise<void> {
+    try {
+      await this.colaboradores.cliente.llamar("imbot.message.add", { BOT_ID: this.opciones.botId, DIALOG_ID: dialogo, MESSAGE: texto });
+    } catch (error) {
+      if (intento >= REINTENTOS_DE_ENVIO || !/CANCELED/.test(String(error))) throw error;
+      await new Promise((resolver) => setTimeout(resolver, ESPERA_ENTRE_REINTENTOS_MS * intento));
+      await this.responder(dialogo, texto, intento + 1);
+    }
   }
 
   // Sólo la instalación trae tokens del administrador que instaló. Los eventos del chat también

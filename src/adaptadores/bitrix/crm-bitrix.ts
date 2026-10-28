@@ -8,6 +8,7 @@ import type { MapeoDeBitrix } from "./mapeo.js";
 // timeline de la negociación, que el socio no ve.
 export class CrmBitrix implements ClienteCrm {
   private readonly negociacionPorChat = new Map<string, string>();
+  private readonly transferenciasPendientes = new Map<string, DestinoDeDerivacion>();
 
   constructor(
     private readonly cliente: ClienteBitrix,
@@ -31,16 +32,25 @@ export class CrmBitrix implements ClienteCrm {
     await this.cliente.llamar("crm.deal.update", { id: negociacionId, fields: { STAGE_ID: this.mapeo.etapas[etapa] } });
   }
 
+  // El motivo se anota ya; la transferencia queda pendiente hasta que el bot mande su última
+  // respuesta: al transferir sale del chat y después no puede escribir.
   async transferirConversacion(chatId: string, destino: DestinoDeDerivacion, motivo: string): Promise<void> {
-    await this.cliente.llamar("imopenlines.bot.session.transfer", {
-      CHAT_ID: Number(chatId),
-      USER_ID: this.mapeo.usuariosDeDerivacion[destino],
-      LEAVE: "Y",
-    });
+    this.transferenciasPendientes.set(chatId, destino);
     const negociacionId = this.negociacionPorChat.get(chatId);
     if (!negociacionId) return;
     await this.cliente.llamar("crm.timeline.comment.add", {
       fields: { ENTITY_ID: Number(negociacionId), ENTITY_TYPE: "deal", COMMENT: `Agente documental: chat derivado a ${destino}. Motivo: ${motivo}` },
+    });
+  }
+
+  async completarTransferencia(chatId: string): Promise<void> {
+    const destino = this.transferenciasPendientes.get(chatId);
+    if (!destino) return;
+    this.transferenciasPendientes.delete(chatId);
+    await this.cliente.llamar("imopenlines.bot.session.transfer", {
+      CHAT_ID: Number(chatId),
+      USER_ID: this.mapeo.usuariosDeDerivacion[destino],
+      LEAVE: "Y",
     });
   }
 }

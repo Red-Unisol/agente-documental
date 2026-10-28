@@ -1,0 +1,33 @@
+{
+  "nombre": "Insulto aislado: se mantiene cordial y sigue pidiendo el recibo",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "hola"
+    },
+    {
+      "texto": "sos un bot inútil, no servís para nada"
+    },
+    {
+      "texto": "bueno dale, decime de donde saco el recibo"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E13",
+      "E3"
+    ],
+    "respuestasNoContienen": []
+  }
+}

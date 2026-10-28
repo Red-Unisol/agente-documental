@@ -14,7 +14,8 @@ export function crearServidorDeEventos(bot: BotDeBitrix, registrar: (linea: stri
     const consulta = new URL(peticion.url ?? "/", "http://local").searchParams;
     const evento = anidar(new URLSearchParams([...consulta, ...new URLSearchParams(await leerCuerpo(peticion))]));
     const nombre = hoja(evento, "event") || (hoja(evento, "PLACEMENT") ? "APERTURA" : peticion.method ?? "");
-    registrar(`${new Date().toISOString()} ${nombre} ${peticion.url ?? ""}`);
+    const chat = hoja(evento, "data", "PARAMS", "DIALOG_ID");
+    registrar(`${new Date().toISOString()} ${nombre}${chat ? ` ${chat}` : ""} ${peticion.url ?? ""}`);
     respuesta.writeHead(200, { "content-type": "text/html; charset=utf-8" }).end(HTML_DE_INSTALACION);
     bot.atenderEvento(evento).catch((error: unknown) => registrar(`error al atender ${nombre}: ${error instanceof Error ? error.message : String(error)}`));
   });
