@@ -10,9 +10,10 @@ const HTML_DE_INSTALACION = `<!doctype html><html lang="es"><head><meta charset=
 // seguida y procesa después: Bitrix reintenta si el handler tarda.
 export function crearServidorDeEventos(bot: BotDeBitrix, registrar: (linea: string) => void = console.log): Server {
   return createServer(async (peticion, respuesta) => {
-    const cuerpo = await leerCuerpo(peticion);
-    const evento = anidar(new URLSearchParams(cuerpo));
-    const nombre = hoja(evento, "event") || (hoja(evento, "PLACEMENT") ? "INSTALACION" : peticion.method ?? "");
+    // DOMAIN, PROTOCOL y LANG vienen en la query; el resto en el cuerpo. Se juntan en un solo objeto.
+    const consulta = new URL(peticion.url ?? "/", "http://local").searchParams;
+    const evento = anidar(new URLSearchParams([...consulta, ...new URLSearchParams(await leerCuerpo(peticion))]));
+    const nombre = hoja(evento, "event") || (hoja(evento, "PLACEMENT") ? "APERTURA" : peticion.method ?? "");
     registrar(`${new Date().toISOString()} ${nombre} ${peticion.url ?? ""}`);
     respuesta.writeHead(200, { "content-type": "text/html; charset=utf-8" }).end(HTML_DE_INSTALACION);
     bot.atenderEvento(evento).catch((error: unknown) => registrar(`error al atender ${nombre}: ${error instanceof Error ? error.message : String(error)}`));

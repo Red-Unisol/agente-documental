@@ -31,8 +31,10 @@ export class BotDeBitrix {
   ) {}
 
   async atenderEvento(evento: Anidado): Promise<void> {
-    await this.refrescarTokens(evento);
+    if (hoja(evento, "AUTH_ID")) return this.guardarTokensDeApertura(evento);
     switch (hoja(evento, "event").toUpperCase()) {
+      case "ONAPPINSTALL":
+        return this.guardarTokens(rama(evento, "auth"));
       case "ONIMBOTMESSAGEADD":
         return this.atenderMensajeDelChat(rama(evento, "data", "PARAMS"));
       default:
@@ -76,14 +78,26 @@ export class BotDeBitrix {
     await this.colaboradores.cliente.llamar("imbot.message.add", { BOT_ID: this.opciones.botId, DIALOG_ID: dialogo, MESSAGE: texto });
   }
 
-  // Cada evento trae tokens vigentes de la aplicación: se guardan para no depender del refresh.
-  private async refrescarTokens(evento: Anidado): Promise<void> {
-    const auth = rama(evento, "auth");
+  // Sólo la instalación trae tokens del administrador que instaló. Los eventos del chat también
+  // traen tokens, pero en nombre del autor del mensaje (el visitante), que no puede tocar el CRM.
+  private async guardarTokens(auth: Anidado): Promise<void> {
     const dominio = hoja(auth, "domain");
     const accessToken = hoja(auth, "access_token");
     const refreshToken = hoja(auth, "refresh_token");
     if (!dominio || !accessToken || !refreshToken) return;
     await this.colaboradores.cliente.actualizarTokens(tokensDesdeEvento(dominio, { access_token: accessToken, refresh_token: refreshToken, expires_in: hoja(auth, "expires_in") || 3600 }));
+  }
+
+  // Cuando alguien abre la aplicación desde el menú, Bitrix manda tokens en nombre de esa
+  // persona. Se guardan sólo si es administrador: así se recuperan sin reinstalar.
+  private async guardarTokensDeApertura(peticion: Anidado): Promise<void> {
+    const dominio = hoja(peticion, "DOMAIN");
+    const accessToken = hoja(peticion, "AUTH_ID");
+    const refreshToken = hoja(peticion, "REFRESH_ID");
+    if (!dominio || !accessToken || !refreshToken) return;
+    const perfil = await this.colaboradores.cliente.consultarComo<{ ADMIN?: boolean }>(dominio, accessToken, "profile");
+    if (perfil.ADMIN !== true) return;
+    await this.colaboradores.cliente.actualizarTokens(tokensDesdeEvento(dominio, { access_token: accessToken, refresh_token: refreshToken, expires_in: hoja(peticion, "AUTH_EXPIRES") || 3600 }));
   }
 }
 

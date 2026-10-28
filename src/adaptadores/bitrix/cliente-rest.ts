@@ -24,10 +24,15 @@ export class ClienteBitrix {
 
   async llamar<T>(metodo: string, parametros: Record<string, unknown> = {}): Promise<T> {
     const vigentes = await this.tokensVigentes();
-    const respuesta = await fetch(`https://${vigentes.dominio}/rest/${metodo}`, {
+    return this.consultarComo<T>(vigentes.dominio, vigentes.accessToken, metodo, parametros);
+  }
+
+  // Misma llamada pero con un token puntual (por ejemplo, el que viene en una petición de Bitrix).
+  async consultarComo<T>(dominio: string, accessToken: string, metodo: string, parametros: Record<string, unknown> = {}): Promise<T> {
+    const respuesta = await fetch(`https://${dominio}/rest/${metodo}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ...parametros, auth: vigentes.accessToken }),
+      body: JSON.stringify({ ...parametros, auth: accessToken }),
     });
     const cuerpo = (await respuesta.json()) as RespuestaRest<T>;
     if (cuerpo.error !== undefined) throw new Error(`Bitrix ${metodo}: ${cuerpo.error} · ${cuerpo.error_description ?? ""}`.trim());

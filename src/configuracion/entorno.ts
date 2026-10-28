@@ -2,8 +2,9 @@ import { z } from "zod";
 
 const esquema = z.object({
   OPENAI_API_KEY: z.string().min(1),
-  OPENAI_MODELO_CONVERSACION: z.string().default("gpt-4.1-mini"),
-  OPENAI_MODELO_LECTURA: z.string().default("gpt-4.1"),
+  // Elegidos con los evals (evals/corridas): misma tasa de acierto que gpt-4.1 a una fracción del costo.
+  OPENAI_MODELO_CONVERSACION: z.string().default("gpt-6-luna"),
+  OPENAI_MODELO_LECTURA: z.string().default("gpt-6-luna"),
 });
 
 export type Entorno = z.infer<typeof esquema>;
