@@ -258,5 +258,35 @@
     "CUIL": "27-12345678-0",
     "CARGO": "Maestra de grado",
     "DEPENDENCIA": "Escuela N° 999"
+  },
+  {
+    "archivo": "lucia-docente-santa-fe-agosto",
+    "EMPLEADOR": "PROVINCIA DE SANTA FE · MINISTERIO DE EDUCACIÓN",
+    "DIRECCION": "Santa Fe",
+    "CUIT": "30-99999997-0",
+    "NUMERO": "0001-00512377",
+    "PERIODO": "AGOSTO 2026",
+    "NOMBRE": "PRUEBA, LUCÍA",
+    "LEGAJO": "D-30981",
+    "CUIL": "27-23456789-4",
+    "INGRESO": "10/03/2016",
+    "CARGO": "Profesora nivel secundario",
+    "DEPENDENCIA": "E.E.S.O. N° 999",
+    "FECHA_PAGO": "03/09/2026"
+  },
+  {
+    "archivo": "valeria-empresa-privada",
+    "EMPLEADOR": "CLÍNICA PRIVADA DEL VALLE S.A.",
+    "DIRECCION": "Neuquén",
+    "CUIT": "30-99999994-6",
+    "NUMERO": "0001-00513114",
+    "PERIODO": "SEPTIEMBRE 2026",
+    "NOMBRE": "PRUEBA, VALERIA",
+    "LEGAJO": "CL-2210",
+    "CUIL": "27-45678901-2",
+    "INGRESO": "01/02/2018",
+    "CARGO": "Enfermera",
+    "DEPENDENCIA": "Internación",
+    "FECHA_PAGO": "02/10/2026"
   }
 ]

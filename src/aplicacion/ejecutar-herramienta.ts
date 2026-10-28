@@ -84,7 +84,7 @@ async function aplicarDecision(conversacion: Conversacion, archivo: Archivo, dep
 
   if (verificacion.decision === "aceptar") {
     await dependencias.crm.cargarRecibo(negociacionId, archivo);
-    await dependencias.crm.moverEtapa(negociacionId, "DOCU_RECIBIDA");
+    await dependencias.crm.moverEtapa(negociacionId, "DOCU_RECIBIDA", `Recibo verificado y guardado (${archivo.nombre}).`);
     const evento = { at, tipo: "accion_crm" as const, detalle: { accion: "cargar_recibo", etapa: "DOCU_RECIBIDA", archivo: archivo.nombre } };
     return { ...conEvento(conversacion, evento), estado: "documentacion_cargada" };
   }
@@ -98,7 +98,7 @@ async function aplicarDecision(conversacion: Conversacion, archivo: Archivo, dep
 }
 
 async function marcarFaltaDocumentacion({ conversacion, dependencias }: Contexto, { motivo }: ArgumentosDe<"marcar_falta_documentacion">): Promise<ResultadoDeHerramienta> {
-  await dependencias.crm.moverEtapa(conversacion.ficha.negociacionId, "FALTA_DOCUMENTACION");
+  await dependencias.crm.moverEtapa(conversacion.ficha.negociacionId, "FALTA_DOCUMENTACION", `Motivo: ${motivo}`);
   const evento = { at: dependencias.reloj.ahora(), tipo: "accion_crm" as const, detalle: { accion: "mover_etapa", etapa: "FALTA_DOCUMENTACION", motivo } };
   return { conversacion: conEvento(conversacion, evento), resultado: { ok: true, etapa: "FALTA DOCUMENTACION" } };
 }

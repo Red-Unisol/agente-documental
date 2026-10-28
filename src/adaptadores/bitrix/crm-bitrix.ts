@@ -6,6 +6,13 @@ import type { MapeoDeBitrix } from "./mapeo.js";
 // CRM real sobre la aplicación local. Cada método es una operación de negocio del
 // agente traducida a una o dos llamadas REST; el motivo de una derivación va al
 // timeline de la negociación, que el socio no ve.
+const NOMBRE_DE_ETAPA: Record<Etapa, string> = {
+  DOCUMENTACION: "DOCUMENTACIÓN",
+  REVISION_DOCUMENTAL: "REVISIÓN DOCUMENTAL",
+  DOCU_RECIBIDA: "DOCU RECIBIDA",
+  FALTA_DOCUMENTACION: "FALTA DOCUMENTACIÓN",
+};
+
 export class CrmBitrix implements ClienteCrm {
   private readonly negociacionPorChat = new Map<string, string>();
   private readonly transferenciasPendientes = new Map<string, DestinoDeDerivacion>();
@@ -28,8 +35,9 @@ export class CrmBitrix implements ClienteCrm {
     });
   }
 
-  async moverEtapa(negociacionId: string, etapa: Etapa): Promise<void> {
+  async moverEtapa(negociacionId: string, etapa: Etapa, motivo?: string): Promise<void> {
     await this.cliente.llamar("crm.deal.update", { id: negociacionId, fields: { STAGE_ID: this.mapeo.etapas[etapa] } });
+    if (motivo) await this.comentar(negociacionId, `Agente documental: pasa a ${NOMBRE_DE_ETAPA[etapa]}. ${motivo}`);
   }
 
   // El motivo se anota ya; la transferencia queda pendiente hasta que el bot mande su última
@@ -38,8 +46,12 @@ export class CrmBitrix implements ClienteCrm {
     this.transferenciasPendientes.set(chatId, destino);
     const negociacionId = this.negociacionPorChat.get(chatId);
     if (!negociacionId) return;
+    await this.comentar(negociacionId, `Agente documental: chat derivado a ${destino}. Motivo: ${motivo}`);
+  }
+
+  private async comentar(negociacionId: string, texto: string): Promise<void> {
     await this.cliente.llamar("crm.timeline.comment.add", {
-      fields: { ENTITY_ID: Number(negociacionId), ENTITY_TYPE: "deal", COMMENT: `Agente documental: chat derivado a ${destino}. Motivo: ${motivo}` },
+      fields: { ENTITY_ID: Number(negociacionId), ENTITY_TYPE: "deal", COMMENT: texto },
     });
   }
 
