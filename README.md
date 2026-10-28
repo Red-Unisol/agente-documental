@@ -21,8 +21,8 @@ escenarios de conversación se editan desde el panel, no en el código. Toda dec
 ## Stack
 
 - Node.js 22, TypeScript, Express, Prisma, PostgreSQL, Zod
-- React + Vite (panel)
-- OpenAI (lectura del recibo y conversación), detrás de una interfaz propia
+- Panel: HTML renderizado en el servidor (sin framework)
+- OpenAI (lectura del recibo y conversación), detrás de una interfaz propia; modelo configurable por entorno
 - Bitrix24: aplicación local con alcances `crm`, `imbot`, `imopenlines`
 - Docker / Docker Compose
 
@@ -34,12 +34,14 @@ src/
     verificacion/   período, identidad, empleador, exclusiones
     agente/         prompt, escenarios, herramientas
     conversacion/   estado y auditoría de una conversación
+    costos/         uso de tokens, tarifas y costo por conversación
   aplicacion/     casos de uso: atender un mensaje, ejecutar una herramienta
   puertos/        interfaces hacia el modelo, el lector de recibos, el CRM y la base
   adaptadores/    openai (modelo y lector), memoria (simulación y tests), bitrix, prisma
-  evals/          cómo se grada una conversación de prueba
+  evals/          cómo se grada una conversación de prueba y cómo se guarda una corrida
   cli/            simulación por consola y corredor de evals
-evals/            conversaciones de prueba y recibos sintéticos
+  panel/          panel de lectura: conversaciones, escenarios, reglas, evals, modelos y costos
+evals/            conversaciones de prueba, recibos sintéticos y corridas guardadas
 infra/            Dockerfile, docker-compose.yml
 scripts/          utilidades: embudo de prueba en Bitrix, recibos sintéticos
 docs/             bitrix-embudo-prueba.md
@@ -53,10 +55,23 @@ npm install
 ./scripts/generar-recibos-sinteticos.sh   # recibos ficticios para probar (requiere Chrome)
 npm run dev                   # conversación por consola; `/archivo <ruta>` adjunta un recibo
 npm run evals                 # corre evals/conversaciones/*.json y grada el resultado
+npm run evals -- --guardar    # además guarda la corrida en evals/corridas/ (la lee el panel)
+npm run panel                 # http://localhost:3011
 npm test                      # tests unitarios, sin red
 ```
 
 La simulación usa un CRM en memoria: muestra qué habría hecho en Bitrix sin tocarlo.
+
+### Cambiar o comparar modelos
+
+Los modelos son dos variables de entorno. Para comparar alternativas se corre la misma batería con
+cada una y el panel las muestra lado a lado (pasan, costo por conversación, tiempo):
+
+```bash
+OPENAI_MODELO_CONVERSACION=gpt-6-luna OPENAI_MODELO_LECTURA=gpt-6.1-terra npm run evals -- --guardar
+```
+
+Las tarifas para estimar el costo están en `src/dominio/costos/tarifas.ts`.
 
 ## Variables de entorno
 

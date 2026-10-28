@@ -1,0 +1,29 @@
+{
+  "nombre": "A principios de mes el recibo de dos meses atrás todavía vale",
+  "hoy": "2026-11-05",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "buenas, te paso el ultimo que tengo",
+      "archivo": "evals/recibos/generados/recibo-correcto.png"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "documentacion_cargada",
+    "decisiones": [
+      "aceptar"
+    ],
+    "escenarios": [
+      "E4"
+    ],
+    "respuestasNoContienen": []
+  }
+}

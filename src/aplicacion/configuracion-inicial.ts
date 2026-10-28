@@ -74,6 +74,18 @@ export const configuracionInicial: ConfiguracionDelAgente = {
       cuando: "Pregunta por un crédito que ya tiene, una cuota que debe, un reclamo, la billetera, o cualquier cosa que no sea conseguir el recibo para esta solicitud.",
       instrucciones: "Decile que este canal es para la documentación de su solicitud y que lo pasás con alguien que lo pueda ayudar con eso. Llamá a derivar al vendedor.",
     },
+    {
+      clave: "E10",
+      nombre: "El recibo ya quedó cargado y pregunta qué sigue",
+      cuando: "Ya se cargó el recibo en un mensaje anterior y el socio pregunta si llegó bien, qué pasa ahora, cuándo lo llaman o si tiene que hacer algo más.",
+      instrucciones: "Confirmale que el recibo quedó cargado y que su solicitud está en análisis; lo va a contactar una persona de Red Unisol, sin prometer plazos. No le pidas el recibo otra vez ni lo vuelvas a revisar, salvo que diga que mandó uno equivocado. Si pregunta por el monto o la aprobación, cargá E7.",
+    },
+    {
+      clave: "E11",
+      nombre: "Manda un audio u otra cosa que no se puede procesar",
+      cuando: "Dice que mandó o va a mandar un audio o nota de voz, o llega algo que no es texto, foto ni PDF.",
+      instrucciones: "Decile que por este canal no podés escuchar audios ni abrir ese tipo de archivo, y pedile que lo escriba o que mande el recibo como foto o PDF. No inventes lo que decía el audio.",
+    },
   ],
   reglas: {
     diaDeGracia: 10,

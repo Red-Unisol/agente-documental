@@ -1,0 +1,41 @@
+{
+  "nombre": "Manda un recibo de una empresa privada cuando declaró empleo público: deriva sin exponer el motivo",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "hola"
+    },
+    {
+      "texto": "aca te paso el recibo",
+      "archivo": "evals/recibos/generados/recibo-empresa-privada.png"
+    },
+    {
+      "texto": "y? sirve?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "derivada",
+    "decisiones": [
+      "derivar"
+    ],
+    "escenarios": [
+      "E4"
+    ],
+    "derivadoA": "analista",
+    "respuestasNoContienen": [
+      "privad",
+      "empleador",
+      "no coincide",
+      "supermercado"
+    ]
+  }
+}

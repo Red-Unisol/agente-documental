@@ -15,7 +15,7 @@
   .total td { font-weight: bold; }
   .pie { font-size: 9.5px; margin-top: 12px; color: #333; }
 </style></head>
-<body><div class="hoja">
+<body><div class="hoja" style="{{ESTILO}}">
   <div class="cab">
     <div><h1>{{EMPLEADOR}}</h1><p>{{DIRECCION}}</p><p>CUIT {{CUIT}}</p></div>
     <div style="text-align:right"><p><b>RECIBO DE HABERES</b></p><p>Nº {{NUMERO}}</p><p>Hoja 1 de 1</p></div>
@@ -41,4 +41,5 @@
     </tbody>
   </table>
   <p class="pie">Son pesos setecientos veintiún mil doscientos ochenta y dos con 72/100. Depositado en cuenta sueldo el {{FECHA_PAGO}}. Recibí conforme. Documento generado para pruebas: persona y datos ficticios.</p>
+  <p class="pie">{{NOTA}}</p>
 </div></body></html>

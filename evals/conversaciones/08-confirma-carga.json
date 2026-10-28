@@ -1,0 +1,40 @@
+{
+  "nombre": "Después de cargar el recibo pregunta si llegó y qué sigue",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "hola, te mando el recibo",
+      "archivo": "evals/recibos/generados/recibo-correcto.png"
+    },
+    {
+      "texto": "llegó bien? tengo que hacer algo más?"
+    },
+    {
+      "texto": "y cuando me llaman?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "documentacion_cargada",
+    "decisiones": [
+      "aceptar"
+    ],
+    "escenarios": [
+      "E4",
+      "E10"
+    ],
+    "respuestasNoContienen": [
+      "mand[aá]me (tu|el|otra vez)",
+      "necesito que me env[ií]es",
+      "\\d+ ?(horas|d[ií]as) h[aá]biles"
+    ]
+  }
+}

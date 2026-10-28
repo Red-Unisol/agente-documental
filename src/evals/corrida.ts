@@ -46,7 +46,7 @@ export function registrarCaso(archivo: string, nombre: string, conversacion: Con
 export function armarCorrida(modelos: Corrida["modelos"], casos: CasoCorrido[], fecha = new Date()): Corrida {
   const costos = casos.map((c) => c.uso.costoUsd);
   return {
-    id: `${fecha.toISOString().slice(0, 19).replace(/[:T]/g, "-")}-${modelos.conversacion}`,
+    id: `${fecha.toISOString().slice(0, 19).replace(/[:T]/g, "-")}-${modelos.conversacion}+${modelos.lectura}`,
     fecha: fecha.toISOString(),
     modelos,
     casos,
