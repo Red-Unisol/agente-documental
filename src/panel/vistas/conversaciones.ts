@@ -1,20 +1,21 @@
 import type { EventoDeAuditoria, Mensaje } from "../../dominio/conversacion/conversacion.js";
 import type { CasoCorrido, Corrida } from "../../evals/corrida.js";
-import { chip, escapar, fecha, type Html, segundos, usd } from "../html.js";
+import { chip, escapar, fecha, hora, type Html, segundos, usd } from "../html.js";
+import { seccionHtml } from "./plantilla.js";
 
 const ETIQUETA_DE_ESTADO: Record<CasoCorrido["estadoFinal"], Html> = {
   activa: chip("alerta", "Activa"),
-  derivada: chip("violeta", "Derivada a una persona"),
-  documentacion_cargada: chip("ok", "Documentación cargada"),
+  derivada: chip("violeta", "Derivada"),
+  documentacion_cargada: chip("ok", "Cargada"),
 };
 
 export function vistaDeConversaciones(corrida: Corrida | undefined, seleccionado: string | undefined): { cuerpo: Html; subtitulo: string } {
-  if (!corrida) return { cuerpo: `<div class="tarjeta">Todavía no hay conversaciones. Corré <span class="mono">npm run evals -- --guardar</span>.</div>`, subtitulo: "" };
+  if (!corrida) return { cuerpo: `<div class="panel relleno">Todavía no hay conversaciones. Corré <span class="cod">npm run evals -- --guardar</span>.</div>`, subtitulo: "" };
   const caso = corrida.casos.find((c) => c.archivo === seleccionado) ?? corrida.casos[0];
-  if (!caso) return { cuerpo: `<div class="tarjeta">La corrida no tiene casos.</div>`, subtitulo: "" };
+  if (!caso) return { cuerpo: `<div class="panel relleno">La corrida no tiene casos.</div>`, subtitulo: "" };
   return {
-    subtitulo: `Conversaciones de la corrida del ${fecha(corrida.fecha)} (${escapar(corrida.modelos.conversacion)}). En producción acá se ven las conversaciones reales del canal; hoy, las de prueba con datos ficticios.`,
-    cuerpo: `<div class="editor"><div class="tarjeta lista">${listado(corrida, caso)}</div><div>${detalle(caso)}</div></div>`,
+    subtitulo: `Corrida del ${fecha(corrida.fecha)} con <span class="cod">${escapar(corrida.modelos.conversacion)}</span>. En producción acá se ven las conversaciones reales del canal; hoy, las de prueba con datos ficticios.`,
+    cuerpo: `<div class="editor"><div class="lista"><div class="cabecera">${corrida.casos.length} conversaciones</div>${listado(corrida, caso)}</div><div>${detalle(caso)}</div></div>`,
   };
 }
 
@@ -22,58 +23,66 @@ function listado(corrida: Corrida, activo: CasoCorrido): Html {
   return corrida.casos
     .map(
       (c) =>
-        `<a href="/conversaciones?caso=${encodeURIComponent(c.archivo)}" class="${c === activo ? "activo" : ""}"><b>${escapar(c.archivo.slice(0, 2))}</b> ${escapar(c.nombre)}<small>${ETIQUETA_DE_ESTADO[c.estadoFinal]}</small></a>`,
+        `<a href="/conversaciones?caso=${encodeURIComponent(c.archivo)}" class="${c === activo ? "activo" : ""}"><b>${escapar(c.archivo.slice(0, 2))}</b>${escapar(c.nombre)}<small>${ETIQUETA_DE_ESTADO[c.estadoFinal]}</small></a>`,
     )
     .join("");
 }
 
 function detalle(caso: CasoCorrido): Html {
   const { ficha } = caso;
+  const sector = ficha.sectorDeclarado === "publico" ? "Público" : "Privado";
+  const pasos = caso.auditoria.filter((e) => e.tipo !== "uso_de_modelo");
   return `
+  ${seccionHtml(caso.archivo.slice(0, 2), caso.nombre, caso.paso ? chip("ok", "eval pasa") : chip("rojo", "eval falla"))}
   <div class="ficha">
     <div><small>Socio</small><b>${escapar(ficha.nombre)}</b></div>
-    <div><small>Empleo declarado</small><b>${escapar(ficha.sectorDeclarado)} · ${escapar(ficha.empleadorDeclarado)}</b></div>
+    <div><small>Empleo declarado</small><b>${sector} · ${escapar(ficha.empleadorDeclarado)}</b></div>
     <div><small>Provincia · convenio</small><b>${escapar(ficha.provincia)} · ${escapar(ficha.convenio)}</b></div>
-    <div><small>Estado</small><b>${ETIQUETA_DE_ESTADO[caso.estadoFinal]}</b></div>
+    <div><small>Estado final</small><b>${ETIQUETA_DE_ESTADO[caso.estadoFinal]}</b></div>
   </div>
   <div class="dos">
-    <div class="tarjeta"><div class="chat">${caso.mensajes.map(burbuja).join("")}${caso.estadoFinal === "derivada" ? `<div class="b sistema"><div class="q">Sistema</div>El agente no responde más: la conversación la sigue la persona.</div>` : ""}</div></div>
-    <div class="tarjeta"><h3>Qué hizo el agente</h3>${caso.auditoria.filter((e) => e.tipo !== "uso_de_modelo").map(paso).join("")}
-      <p class="nota">${caso.uso.llamadas} llamadas al modelo · ${caso.uso.tokensDeEntrada} tokens de entrada · ${caso.uso.tokensDeSalida} de salida · ${segundos(caso.uso.milisegundos)} · ${usd(caso.uso.costoUsd)}</p>
+    <div>
+      <div class="ledger">${caso.mensajes.map(renglon).join("")}${caso.estadoFinal === "derivada" ? `<div class="m sistema"><div class="quien">Sistema</div><div class="txt">El agente no responde más: la conversación la sigue la persona a la que derivó.</div></div>` : ""}</div>
+    </div>
+    <div>
+      <div class="pasos">${pasos.map((e, i) => paso(e, i + 1)).join("")}
+        <div class="uso"><span><b>${caso.uso.llamadas}</b> llamadas</span><span><b>${caso.uso.tokensDeEntrada.toLocaleString("es-AR")}</b> tokens entrada</span><span><b>${caso.uso.tokensDeSalida.toLocaleString("es-AR")}</b> salida</span><span><b>${segundos(caso.uso.milisegundos)}</b> en modelo</span><span><b>${usd(caso.uso.costoUsd)}</b></span></div>
+      </div>
     </div>
   </div>`;
 }
 
-function burbuja(mensaje: Mensaje): Html {
+function renglon(mensaje: Mensaje): Html {
   const propio = mensaje.direccion === "saliente";
-  const adjunto = mensaje.archivoId ? `<div class="adj">📎 archivo adjunto</div>` : "";
-  return `<div class="b ${propio ? "a" : "s"}"><div class="q">${propio ? "Agente" : "Socio"} · ${fecha(mensaje.at)}</div>${escapar(mensaje.texto)}${adjunto}</div>`;
+  const adjunto = mensaje.archivoId ? `<div><span class="adj">archivo adjunto</span></div>` : "";
+  return `<div class="m ${propio ? "a" : "s"}"><div class="quien">${propio ? "Agente" : "Socio"}<small>${hora(mensaje.at)}</small></div><div class="txt">${escapar(mensaje.texto)}${adjunto}</div></div>`;
 }
 
-function paso(evento: EventoDeAuditoria): Html {
+function paso(evento: EventoDeAuditoria, numero: number): Html {
   const d = evento.detalle;
+  const n = String(numero).padStart(2, "0");
   switch (evento.tipo) {
     case "escenario_cargado":
-      return bloque(`Cargó el escenario <span class="mono">${escapar(d.clave)}</span> · ${escapar(d.nombre)}`, "Elegido del índice. Sólo ese entró al contexto.");
+      return bloque(n, `Cargó el escenario <span class="cod">${escapar(d.clave)}</span> · ${escapar(d.nombre)}`, "Elegido del índice. Sólo ese entró al contexto.");
     case "lectura_de_recibo":
-      return bloque("Leyó el archivo", resumenDeLectura(d));
+      return bloque(n, "Leyó el archivo", resumenDeLectura(d));
     case "verificacion":
-      return `<div class="paso"><h4>Verificó (decide el sistema, no el modelo)</h4><ul>${(d.chequeos as { ok: boolean; nombre: string; detalle: string }[]).map((c) => `<li class="${c.ok ? "ok" : "no"}"><b>${escapar(c.nombre)}</b> · ${escapar(c.detalle)}</li>`).join("")}</ul><p style="margin-top:6px">Decisión: ${chipDeDecision(String(d.decision))}</p></div>`;
+      return `<div class="paso"><span class="n">${n}</span><div><h4>Verificó · decide el sistema, no el modelo</h4><ul>${(d.chequeos as { ok: boolean; nombre: string; detalle: string }[]).map((c) => `<li class="${c.ok ? "" : "no"}"><b>${escapar(c.nombre)}</b> · ${escapar(c.detalle)}</li>`).join("")}</ul><p class="pie">Decisión: ${chipDeDecision(String(d.decision))}</p></div></div>`;
     case "accion_crm":
-      return bloque(`CRM: ${escapar(d.accion)} → ${escapar(d.etapa)}`, d.motivo ? escapar(d.motivo) : "");
+      return bloque(n, `CRM: ${escapar(d.accion)} → ${escapar(d.etapa)}`, d.motivo ? escapar(d.motivo) : "");
     case "derivacion":
-      return bloque(`Derivó a ${escapar(d.destino)}`, `Motivo interno (el socio no lo ve): ${escapar(d.motivo)}`);
+      return bloque(n, `Derivó a ${escapar(d.destino)}`, `Motivo interno, el socio no lo ve: ${escapar(d.motivo)}`);
     case "herramienta_rechazada":
-      return bloque(`Herramienta rechazada: <span class="mono">${escapar(d.herramienta)}</span>`, escapar(d.error));
+      return bloque(n, `Herramienta rechazada: <span class="cod">${escapar(d.herramienta)}</span>`, escapar(d.error));
     case "dato_sensible_omitido":
-      return bloque("Filtro de salida", `Omitió ${escapar((d.tipos as string[]).join(", "))} de la respuesta antes de enviarla.`);
+      return bloque(n, "Filtro de salida", `Omitió ${escapar((d.tipos as string[]).join(", "))} de la respuesta antes de enviarla.`);
     case "uso_de_modelo":
       return "";
   }
 }
 
-function bloque(titulo: Html, texto: Html): Html {
-  return `<div class="paso"><h4>${titulo}</h4>${texto ? `<p>${texto}</p>` : ""}</div>`;
+function bloque(n: string, titulo: Html, texto: Html): Html {
+  return `<div class="paso"><span class="n">${n}</span><div><h4>${titulo}</h4>${texto ? `<p>${texto}</p>` : ""}</div></div>`;
 }
 
 function resumenDeLectura(d: Record<string, unknown>): Html {

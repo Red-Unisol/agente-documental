@@ -1,17 +1,30 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { configuracionInicial } from "../aplicacion/configuracion-inicial.js";
+import type { Ficha } from "../dominio/tipos.js";
 import { leerCorridas } from "./datos.js";
 import type { Html } from "./html.js";
 import { vistaDeConversaciones } from "./vistas/conversaciones.js";
 import { vistaDeEscenarios } from "./vistas/escenarios.js";
 import { vistaDeEvals } from "./vistas/evals.js";
 import { vistaDeModelos } from "./vistas/modelos.js";
-import { pagina, type Seccion } from "./vistas/plantilla.js";
+import { type Entorno, pagina, type Seccion } from "./vistas/plantilla.js";
+import { vistaDelPrompt } from "./vistas/prompt.js";
 import { vistaDeReglas } from "./vistas/reglas.js";
 
 const PUERTO = Number(process.env.PANEL_PUERTO ?? 3011);
 
-const SECCIONES: Seccion[] = ["conversaciones", "escenarios", "reglas", "evals", "modelos"];
+const SECCIONES: Seccion[] = ["conversaciones", "prompt", "escenarios", "reglas", "evals", "modelos"];
+
+// Ficha ficticia para mostrar el prompt completo tal como lo recibe el modelo.
+const FICHA_DE_EJEMPLO: Ficha = {
+  negociacionId: "EJEMPLO",
+  nombre: "Mariana",
+  dni: "00000000",
+  provincia: "Catamarca",
+  convenio: "EMPLEADOS_PUBLICOS_CATAMARCA",
+  sectorDeclarado: "publico",
+  empleadorDeclarado: "Ministerio de Educación de Catamarca",
+};
 
 async function atender(peticion: IncomingMessage, respuesta: ServerResponse): Promise<void> {
   const url = new URL(peticion.url ?? "/", `http://localhost:${PUERTO}`);
@@ -25,15 +38,16 @@ async function renderizar(seccion: Seccion, parametros: URLSearchParams): Promis
   const corridas = await leerCorridas();
   const ultima = corridas[0];
   const configuracion = configuracionInicial;
+  const hoy = new Date();
   const contadores = {
     conversaciones: ultima ? String(ultima.total.casos) : undefined,
     escenarios: String(configuracion.escenarios.length),
     evals: ultima ? `${ultima.total.pasaron}/${ultima.total.casos}` : undefined,
     modelos: String(new Set(corridas.map((c) => `${c.modelos.conversacion}+${c.modelos.lectura}`)).size),
   };
-  const entorno = {
-    modo: "SIMULACIÓN LOCAL",
-    embudo: "Bitrix: embudo de prueba 19",
+  const entorno: Entorno = {
+    modo: "Simulación local",
+    embudo: "Bitrix · embudo de prueba 19",
     modelos: ultima ? `${ultima.modelos.conversacion} · ${ultima.modelos.lectura}` : "sin corridas",
   };
 
@@ -42,13 +56,24 @@ async function renderizar(seccion: Seccion, parametros: URLSearchParams): Promis
       const vista = vistaDeConversaciones(ultima, parametros.get("caso") ?? undefined);
       return pagina({ seccion, titulo: "Conversaciones", subtitulo: vista.subtitulo, cuerpo: vista.cuerpo, contadores }, entorno);
     }
+    case "prompt":
+      return pagina(
+        {
+          seccion,
+          titulo: "Prompt base",
+          subtitulo: "Lo que el agente sabe antes de leer el primer mensaje. Es corto a propósito: lo específico de cada situación vive en los escenarios y entra sólo cuando hace falta.",
+          cuerpo: vistaDelPrompt({ bloques: configuracion.bloques, escenarios: configuracion.escenarios, fichaDeEjemplo: FICHA_DE_EJEMPLO, hoy, diaDeGracia: configuracion.reglas.diaDeGracia }),
+          contadores,
+        },
+        entorno,
+      );
     case "escenarios":
       return pagina(
         {
           seccion,
           titulo: "Escenarios",
-          subtitulo: "Lo que el agente sabe hacer. En cada mensaje elige uno del índice y carga sólo ese: el resto no ocupa contexto.",
-          cuerpo: vistaDeEscenarios(configuracion.escenarios, configuracion.bloques, ultima, parametros.get("clave") ?? undefined),
+          subtitulo: "Las situaciones que el agente sabe atender. En cada mensaje elige una del índice y carga sólo esa: el resto no ocupa contexto.",
+          cuerpo: vistaDeEscenarios(configuracion.escenarios, ultima, parametros.get("clave") ?? undefined),
           contadores,
         },
         entorno,
@@ -58,8 +83,8 @@ async function renderizar(seccion: Seccion, parametros: URLSearchParams): Promis
         {
           seccion,
           titulo: "Reglas de verificación",
-          subtitulo: "Lo que decide el sistema con el recibo en la mano. Son datos, no texto del prompt.",
-          cuerpo: vistaDeReglas(configuracion.reglas, new Date()),
+          subtitulo: "Lo que decide el sistema con el recibo en la mano. Son datos y código, no texto del prompt: el modelo no participa.",
+          cuerpo: vistaDeReglas(configuracion.reglas, hoy),
           contadores,
         },
         entorno,

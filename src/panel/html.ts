@@ -10,7 +10,12 @@ export function chip(clase: "ok" | "alerta" | "rojo" | "violeta" | "azul", texto
 
 export function fecha(iso: string | Date): string {
   const valor = typeof iso === "string" ? new Date(iso) : iso;
-  return valor.toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  return valor.toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
+export function hora(iso: string | Date): string {
+  const valor = typeof iso === "string" ? new Date(iso) : iso;
+  return valor.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
 export function usd(valor: number | undefined, decimales = 4): string {
