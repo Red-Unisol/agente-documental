@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { negociacionDelChat } from "./bot.js";
-import { sectorDelConvenio } from "./fichas-bitrix.js";
+import { sectorDeLaSituacionLaboral } from "./fichas-bitrix.js";
 import { anidar, hoja, rama } from "./formulario.js";
 
 describe("anidar", () => {
@@ -32,15 +32,16 @@ describe("negociacionDelChat", () => {
   });
 });
 
-describe("sectorDelConvenio", () => {
-  it("reconoce convenios del sector público", () => {
-    expect(sectorDelConvenio("EMPLEADOS PUBLICOS CATAMARCA")).toBe("publico");
-    expect(sectorDelConvenio("Docentes Chaco")).toBe("publico");
-    expect(sectorDelConvenio("Jubilados ANSES")).toBe("publico");
+describe("sectorDeLaSituacionLaboral", () => {
+  it("reconoce las situaciones laborales del sector público", () => {
+    for (const situacion of ["Empleado Publico Provincial", "Docente", "Jubilado Nacional", "Pensionado", "Policía Federal", "Personal de Salud", "Empleado de la UNC", "DASPU"]) {
+      expect(sectorDeLaSituacionLaboral(situacion), situacion).toBe("publico");
+    }
   });
 
   it("el resto se trata como privado", () => {
-    expect(sectorDelConvenio("Comercio")).toBe("privado");
-    expect(sectorDelConvenio("")).toBe("privado");
+    for (const situacion of ["Empleado Privado", "Autonomo/Independiente", "Monotributista", "Beneficiario de Plan Social", ""]) {
+      expect(sectorDeLaSituacionLaboral(situacion), situacion).toBe("privado");
+    }
   });
 });

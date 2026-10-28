@@ -11,7 +11,8 @@ export interface MapeoDeBitrix {
     recibo: string;
     dni: string;
     provincia: string;
-    convenio: string;
+    convenio: string; // la mutual o línea (Celesol, Fiat, Amejuca...)
+    situacionLaboral: string; // lista: Empleado Publico Provincial, Docente, Jubilado, Empleado Privado...
     empleador: string;
     organismo: string;
   };
@@ -33,6 +34,7 @@ export function mapeoDelEmbudoDePrueba(usuarioDePrueba: number): MapeoDeBitrix {
       dni: "UF_CRM_6601C9A69747F",
       provincia: "UF_CRM_1684346013612",
       convenio: "UF_CRM_1685450067166",
+      situacionLaboral: "UF_CRM_662B9D2685477",
       empleador: "UF_CRM_6A43D31EBC847",
       organismo: "UF_CRM_WA_ORGANISMO",
     },

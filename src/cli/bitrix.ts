@@ -49,7 +49,8 @@ const comandos: Record<string, () => Promise<void>> = {
         CONTACT_ID: contactoId,
         [mapeo.campos.dni]: "12345678",
         [mapeo.campos.provincia]: idDeOpcion(mapeo.campos.provincia, /catamarca/i),
-        [mapeo.campos.convenio]: idDeOpcion(mapeo.campos.convenio, /catamarca/i),
+        [mapeo.campos.convenio]: idDeOpcion(mapeo.campos.convenio, /linea propia/i),
+        [mapeo.campos.situacionLaboral]: idDeOpcion(mapeo.campos.situacionLaboral, /^empleado publico provincial$/i),
         [mapeo.campos.empleador]: "Ministerio de Educación de Catamarca",
       },
     });

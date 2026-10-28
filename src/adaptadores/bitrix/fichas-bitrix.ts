@@ -5,7 +5,8 @@ import type { MapeoDeBitrix } from "./mapeo.js";
 type Negociacion = Record<string, unknown> & { ID: string; CONTACT_ID?: string | null };
 type Enumeraciones = Record<string, Map<string, string>>; // campo → (id del valor → etiqueta)
 
-const CONVENIOS_DEL_SECTOR_PUBLICO = /p[uú]blic|estatal|municipal|provinc|docente|polic|jubil|pasiv|ministerio/i;
+// Valores de "Sit Laboral" que son sector público (empleo estatal, docencia, fuerzas, salud, pasivos).
+const SITUACIONES_DEL_SECTOR_PUBLICO = /p[uú]blic|estatal|municipal|provinc|nacional|docente|polic|jubil|pensio|salud|\bUNC\b|DASPU/i;
 
 // Arma la ficha que conoce el agente a partir de la negociación de Bitrix. El DNI entra
 // a la ficha porque lo compara el código; el prompt nunca lo incluye.
@@ -21,15 +22,15 @@ export class FichasDesdeBitrix {
     const negociacion = await this.cliente.llamar<Negociacion>("crm.deal.get", { id: negociacionId });
     const etiquetas = await this.etiquetas();
     const nombre = await this.nombreDelContacto(negociacion);
-    const convenio = etiqueta(etiquetas, this.mapeo.campos.convenio, negociacion[this.mapeo.campos.convenio]);
+    const situacionLaboral = etiqueta(etiquetas, this.mapeo.campos.situacionLaboral, negociacion[this.mapeo.campos.situacionLaboral]);
     const empleador = texto(negociacion[this.mapeo.campos.empleador]) || texto(negociacion[this.mapeo.campos.organismo]);
     return {
       negociacionId: negociacion.ID,
       nombre,
       dni: texto(negociacion[this.mapeo.campos.dni]).replace(/\D/g, ""),
       provincia: etiqueta(etiquetas, this.mapeo.campos.provincia, negociacion[this.mapeo.campos.provincia]),
-      convenio,
-      sectorDeclarado: sectorDelConvenio(convenio),
+      convenio: etiqueta(etiquetas, this.mapeo.campos.convenio, negociacion[this.mapeo.campos.convenio]) || "sin informar",
+      sectorDeclarado: sectorDeLaSituacionLaboral(situacionLaboral),
       empleadorDeclarado: empleador || "sin informar",
     };
   }
@@ -62,6 +63,6 @@ function texto(valor: unknown): string {
   return valor === null || valor === undefined ? "" : String(valor).trim();
 }
 
-export function sectorDelConvenio(convenio: string): Sector {
-  return CONVENIOS_DEL_SECTOR_PUBLICO.test(convenio) ? "publico" : "privado";
+export function sectorDeLaSituacionLaboral(situacionLaboral: string): Sector {
+  return SITUACIONES_DEL_SECTOR_PUBLICO.test(situacionLaboral) ? "publico" : "privado";
 }
