@@ -69,8 +69,13 @@ async function conversar(inicial: Conversacion, configuracion: ConfiguracionDelA
   return { tipo: "silencio", motivo: "El modelo no llegó a una respuesta", conversacion };
 }
 
+// Si el modelo derivó y no dijo nada, el socio igual tiene que enterarse de que alguien lo va a seguir.
+const DESPEDIDA_AL_DERIVAR = "Una persona de Red Unisol te va a contactar para seguir.";
+
 function responder(conversacion: Conversacion, textoDelModelo: string, at: Date): ResultadoDeAtencion {
-  const { texto, omitidos } = omitirIdentificadores(textoDelModelo);
+  const textoBase = textoDelModelo.trim() || (conversacion.estado === "derivada" ? DESPEDIDA_AL_DERIVAR : "");
+  if (!textoBase) return { tipo: "silencio", motivo: "El modelo devolvió una respuesta vacía", conversacion };
+  const { texto, omitidos } = omitirIdentificadores(textoBase);
   const auditada = omitidos.length ? conEvento(conversacion, { at, tipo: "dato_sensible_omitido", detalle: { tipos: omitidos } }) : conversacion;
   return { tipo: "respondio", texto, conversacion: conMensaje(auditada, { direccion: "saliente", texto, at }) };
 }

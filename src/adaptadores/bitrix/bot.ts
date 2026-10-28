@@ -55,8 +55,12 @@ export class BotDeBitrix {
     const archivo = await this.primerArchivo(rama(parametros, "FILES"));
     const texto = hoja(parametros, "MESSAGE") || (archivo ? "(archivo)" : "");
     const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(archivo && { archivo }) }, this.colaboradores.dependencias);
-    if (resultado.tipo === "respondio") await this.responder(dialogo, resultado.texto);
-    await this.colaboradores.crm.completarTransferencia(chatId);
+    try {
+      if (resultado.tipo === "respondio") await this.responder(dialogo, resultado.texto);
+    } finally {
+      // Aunque falle el envío, una derivación pendiente tiene que completarse: si no, el chat queda con el bot.
+      await this.colaboradores.crm.completarTransferencia(chatId);
+    }
     return resultado.tipo === "respondio" ? `respondió (${resultado.texto.length} caracteres)` : `silencio: ${resultado.motivo}`;
   }
 
