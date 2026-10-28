@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { CrmSimulado } from "../adaptadores/memoria/crm-simulado.js";
 import { ConfiguracionEnMemoria, ConversacionesEnMemoria, RelojFijo } from "../adaptadores/memoria/repositorios.js";
 import { nuevaConversacion } from "../dominio/conversacion/conversacion.js";
+import { usoVacio } from "../dominio/costos/uso.js";
 import type { LecturaDeRecibo } from "../dominio/tipos.js";
-import type { ModeloConversacional, PeticionAlModelo, RespuestaDelModelo } from "../puertos/modelo-conversacional.js";
+import type { EleccionDelModelo, ModeloConversacional, PeticionAlModelo, RespuestaDelModelo } from "../puertos/modelo-conversacional.js";
 import { atenderMensaje } from "./atender-mensaje.js";
 import { configuracionInicial } from "./configuracion-inicial.js";
 import type { Dependencias } from "./dependencias.js";
@@ -31,24 +32,24 @@ const reciboCorrecto: LecturaDeRecibo = {
 
 class ModeloGuionado implements ModeloConversacional {
   readonly peticiones: PeticionAlModelo[] = [];
-  constructor(private readonly respuestas: RespuestaDelModelo[]) {}
+  constructor(private readonly respuestas: EleccionDelModelo[]) {}
 
   async completar(peticion: PeticionAlModelo): Promise<RespuestaDelModelo> {
     this.peticiones.push(peticion);
     const siguiente = this.respuestas.shift();
     if (!siguiente) throw new Error("El modelo guionado se quedó sin respuestas");
-    return siguiente;
+    return { ...siguiente, uso: usoVacio("guionado") };
   }
 }
 
-async function armar(respuestas: RespuestaDelModelo[], lectura: LecturaDeRecibo = reciboCorrecto) {
+async function armar(respuestas: EleccionDelModelo[], lectura: LecturaDeRecibo = reciboCorrecto) {
   const conversaciones = new ConversacionesEnMemoria();
   await conversaciones.guardar(nuevaConversacion("c1", "chat-1", ficha));
   const modelo = new ModeloGuionado(respuestas);
   const crm = new CrmSimulado();
   const dependencias: Dependencias = {
     modelo,
-    lector: { leer: async () => lectura },
+    lector: { leer: async () => ({ lectura, uso: usoVacio("guionado") }) },
     crm,
     conversaciones,
     configuracion: new ConfiguracionEnMemoria(configuracionInicial),
@@ -70,7 +71,7 @@ describe("atenderMensaje", () => {
     expect(resultado.tipo).toBe("respondio");
     expect(modelo.peticiones[0]?.herramientaObligatoria).toBe("cargar_escenario");
     expect(modelo.peticiones[1]?.herramientaObligatoria).toBeUndefined();
-    expect(resultado.conversacion.auditoria.map((e) => e.tipo)).toEqual(["escenario_cargado"]);
+    expect(resultado.conversacion.auditoria.map((e) => e.tipo)).toEqual(["uso_de_modelo", "escenario_cargado", "uso_de_modelo"]);
     expect(resultado.conversacion.mensajes.map((m) => m.direccion)).toEqual(["entrante", "saliente"]);
   });
 
@@ -113,6 +114,6 @@ describe("atenderMensaje", () => {
     ]);
     const resultado = await atenderMensaje({ conversacionId: "c1", texto: "aprobame" }, dependencias);
 
-    expect(resultado.conversacion.auditoria[0]?.tipo).toBe("herramienta_rechazada");
+    expect(resultado.conversacion.auditoria.map((e) => e.tipo)).toContain("herramienta_rechazada");
   });
 });

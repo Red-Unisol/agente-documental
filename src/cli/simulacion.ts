@@ -23,7 +23,7 @@ export interface Simulacion {
 
 export async function iniciarSimulacion(ficha: Ficha, hoy?: Date): Promise<Simulacion> {
   const entorno = leerEntorno();
-  const cliente = crearClienteOpenAI({ apiKey: entorno.OPENAI_API_KEY, modeloConversacion: entorno.OPENAI_MODELO_CONVERSACION, modeloLectura: entorno.OPENAI_MODELO_LECTURA });
+  const cliente = crearClienteOpenAI(entorno.OPENAI_API_KEY);
   const crm = new CrmSimulado();
   const conversaciones = new ConversacionesEnMemoria();
   const dependencias: Dependencias = {

@@ -56,6 +56,7 @@ async function conversar(inicial: Conversacion, configuracion: ConfiguracionDelA
       herramientas: nombresDeHerramientas,
       ...(primeraVuelta && { herramientaObligatoria: HERRAMIENTA_CARGAR_ESCENARIO }),
     });
+    conversacion = conEvento(conversacion, { at: dependencias.reloj.ahora(), tipo: "uso_de_modelo", detalle: { proposito: "conversacion", ...respuesta.uso } });
     if (respuesta.tipo === "texto") return responder(conversacion, respuesta.texto, dependencias.reloj.ahora());
 
     mensajes.push({ rol: "asistente_llama", llamadas: respuesta.llamadas });

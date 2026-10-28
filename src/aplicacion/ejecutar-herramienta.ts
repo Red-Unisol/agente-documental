@@ -53,10 +53,11 @@ async function revisarRecibo({ conversacion, configuracion, dependencias }: Cont
   if (!archivo) return { conversacion, resultado: { error: "El socio todavía no mandó ningún archivo." } };
 
   const ahora = dependencias.reloj.ahora();
-  const lectura = await dependencias.lector.leer(archivo);
+  const { lectura, uso } = await dependencias.lector.leer(archivo);
   const verificacion = verificarRecibo({ lectura, ficha: conversacion.ficha, reglas: configuracion.reglas, hoy: ahora });
 
-  let actualizada = conEvento(conversacion, { at: ahora, tipo: "lectura_de_recibo", detalle: { archivo: archivo.nombre, ...lectura, cuil: lectura.cuil ? "leído" : "ausente" } });
+  let actualizada = conEvento(conversacion, { at: ahora, tipo: "uso_de_modelo", detalle: { proposito: "lectura", ...uso } });
+  actualizada = conEvento(actualizada, { at: ahora, tipo: "lectura_de_recibo", detalle: { archivo: archivo.nombre, ...lectura, cuil: lectura.cuil ? "leído" : "ausente" } });
   actualizada = conEvento(actualizada, { at: ahora, tipo: "verificacion", detalle: { decision: verificacion.decision, chequeos: verificacion.chequeos } });
   actualizada = await aplicarDecision({ ...actualizada, ultimaVerificacion: verificacion }, archivo, dependencias);
 

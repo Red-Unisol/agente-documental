@@ -1,5 +1,7 @@
 import type { AccionSimulada } from "../adaptadores/memoria/crm-simulado.js";
 import type { Conversacion, EventoDeAuditoria } from "../dominio/conversacion/conversacion.js";
+import { resumenDeUso } from "../dominio/costos/resumen.js";
+import { tarifasOpenAI } from "../dominio/costos/tarifas.js";
 
 export function transcripcionEnMarkdown(titulo: string, conversacion: Conversacion, acciones: AccionSimulada[]): string {
   return [
@@ -13,14 +15,22 @@ export function transcripcionEnMarkdown(titulo: string, conversacion: Conversaci
     "",
     "## Qué hizo el agente por detrás",
     "",
-    ...conversacion.auditoria.map(lineaDeEvento),
+    ...conversacion.auditoria.flatMap((evento) => (evento.tipo === "uso_de_modelo" ? [] : [lineaDeEvento(evento)])),
     "",
     "## Acciones en el CRM (simulado)",
     "",
     ...(acciones.length ? acciones.map(lineaDeAccion) : ["(ninguna)"]),
     "",
     `Estado final: ${conversacion.estado}`,
+    "",
+    lineaDeUso(conversacion),
   ].join("\n");
+}
+
+function lineaDeUso(conversacion: Conversacion): string {
+  const uso = resumenDeUso(conversacion, tarifasOpenAI);
+  const costo = uso.costoUsd === undefined ? "costo sin tarifa" : `~US$ ${uso.costoUsd.toFixed(4)}`;
+  return `Uso: ${uso.llamadas} llamadas · ${uso.tokensDeEntrada} tokens de entrada (${uso.tokensCacheados} cacheados) · ${uso.tokensDeSalida} de salida · ${(uso.milisegundos / 1000).toFixed(1)} s en el modelo · ${costo} · ${uso.modelos.join(", ")}`;
 }
 
 function lineaDeMensaje(mensaje: Conversacion["mensajes"][number]): string {
@@ -45,6 +55,8 @@ function lineaDeEvento(evento: EventoDeAuditoria): string {
       return `- Herramienta rechazada: ${evento.detalle.herramienta} (${evento.detalle.error})`;
     case "dato_sensible_omitido":
       return `- Filtro de salida: omitió ${(evento.detalle.tipos as string[]).join(", ")} de la respuesta`;
+    case "uso_de_modelo":
+      return "";
   }
 }
 

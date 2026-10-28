@@ -3,8 +3,8 @@ import type { ChatCompletionContentPart } from "openai/resources/chat/completion
 import { z } from "zod";
 import type { Archivo } from "../../dominio/conversacion/conversacion.js";
 import type { LecturaDeRecibo } from "../../dominio/tipos.js";
-import type { LectorDeRecibo } from "../../puertos/lector-de-recibo.js";
-import { esquemaJsonDe } from "./cliente.js";
+import type { LectorDeRecibo, ResultadoDeLectura } from "../../puertos/lector-de-recibo.js";
+import { esquemaJsonDe, medirUso, parametrosDeGeneracion } from "./cliente.js";
 
 const INSTRUCCIONES = [
   "Analizás un documento que una persona mandó como recibo de sueldo. Devolvé sólo lo que se lee en el documento; si algo no está o no se distingue, dejalo en null.",
@@ -33,10 +33,11 @@ export class LectorDeReciboOpenAI implements LectorDeRecibo {
     private readonly modelo: string,
   ) {}
 
-  async leer(archivo: Archivo): Promise<LecturaDeRecibo> {
+  async leer(archivo: Archivo): Promise<ResultadoDeLectura> {
+    const inicio = performance.now();
     const respuesta = await this.cliente.chat.completions.create({
       model: this.modelo,
-      temperature: 0,
+      ...parametrosDeGeneracion(this.modelo, 0),
       messages: [
         { role: "system", content: INSTRUCCIONES },
         { role: "user", content: [{ type: "text", text: "Leé este documento." }, contenidoDe(archivo)] },
@@ -44,13 +45,14 @@ export class LectorDeReciboOpenAI implements LectorDeRecibo {
       response_format: { type: "json_schema", json_schema: { name: "lectura_de_recibo", strict: true, schema: esquemaJsonDe(esquemaDeLectura) } },
     });
     const crudo = esquemaDeLectura.parse(JSON.parse(respuesta.choices[0]?.message.content ?? "{}"));
-    return {
+    const lectura: LecturaDeRecibo = {
       ...crudo,
       empleador: crudo.empleador ?? undefined,
       cuil: crudo.cuil ?? undefined,
       periodo: crudo.periodo ?? undefined,
       provincia: crudo.provincia ?? undefined,
     };
+    return { lectura, uso: medirUso(this.modelo, respuesta.usage, inicio) };
   }
 }
 

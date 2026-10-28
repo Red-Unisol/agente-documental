@@ -21,7 +21,15 @@ export interface Mensaje {
 
 export interface EventoDeAuditoria {
   at: Date;
-  tipo: "escenario_cargado" | "lectura_de_recibo" | "verificacion" | "accion_crm" | "derivacion" | "herramienta_rechazada" | "dato_sensible_omitido";
+  tipo:
+    | "escenario_cargado"
+    | "lectura_de_recibo"
+    | "verificacion"
+    | "accion_crm"
+    | "derivacion"
+    | "herramienta_rechazada"
+    | "dato_sensible_omitido"
+    | "uso_de_modelo";
   detalle: Record<string, unknown>;
 }
 

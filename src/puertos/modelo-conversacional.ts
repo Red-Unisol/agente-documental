@@ -1,4 +1,5 @@
 import type { NombreDeHerramienta } from "../dominio/agente/herramientas.js";
+import type { UsoDelModelo } from "../dominio/costos/uso.js";
 
 export interface LlamadaAHerramienta {
   id: string;
@@ -12,9 +13,9 @@ export type MensajeParaElModelo =
   | { rol: "asistente_llama"; llamadas: LlamadaAHerramienta[] }
   | { rol: "resultado"; llamadaId: string; nombre: string; resultado: unknown };
 
-export type RespuestaDelModelo =
-  | { tipo: "texto"; texto: string }
-  | { tipo: "llamadas"; llamadas: LlamadaAHerramienta[] };
+export type EleccionDelModelo = { tipo: "texto"; texto: string } | { tipo: "llamadas"; llamadas: LlamadaAHerramienta[] };
+
+export type RespuestaDelModelo = EleccionDelModelo & { uso: UsoDelModelo };
 
 export interface PeticionAlModelo {
   sistema: string;
