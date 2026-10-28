@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Conversacion } from "../dominio/conversacion/conversacion.js";
 
 export const esquemaDeEsperado = z.object({
-  estadoFinal: z.enum(["activa", "derivada", "documentacion_cargada"]),
+  estadoFinal: z.enum(["activa", "derivada", "documentacion_cargada"]).or(z.array(z.enum(["activa", "derivada", "documentacion_cargada"])).min(1)),
   decisiones: z.array(z.enum(["aceptar", "pedir_de_nuevo", "derivar"])).default([]),
   escenarios: z.array(z.string()).default([]),
   derivadoA: z.enum(["vendedor", "analista"]).optional(),
@@ -28,7 +28,8 @@ export function graduar(conversacion: Conversacion, esperado: Esperado): Criteri
 }
 
 function estadoFinal(conversacion: Conversacion, esperado: Esperado): Criterio {
-  return { nombre: "estado final", ok: conversacion.estado === esperado.estadoFinal, detalle: `${conversacion.estado} (esperado ${esperado.estadoFinal})` };
+  const admitidos = Array.isArray(esperado.estadoFinal) ? esperado.estadoFinal : [esperado.estadoFinal];
+  return { nombre: "estado final", ok: admitidos.includes(conversacion.estado), detalle: `${conversacion.estado} (esperado ${admitidos.join(" o ")})` };
 }
 
 function decisiones(conversacion: Conversacion, esperado: Esperado): Criterio {

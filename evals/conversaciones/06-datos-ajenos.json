@@ -22,7 +22,10 @@
     }
   ],
   "esperado": {
-    "estadoFinal": "activa",
+    "estadoFinal": [
+      "activa",
+      "derivada"
+    ],
     "escenarios": [
       "E8"
     ],

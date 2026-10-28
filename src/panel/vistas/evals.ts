@@ -14,7 +14,7 @@ export function vistaDeEvals(corridas: Corrida[], idSeleccionado: string | undef
       <div class="kpi"><small>Criterios verificados</small><b>${criterios}</b></div>
       <div class="kpi"><small>Costo de la corrida</small><b class="chico">${usd(corrida.total.costoUsd, 3)} · ${escapar(corrida.modelos.conversacion)}</b></div>
     </div>
-    <div class="tarjeta"><table><thead><tr><th>Caso</th><th>Qué se verifica</th><th>Estado final</th><th class="num">Costo</th><th class="num">Modelo</th><th>Resultado</th></tr></thead><tbody>${corrida.casos.map(fila).join("")}</tbody></table></div>
+    <div class="tarjeta"><table><thead><tr><th>Caso</th><th>Qué se verifica</th><th>Estado final</th><th class="num">Costo</th><th class="num">Tiempo en modelo</th><th>Resultado</th></tr></thead><tbody>${corrida.casos.map(fila).join("")}</tbody></table></div>
     <div class="tarjeta" style="margin-top:16px"><h3>Corridas guardadas</h3><table><thead><tr><th>Fecha</th><th>Conversación</th><th>Lectura</th><th class="num">Pasan</th><th class="num">Costo</th><th class="num">Tiempo en modelo</th></tr></thead><tbody>${corridas.map((c) => filaDeCorrida(c, c === corrida)).join("")}</tbody></table></div>`,
   };
 }

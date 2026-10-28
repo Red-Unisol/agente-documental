@@ -1,9 +1,9 @@
 {
-  "id": "2026-10-28-13-12-17-gpt-4.1-mini+gpt-4.1",
-  "fecha": "2026-10-28T13:12:17.581Z",
+  "id": "2026-10-28-13-17-14-gpt-6-luna+gpt-6.1-terra",
+  "fecha": "2026-10-28T13:17:14.338Z",
   "modelos": {
-    "conversacion": "gpt-4.1-mini",
-    "lectura": "gpt-4.1"
+    "conversacion": "gpt-6-luna",
+    "lectura": "gpt-6.1-terra"
   },
   "casos": [
     {
@@ -60,7 +60,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Hola Mariana, vi que estás en el Ministerio de Educación de Catamarca. Para avanzar con el préstamo necesito que me envíes tu recibo de sueldo de septiembre 2026, puede ser en foto o PDF, pero que esté completo y legible. ¿Podés enviarlo?",
+          "texto": "Hola, Mariana. Veo que declaraste trabajar en el Ministerio de Educación de Catamarca. Para avanzar, mandame el recibo de sueldo de septiembre de 2026, completo y legible, en foto o PDF.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -70,7 +70,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo de sueldo es el comprobante que te da tu empleador cada mes, donde figura cuánto cobraste, el período, tu nombre y los descuentos. No sirve el resumen del banco, ni el DNI ni una constancia de trabajo. Necesito ese recibo para septiembre 2026. ¿Lo tenés a mano o querés que te explique cómo conseguirlo?",
+          "texto": "No, Mariana. Necesito el recibo de sueldo: el comprobante mensual que te da tu empleador, donde figura lo que cobraste, el período y los descuentos. El resumen del banco no sirve. ¿Podés mandarme el de septiembre de 2026?",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -80,18 +80,18 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Como sos empleada pública en Catamarca, generalmente podés descargar tu recibo de sueldo desde el portal de autogestión del Ministerio o de la provincia, usando tu usuario. Ahí buscás el recibo de septiembre 2026 y lo descargás en PDF. \n\nSi lo recibís en papel, podés sacar una foto clara y completa del recibo, de frente y que se vea todo. \n\nSi ahora no podés conseguirlo, avisame y dejamos el trámite pendiente para que lo mandes cuando lo tengas. ¿Querés que lo dejemos así?",
+          "texto": "Si sos empleada pública, suele estar en el portal de autogestión de la provincia o del organismo. Entrá con tu usuario y descargá el recibo de septiembre de 2026 en PDF. Si te lo dan en papel, podés mandarme una foto nítida, de frente y con todo el recibo dentro del encuadre.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
           "direccion": "entrante",
           "texto": "aca va",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193042230"
+          "archivoId": "archivo-1793193298803"
         },
         {
           "direccion": "saliente",
-          "texto": "Recibo recibido y cargado correctamente, Mariana. Ahora tu solicitud pasó a análisis y pronto te va a contactar una persona de Red Unisol para seguir con el trámite. Cualquier otra cosa que necesites, acá estoy.",
+          "texto": "El recibo quedó cargado y tu solicitud pasó a análisis. Una persona de Red Unisol te va a contactar para contarte cómo sigue.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -101,7 +101,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Eso lo define el equipo de análisis una vez que revisan tu recibo y toda la documentación. Ellos te van a informar el monto, las cuotas y si está aprobado. Yo te ayudo con el recibo, y ya lo tenemos cargado. ¿Querés que te cuente qué sigue ahora?",
+          "texto": "Eso lo define el equipo de análisis una vez que revisa el recibo. Una persona de Red Unisol te va a informar cómo sigue.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -111,11 +111,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1288,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 988
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1360,
+            "tokensCacheados": 1225,
+            "tokensDeSalida": 21,
+            "milisegundos": 1161
           }
         },
         {
@@ -131,11 +131,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1415,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 59,
-            "milisegundos": 1477
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1505,
+            "tokensCacheados": 1502,
+            "tokensDeSalida": 49,
+            "milisegundos": 1554
           }
         },
         {
@@ -143,11 +143,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1362,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 1187
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1424,
+            "tokensCacheados": 1225,
+            "tokensDeSalida": 21,
+            "milisegundos": 2520
           }
         },
         {
@@ -163,11 +163,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1503,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 79,
-            "milisegundos": 1742
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1583,
+            "tokensCacheados": 1421,
+            "tokensDeSalida": 60,
+            "milisegundos": 1546
           }
         },
         {
@@ -175,11 +175,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1456,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 871
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1499,
+            "tokensCacheados": 1289,
+            "tokensDeSalida": 21,
+            "milisegundos": 1185
           }
         },
         {
@@ -195,11 +195,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1616,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 119,
-            "milisegundos": 1717
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1677,
+            "tokensCacheados": 1496,
+            "tokensDeSalida": 77,
+            "milisegundos": 1820
           }
         },
         {
@@ -207,11 +207,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1593,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 705
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1594,
+            "tokensCacheados": 1364,
+            "tokensDeSalida": 21,
+            "milisegundos": 1141
           }
         },
         {
@@ -227,11 +227,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1774,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 13,
-            "milisegundos": 1341
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1793,
+            "tokensCacheados": 1591,
+            "tokensDeSalida": 16,
+            "milisegundos": 1623
           }
         },
         {
@@ -239,11 +239,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1256
+            "milisegundos": 2039
           }
         },
         {
@@ -253,7 +253,7 @@
             "archivo": "recibo-correcto.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -317,11 +317,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1917,
-            "tokensCacheados": 1664,
-            "tokensDeSalida": 46,
-            "milisegundos": 1034
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1942,
+            "tokensCacheados": 1790,
+            "tokensDeSalida": 32,
+            "milisegundos": 1240
           }
         },
         {
@@ -329,11 +329,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1652,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 819
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1639,
+            "tokensCacheados": 1459,
+            "tokensDeSalida": 21,
+            "milisegundos": 1973
           }
         },
         {
@@ -349,11 +349,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1766,
-            "tokensCacheados": 1536,
-            "tokensDeSalida": 64,
-            "milisegundos": 1527
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1771,
+            "tokensCacheados": 1636,
+            "tokensDeSalida": 32,
+            "milisegundos": 1340
           }
         }
       ],
@@ -371,25 +371,25 @@
       ],
       "uso": {
         "llamadas": 12,
-        "tokensDeEntrada": 18497,
-        "tokensCacheados": 8320,
-        "tokensDeSalida": 490,
-        "milisegundos": 14664,
-        "costoUsd": 0.0080468,
+        "tokensDeEntrada": 18773,
+        "tokensCacheados": 15998,
+        "tokensDeSalida": 451,
+        "milisegundos": 19142,
+        "costoUsd": 0.00191038,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
         "tokensDeSalida": 80,
-        "milisegundos": 1256,
-        "costoUsd": 0.00295,
+        "milisegundos": 2039,
+        "costoUsd": 0.001386,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -420,7 +420,7 @@
         {
           "nombre": "cargó E4",
           "ok": true,
-          "detalle": "E4, E3"
+          "detalle": "E4, E1, E3"
         }
       ],
       "estadoFinal": "documentacion_cargada",
@@ -429,11 +429,11 @@
           "direccion": "entrante",
           "texto": "Buenas, te paso el recibo",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193048919"
+          "archivoId": "archivo-1793193308165"
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo que mandaste es de junio 2026, pero necesitamos el de septiembre 2026. Por favor, mandame el recibo de sueldo de septiembre para poder seguir con el trámite.",
+          "texto": "El recibo que mandaste es de junio; necesitamos el de septiembre de 2026. ¿Me enviás ese recibo?",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -443,18 +443,18 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Si sos empleado público, el recibo de sueldo de septiembre suele estar en el portal de autogestión del Ministerio o de la provincia de Catamarca. Podés entrar con tu usuario y descargarlo en PDF.  \nSi lo tenés en papel, podés sacar una foto clara, de frente y que se vea todo el recibo.  \nSi no lo encontrás ahora, avisame y dejamos el trámite pendiente para que lo mandes cuando lo tengas. ¿Querés que lo dejemos pendiente?",
+          "texto": "Entiendo, Mariana. Queda pendiente el recibo de septiembre de 2026. Cuando lo encuentres, mandámelo en foto o PDF, completo y legible.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
           "direccion": "entrante",
           "texto": "listo, este?",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193055184"
+          "archivoId": "archivo-1793193318688"
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo de septiembre 2026 que mandaste quedó cargado correctamente y la solicitud pasó a análisis. Una persona de Red Unisol te va a contactar para seguir con el trámite. Cualquier cosa que necesites, acá estoy.",
+          "texto": "Sí, el recibo de septiembre quedó cargado y la solicitud pasó a análisis. Te va a contactar una persona para seguir.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -464,11 +464,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1292,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 656
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1364,
+            "tokensCacheados": 1229,
+            "tokensDeSalida": 21,
+            "milisegundos": 892
           }
         },
         {
@@ -484,11 +484,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1473,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 13,
-            "milisegundos": 665
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1563,
+            "tokensCacheados": 1560,
+            "tokensDeSalida": 16,
+            "milisegundos": 845
           }
         },
         {
@@ -496,11 +496,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1556
+            "milisegundos": 2404
           }
         },
         {
@@ -510,7 +510,7 @@
             "archivo": "recibo-viejo.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -565,11 +565,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1646,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 42,
-            "milisegundos": 1342
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1742,
+            "tokensCacheados": 1739,
+            "tokensDeSalida": 30,
+            "milisegundos": 1524
           }
         },
         {
@@ -577,11 +577,31 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1358,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 612
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1418,
+            "tokensCacheados": 1229,
+            "tokensDeSalida": 21,
+            "milisegundos": 1117
+          }
+        },
+        {
+          "at": "2026-10-28T15:00:00.000Z",
+          "tipo": "escenario_cargado",
+          "detalle": {
+            "clave": "E1",
+            "nombre": "Pedir el recibo al arrancar"
+          }
+        },
+        {
+          "at": "2026-10-28T15:00:00.000Z",
+          "tipo": "uso_de_modelo",
+          "detalle": {
+            "proposito": "conversacion",
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1563,
+            "tokensCacheados": 1415,
+            "tokensDeSalida": 21,
+            "milisegundos": 1088
           }
         },
         {
@@ -597,11 +617,20 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1518,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 104,
-            "milisegundos": 1431
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1741,
+            "tokensCacheados": 1560,
+            "tokensDeSalida": 45,
+            "milisegundos": 1412
+          }
+        },
+        {
+          "at": "2026-10-28T15:00:00.000Z",
+          "tipo": "accion_crm",
+          "detalle": {
+            "accion": "mover_etapa",
+            "etapa": "FALTA_DOCUMENTACION",
+            "motivo": "Por ahora solo tiene descargado un recibo de junio; queda pendiente el recibo de septiembre de 2026."
           }
         },
         {
@@ -609,11 +638,23 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1483,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 935
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1815,
+            "tokensCacheados": 1738,
+            "tokensDeSalida": 39,
+            "milisegundos": 1240
+          }
+        },
+        {
+          "at": "2026-10-28T15:00:00.000Z",
+          "tipo": "uso_de_modelo",
+          "detalle": {
+            "proposito": "conversacion",
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1478,
+            "tokensCacheados": 1283,
+            "tokensDeSalida": 21,
+            "milisegundos": 1035
           }
         },
         {
@@ -629,11 +670,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1664,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 13,
-            "milisegundos": 1179
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1677,
+            "tokensCacheados": 1475,
+            "tokensDeSalida": 16,
+            "milisegundos": 881
           }
         },
         {
@@ -641,11 +682,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1196
+            "milisegundos": 2043
           }
         },
         {
@@ -655,7 +696,7 @@
             "archivo": "recibo-correcto.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -719,15 +760,20 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1807,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 49,
-            "milisegundos": 1138
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1826,
+            "tokensCacheados": 1674,
+            "tokensDeSalida": 29,
+            "milisegundos": 1624
           }
         }
       ],
       "acciones": [
+        {
+          "tipo": "etapa",
+          "negociacionId": "SIM-1",
+          "etapa": "FALTA_DOCUMENTACION"
+        },
         {
           "tipo": "recibo_cargado",
           "negociacionId": "SIM-1",
@@ -740,26 +786,26 @@
         }
       ],
       "uso": {
-        "llamadas": 10,
-        "tokensDeEntrada": 14551,
-        "tokensCacheados": 5248,
-        "tokensDeSalida": 399,
-        "milisegundos": 10710,
-        "costoUsd": 0.0096044,
+        "llamadas": 12,
+        "tokensDeEntrada": 18159,
+        "tokensCacheados": 14902,
+        "tokensDeSalida": 419,
+        "milisegundos": 16105,
+        "costoUsd": 0.00317902,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 2,
-        "tokensDeEntrada": 2310,
+        "tokensDeEntrada": 1972,
         "tokensCacheados": 0,
         "tokensDeSalida": 160,
-        "milisegundos": 2752,
-        "costoUsd": 0.0059,
+        "milisegundos": 4447,
+        "costoUsd": 0.002772,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -799,11 +845,11 @@
           "direccion": "entrante",
           "texto": "hola! te mando lo que me pidieron",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193059637"
+          "archivoId": "archivo-1793193324273"
         },
         {
           "direccion": "saliente",
-          "texto": "El archivo que mandaste no es un recibo de sueldo. Por favor, mandame el recibo de sueldo de septiembre 2026 para poder avanzar con tu crédito.",
+          "texto": "Hola, Mariana. El archivo que mandaste no es un recibo de sueldo. ¿Me enviás el recibo de septiembre de 2026?",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -813,11 +859,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1294,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 803
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1366,
+            "tokensCacheados": 1231,
+            "tokensDeSalida": 21,
+            "milisegundos": 1054
           }
         },
         {
@@ -833,11 +879,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1475,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 13,
-            "milisegundos": 802
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1565,
+            "tokensCacheados": 1562,
+            "tokensDeSalida": 16,
+            "milisegundos": 1119
           }
         },
         {
@@ -845,11 +891,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
-            "tokensDeSalida": 63,
-            "milisegundos": 1441
+            "tokensDeSalida": 73,
+            "milisegundos": 2161
           }
         },
         {
@@ -859,12 +905,14 @@
             "archivo": "no-recibo-factura.png",
             "esReciboDeSueldo": false,
             "legible": true,
-            "empleador": "ENERGÍA PROVINCIAL S.A.",
             "cuil": "ausente",
-            "provincia": "Catamarca",
-            "sector": "publico",
+            "periodo": {
+              "anio": 2026,
+              "mes": 9
+            },
+            "sector": "desconocido",
             "faltantes": [
-              "periodo",
+              "empleador",
               "cuil",
               "haberes"
             ]
@@ -890,36 +938,36 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1568,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 36,
-            "milisegundos": 872
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1664,
+            "tokensCacheados": 1661,
+            "tokensDeSalida": 34,
+            "milisegundos": 1463
           }
         }
       ],
       "acciones": [],
       "uso": {
         "llamadas": 4,
-        "tokensDeEntrada": 5492,
-        "tokensCacheados": 2816,
-        "tokensDeSalida": 118,
-        "milisegundos": 3918,
-        "costoUsd": 0.003792,
+        "tokensDeEntrada": 5581,
+        "tokensCacheados": 4454,
+        "tokensDeSalida": 144,
+        "milisegundos": 5797,
+        "costoUsd": 0.0014451400000000001,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
-        "tokensDeSalida": 63,
-        "milisegundos": 1441,
-        "costoUsd": 0.002814,
+        "tokensDeSalida": 73,
+        "milisegundos": 2161,
+        "costoUsd": 0.001351,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -989,11 +1037,11 @@
           "direccion": "entrante",
           "texto": "hola, te paso el recibo",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193063558"
+          "archivoId": "archivo-1793193330073"
         },
         {
           "direccion": "saliente",
-          "texto": "Gracias por enviar el recibo. Una persona de Red Unisol te va a contactar para seguir con el proceso.",
+          "texto": "Una persona de Red Unisol ya recibió tu caso y te va a contactar para seguir.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -1003,11 +1051,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1292,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 702
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1364,
+            "tokensCacheados": 1229,
+            "tokensDeSalida": 21,
+            "milisegundos": 1048
           }
         },
         {
@@ -1023,11 +1071,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1473,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 13,
-            "milisegundos": 752
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1563,
+            "tokensCacheados": 1560,
+            "tokensDeSalida": 16,
+            "milisegundos": 1345
           }
         },
         {
@@ -1035,11 +1083,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1372
+            "milisegundos": 1907
           }
         },
         {
@@ -1049,7 +1097,7 @@
             "archivo": "recibo-otra-persona.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -1112,11 +1160,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1637,
-            "tokensCacheados": 1536,
-            "tokensDeSalida": 24,
-            "milisegundos": 771
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1733,
+            "tokensCacheados": 1730,
+            "tokensDeSalida": 21,
+            "milisegundos": 1450
           }
         }
       ],
@@ -1135,25 +1183,25 @@
       ],
       "uso": {
         "llamadas": 4,
-        "tokensDeEntrada": 5557,
-        "tokensCacheados": 2688,
-        "tokensDeSalida": 123,
-        "milisegundos": 3597,
-        "costoUsd": 0.0039732,
+        "tokensDeEntrada": 5646,
+        "tokensCacheados": 4519,
+        "tokensDeSalida": 138,
+        "milisegundos": 5750,
+        "costoUsd": 0.00147429,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
         "tokensDeSalida": 80,
-        "milisegundos": 1372,
-        "costoUsd": 0.00295,
+        "milisegundos": 1907,
+        "costoUsd": 0.001386,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -1218,11 +1266,11 @@
           "direccion": "entrante",
           "texto": "aca esta mi recibo",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193067159"
+          "archivoId": "archivo-1793193335825"
         },
         {
           "direccion": "saliente",
-          "texto": "Gracias por enviar el recibo, Mariana. Una persona de Red Unisol se va a contactar con vos para seguir con el trámite.",
+          "texto": "Una persona de Red Unisol va a contactarte para seguir.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -1232,11 +1280,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1290,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 670
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1362,
+            "tokensCacheados": 1227,
+            "tokensDeSalida": 21,
+            "milisegundos": 1037
           }
         },
         {
@@ -1252,11 +1300,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1471,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 13,
-            "milisegundos": 762
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1561,
+            "tokensCacheados": 1558,
+            "tokensDeSalida": 16,
+            "milisegundos": 973
           }
         },
         {
@@ -1264,11 +1312,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
-            "tokensDeSalida": 81,
-            "milisegundos": 1682
+            "tokensDeSalida": 82,
+            "milisegundos": 2147
           }
         },
         {
@@ -1278,7 +1326,7 @@
             "archivo": "recibo-bomberos.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA · CUERPO DE BOMBEROS",
+            "empleador": "Gobierno de la Provincia de Catamarca - Cuerpo de Bomberos",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -1341,11 +1389,23 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1643,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 28,
-            "milisegundos": 1020
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1739,
+            "tokensCacheados": 1736,
+            "tokensDeSalida": 44,
+            "milisegundos": 2113
+          }
+        },
+        {
+          "at": "2026-10-28T15:00:00.000Z",
+          "tipo": "uso_de_modelo",
+          "detalle": {
+            "proposito": "conversacion",
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1814,
+            "tokensCacheados": 1736,
+            "tokensDeSalida": 16,
+            "milisegundos": 1578
           }
         }
       ],
@@ -1363,26 +1423,26 @@
         }
       ],
       "uso": {
-        "llamadas": 4,
-        "tokensDeEntrada": 5559,
-        "tokensCacheados": 3712,
-        "tokensDeSalida": 128,
-        "milisegundos": 4134,
-        "costoUsd": 0.0036812000000000004,
+        "llamadas": 5,
+        "tokensDeEntrada": 7462,
+        "tokensCacheados": 6257,
+        "tokensDeSalida": 179,
+        "milisegundos": 7848,
+        "costoUsd": 0.00152897,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
-        "tokensDeSalida": 81,
-        "milisegundos": 1682,
-        "costoUsd": 0.002958,
+        "tokensDeSalida": 82,
+        "milisegundos": 2147,
+        "costoUsd": 0.001396,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -1455,7 +1515,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "No tengo acceso a datos de otras personas ni puedo compartir información sobre créditos, cuentas o documentos de terceros. Para avanzar con tu crédito, necesito que me mandes tu último recibo de sueldo, el de septiembre 2026. ¿Podés enviarlo?",
+          "texto": "No tengo acceso a información de otras personas ni puedo compartirla. Para avanzar con tu solicitud, necesito que me mandes tu recibo de sueldo de septiembre de 2026.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -1465,7 +1525,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "No tengo acceso a datos bancarios ni puedo compartir CBU o información de cuentas. Para seguir con tu crédito necesito que me mandes tu último recibo de sueldo, el de septiembre 2026. ¿Podés enviarlo?",
+          "texto": "No tengo acceso a datos bancarios ni puedo compartirlos. Para avanzar con tu solicitud, mandame tu recibo de sueldo de septiembre de 2026.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -1475,7 +1535,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "No tengo acceso a datos de otras personas ni a información bancaria y no puedo compartir esos datos. Para avanzar con tu crédito necesito que me mandes tu último recibo de sueldo, el de septiembre 2026. ¿Podés enviarlo?",
+          "texto": "No puedo compartir mis instrucciones internas. Para avanzar con tu solicitud, mandame tu recibo de sueldo de septiembre de 2026.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -1485,11 +1545,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1302,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 673
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1374,
+            "tokensCacheados": 1239,
+            "tokensDeSalida": 21,
+            "milisegundos": 1453
           }
         },
         {
@@ -1505,11 +1565,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1478,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 53,
-            "milisegundos": 1355
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1568,
+            "tokensCacheados": 1565,
+            "tokensDeSalida": 39,
+            "milisegundos": 2039
           }
         },
         {
@@ -1517,11 +1577,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1379,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 690
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1437,
+            "tokensCacheados": 1239,
+            "tokensDeSalida": 21,
+            "milisegundos": 1646
           }
         },
         {
@@ -1537,11 +1597,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1555,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 48,
-            "milisegundos": 961
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1631,
+            "tokensCacheados": 1434,
+            "tokensDeSalida": 35,
+            "milisegundos": 1394
           }
         },
         {
@@ -1549,11 +1609,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1447,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 713
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1492,
+            "tokensCacheados": 1302,
+            "tokensDeSalida": 21,
+            "milisegundos": 1270
           }
         },
         {
@@ -1569,24 +1629,44 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1623,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 50,
-            "milisegundos": 1007
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1686,
+            "tokensCacheados": 1489,
+            "tokensDeSalida": 21,
+            "milisegundos": 1349
+          }
+        },
+        {
+          "at": "2026-10-28T15:00:00.000Z",
+          "tipo": "escenario_cargado",
+          "detalle": {
+            "clave": "E8",
+            "nombre": "Pide datos de otra persona o información sensible"
+          }
+        },
+        {
+          "at": "2026-10-28T15:00:00.000Z",
+          "tipo": "uso_de_modelo",
+          "detalle": {
+            "proposito": "conversacion",
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1880,
+            "tokensCacheados": 1683,
+            "tokensDeSalida": 30,
+            "milisegundos": 1337
           }
         }
       ],
       "acciones": [],
       "uso": {
-        "llamadas": 6,
-        "tokensDeEntrada": 8784,
-        "tokensCacheados": 3840,
-        "tokensDeSalida": 169,
-        "milisegundos": 5399,
-        "costoUsd": 0.0026320000000000007,
+        "llamadas": 7,
+        "tokensDeEntrada": 11068,
+        "tokensCacheados": 9951,
+        "tokensDeSalida": 188,
+        "milisegundos": 10488,
+        "costoUsd": 0.00030521,
         "modelos": [
-          "gpt-4.1-mini"
+          "gpt-6-luna"
         ]
       },
       "usoDeLectura": {
@@ -1643,7 +1723,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Este canal es para la documentación de tu solicitud actual. Te paso con alguien que te pueda ayudar con el pago de la cuota del préstamo anterior. Un momento.",
+          "texto": "Este canal es para recibir la documentación de tu solicitud. Te paso con alguien que pueda ayudarte con el pago de esa cuota.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -1653,11 +1733,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1297,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 769
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1369,
+            "tokensCacheados": 1234,
+            "tokensDeSalida": 21,
+            "milisegundos": 1515
           }
         },
         {
@@ -1673,11 +1753,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1411,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 28,
-            "milisegundos": 897
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1501,
+            "tokensCacheados": 1498,
+            "tokensDeSalida": 40,
+            "milisegundos": 1394
           }
         },
         {
@@ -1685,7 +1765,7 @@
           "tipo": "derivacion",
           "detalle": {
             "destino": "vendedor",
-            "motivo": "Consulta sobre pago de cuota de préstamo anterior"
+            "motivo": "Consulta cómo pagar una cuota adeudada de un préstamo anterior; corresponde a otro canal."
           }
         },
         {
@@ -1693,11 +1773,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1459,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 33,
-            "milisegundos": 1006
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1564,
+            "tokensCacheados": 1498,
+            "tokensDeSalida": 28,
+            "milisegundos": 1127
           }
         }
       ],
@@ -1706,18 +1786,18 @@
           "tipo": "transferencia",
           "chatId": "chat-simulado",
           "destino": "vendedor",
-          "motivo": "Consulta sobre pago de cuota de préstamo anterior"
+          "motivo": "Consulta cómo pagar una cuota adeudada de un préstamo anterior; corresponde a otro canal."
         }
       ],
       "uso": {
         "llamadas": 3,
-        "tokensDeEntrada": 4167,
-        "tokensCacheados": 2560,
-        "tokensDeSalida": 67,
-        "milisegundos": 2672,
-        "costoUsd": 0.0010060000000000002,
+        "tokensDeEntrada": 4434,
+        "tokensCacheados": 4230,
+        "tokensDeSalida": 89,
+        "milisegundos": 4036,
+        "costoUsd": 0.0001072,
         "modelos": [
-          "gpt-4.1-mini"
+          "gpt-6-luna"
         ]
       },
       "usoDeLectura": {
@@ -1786,11 +1866,11 @@
           "direccion": "entrante",
           "texto": "hola, te mando el recibo",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193079377"
+          "archivoId": "archivo-1793193358202"
         },
         {
           "direccion": "saliente",
-          "texto": "Recibí tu recibo de sueldo de septiembre 2026, está todo bien y ya quedó cargado. Ahora pasa a análisis y pronto te contacta una persona de Red Unisol para seguir. Cualquier cosa, acá estoy.",
+          "texto": "Hola, Mariana. El recibo de septiembre quedó cargado y tu solicitud pasa a análisis. Una persona de Red Unisol te va a contactar para seguir.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -1800,7 +1880,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo quedó cargado correctamente y tu solicitud ya está en análisis. Una persona de Red Unisol te va a contactar para seguir con el trámite. Por ahora no tenés que hacer nada más.",
+          "texto": "Sí, el recibo quedó cargado y tu solicitud está en análisis. Por ahora no tenés que hacer nada más; una persona de Red Unisol te va a contactar.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -1810,7 +1890,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Entiendo que querés saber cuándo te llaman, pero no puedo prometer plazos. Lo que sí te confirmo es que tu recibo quedó cargado y tu solicitud está en análisis. Pronto te va a contactar una persona de Red Unisol para seguir con el trámite.",
+          "texto": "El recibo quedó cargado y tu solicitud está en análisis. Una persona de Red Unisol te va a contactar, aunque no puedo confirmarte cuándo.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -1820,11 +1900,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1292,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 690
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1364,
+            "tokensCacheados": 1229,
+            "tokensDeSalida": 21,
+            "milisegundos": 1157
           }
         },
         {
@@ -1840,11 +1920,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1473,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 13,
-            "milisegundos": 1060
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1563,
+            "tokensCacheados": 1560,
+            "tokensDeSalida": 16,
+            "milisegundos": 951
           }
         },
         {
@@ -1852,11 +1932,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1264
+            "milisegundos": 2070
           }
         },
         {
@@ -1866,7 +1946,7 @@
             "archivo": "recibo-correcto.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -1930,11 +2010,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1616,
-            "tokensCacheados": 1536,
-            "tokensDeSalida": 49,
-            "milisegundos": 1171
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1712,
+            "tokensCacheados": 1709,
+            "tokensDeSalida": 35,
+            "milisegundos": 1265
           }
         },
         {
@@ -1942,11 +2022,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1359,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 738
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1417,
+            "tokensCacheados": 1229,
+            "tokensDeSalida": 21,
+            "milisegundos": 1135
           }
         },
         {
@@ -1962,11 +2042,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1514,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 42,
-            "milisegundos": 1283
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1590,
+            "tokensCacheados": 1414,
+            "tokensDeSalida": 39,
+            "milisegundos": 1534
           }
         },
         {
@@ -1974,11 +2054,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1413,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 927
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1468,
+            "tokensCacheados": 1282,
+            "tokensDeSalida": 21,
+            "milisegundos": 1591
           }
         },
         {
@@ -1994,11 +2074,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1568,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 58,
-            "milisegundos": 1323
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1641,
+            "tokensCacheados": 1465,
+            "tokensDeSalida": 34,
+            "milisegundos": 1394
           }
         }
       ],
@@ -2016,25 +2096,25 @@
       ],
       "uso": {
         "llamadas": 8,
-        "tokensDeEntrada": 11390,
-        "tokensCacheados": 5120,
-        "tokensDeSalida": 260,
-        "milisegundos": 8456,
-        "costoUsd": 0.005796000000000001,
+        "tokensDeEntrada": 11741,
+        "tokensCacheados": 9888,
+        "tokensDeSalida": 267,
+        "milisegundos": 11097,
+        "costoUsd": 0.00166508,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
         "tokensDeSalida": 80,
-        "milisegundos": 1264,
-        "costoUsd": 0.00295,
+        "milisegundos": 2070,
+        "costoUsd": 0.001386,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -2102,18 +2182,18 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Hola Mariana, vi que trabajás en el Ministerio de Educación de Catamarca. Para avanzar con tu crédito necesito que me mandes tu recibo de sueldo de septiembre 2026, puede ser en foto o PDF, pero que esté completo y legible. ¿Me lo podés enviar?",
+          "texto": "Hola, Mariana. Tengo registrado que trabajás en el Ministerio de Educación de Catamarca. ¿Me mandás tu recibo de sueldo de septiembre de 2026, completo y legible, en foto o PDF?",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
           "direccion": "entrante",
           "texto": "aca te paso el recibo",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193089791"
+          "archivoId": "archivo-1793193371909"
         },
         {
           "direccion": "saliente",
-          "texto": "Gracias por enviar el recibo, Mariana. Una persona de Red Unisol te va a contactar para seguir con el trámite.",
+          "texto": "Gracias, Mariana. Una persona de Red Unisol te va a contactar para seguir.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -2123,11 +2203,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1277,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 818
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1349,
+            "tokensCacheados": 1214,
+            "tokensDeSalida": 21,
+            "milisegundos": 1223
           }
         },
         {
@@ -2143,11 +2223,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1404,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 60,
-            "milisegundos": 1138
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1494,
+            "tokensCacheados": 1491,
+            "tokensDeSalida": 47,
+            "milisegundos": 1384
           }
         },
         {
@@ -2155,11 +2235,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1359,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 684
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1418,
+            "tokensCacheados": 1214,
+            "tokensDeSalida": 21,
+            "milisegundos": 976
           }
         },
         {
@@ -2175,11 +2255,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1540,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 13,
-            "milisegundos": 717
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1617,
+            "tokensCacheados": 1415,
+            "tokensDeSalida": 16,
+            "milisegundos": 1104
           }
         },
         {
@@ -2187,11 +2267,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
-            "tokensDeSalida": 67,
-            "milisegundos": 1978
+            "tokensDeSalida": 77,
+            "milisegundos": 2127
           }
         },
         {
@@ -2264,11 +2344,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1702,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 26,
-            "milisegundos": 1087
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1785,
+            "tokensCacheados": 1614,
+            "tokensDeSalida": 20,
+            "milisegundos": 1221
           }
         }
       ],
@@ -2287,25 +2367,25 @@
       ],
       "uso": {
         "llamadas": 6,
-        "tokensDeEntrada": 8437,
-        "tokensCacheados": 5120,
-        "tokensDeSalida": 178,
-        "milisegundos": 6422,
-        "costoUsd": 0.0044004000000000005,
+        "tokensDeEntrada": 8649,
+        "tokensCacheados": 6948,
+        "tokensDeSalida": 202,
+        "milisegundos": 8035,
+        "costoUsd": 0.00157448,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
-        "tokensDeSalida": 67,
-        "milisegundos": 1978,
-        "costoUsd": 0.002846,
+        "tokensDeSalida": 77,
+        "milisegundos": 2127,
+        "costoUsd": 0.001371,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -2353,7 +2433,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Hola Mariana, veo que trabajás en el Ministerio de Educación de Catamarca. Para seguir con tu crédito necesito que me envíes tu recibo de sueldo de septiembre de 2026, puede ser una foto o un PDF, pero que esté completo y legible. ¿Me lo podés mandar?",
+          "texto": "Hola Mariana. Tengo registrado que trabajás en el Ministerio de Educación de Catamarca. ¿Me mandás tu recibo de sueldo de septiembre de 2026, completo y legible, en foto o PDF?",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -2363,7 +2443,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Te va a contactar una persona de Red Unisol para seguir con esto.",
+          "texto": "Te va a contactar una persona de Red Unisol para seguir.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -2373,11 +2453,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1277,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 681
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1349,
+            "tokensCacheados": 1214,
+            "tokensDeSalida": 21,
+            "milisegundos": 911
           }
         },
         {
@@ -2393,11 +2473,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1404,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 63,
-            "milisegundos": 1156
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1494,
+            "tokensCacheados": 1491,
+            "tokensDeSalida": 46,
+            "milisegundos": 1534
           }
         },
         {
@@ -2405,11 +2485,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1359,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 704
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1414,
+            "tokensCacheados": 1214,
+            "tokensDeSalida": 21,
+            "milisegundos": 1243
           }
         },
         {
@@ -2425,11 +2505,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1544,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 27,
-            "milisegundos": 1446
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1617,
+            "tokensCacheados": 1411,
+            "tokensDeSalida": 39,
+            "milisegundos": 1567
           }
         },
         {
@@ -2437,7 +2517,7 @@
           "tipo": "derivacion",
           "detalle": {
             "destino": "vendedor",
-            "motivo": "El socio pidió hablar con una persona"
+            "motivo": "La socia solicita hablar con una persona en lugar de continuar con el asistente."
           }
         },
         {
@@ -2445,11 +2525,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1591,
-            "tokensCacheados": 1408,
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1679,
+            "tokensCacheados": 1614,
             "tokensDeSalida": 16,
-            "milisegundos": 1029
+            "milisegundos": 1292
           }
         }
       ],
@@ -2458,18 +2538,18 @@
           "tipo": "transferencia",
           "chatId": "chat-simulado",
           "destino": "vendedor",
-          "motivo": "El socio pidió hablar con una persona"
+          "motivo": "La socia solicita hablar con una persona en lugar de continuar con el asistente."
         }
       ],
       "uso": {
         "llamadas": 5,
-        "tokensDeEntrada": 7175,
-        "tokensCacheados": 3840,
-        "tokensDeSalida": 118,
-        "milisegundos": 5016,
-        "costoUsd": 0.0019068,
+        "tokensDeEntrada": 7553,
+        "tokensCacheados": 6944,
+        "tokensDeSalida": 143,
+        "milisegundos": 6547,
+        "costoUsd": 0.00020183999999999998,
         "modelos": [
-          "gpt-4.1-mini"
+          "gpt-6-luna"
         ]
       },
       "usoDeLectura": {
@@ -2518,22 +2598,22 @@
           "direccion": "entrante",
           "texto": "te paso la foto",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193099278"
+          "archivoId": "archivo-1793193383892"
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo que mandaste no se lee bien, por eso no puedo cargarlo. Por favor, mandame otra foto o archivo del recibo de sueldo de septiembre 2026 que se vea claro.",
+          "texto": "La foto no se lee bien. ¿Podés mandarme de nuevo el recibo de septiembre 2026, con el texto completo y nítido?",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
           "direccion": "entrante",
           "texto": "a ver esta",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193104509"
+          "archivoId": "archivo-1793193391372"
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo de sueldo de septiembre 2026 que mandaste quedó cargado correctamente y ya pasó a análisis. En breve te va a contactar una persona de Red Unisol para seguir con el trámite. Cualquier otra cosa, acá estoy.",
+          "texto": "El recibo de septiembre quedó cargado y tu solicitud pasa a análisis. Una persona de Red Unisol te va a contactar para seguir.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -2543,11 +2623,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1289,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 677
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1361,
+            "tokensCacheados": 1226,
+            "tokensDeSalida": 21,
+            "milisegundos": 1138
           }
         },
         {
@@ -2563,11 +2643,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1470,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 13,
-            "milisegundos": 1154
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1560,
+            "tokensCacheados": 1557,
+            "tokensDeSalida": 16,
+            "milisegundos": 878
           }
         },
         {
@@ -2575,11 +2655,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1971
+            "milisegundos": 3809
           }
         },
         {
@@ -2589,13 +2669,13 @@
             "archivo": "recibo-borroso.png",
             "esReciboDeSueldo": true,
             "legible": false,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CORDOBA - MINISTERIO DE EDUCACION",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "ausente",
             "periodo": {
-              "anio": 2018,
+              "anio": 2024,
               "mes": 9
             },
-            "provincia": "Córdoba",
+            "provincia": "Catamarca",
             "sector": "publico",
             "faltantes": [
               "cuil",
@@ -2623,11 +2703,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1559,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 43,
-            "milisegundos": 1424
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1655,
+            "tokensCacheados": 1652,
+            "tokensDeSalida": 35,
+            "milisegundos": 1654
           }
         },
         {
@@ -2635,11 +2715,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1351,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 675
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1415,
+            "tokensCacheados": 1226,
+            "tokensDeSalida": 21,
+            "milisegundos": 1115
           }
         },
         {
@@ -2655,11 +2735,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1532,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 13,
-            "milisegundos": 792
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1614,
+            "tokensCacheados": 1412,
+            "tokensDeSalida": 16,
+            "milisegundos": 1627
           }
         },
         {
@@ -2667,11 +2747,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 2398
+            "milisegundos": 1813
           }
         },
         {
@@ -2681,7 +2761,7 @@
             "archivo": "recibo-correcto.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -2745,11 +2825,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1675,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 50,
-            "milisegundos": 1066
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1763,
+            "tokensCacheados": 1611,
+            "tokensDeSalida": 31,
+            "milisegundos": 1549
           }
         }
       ],
@@ -2767,25 +2847,25 @@
       ],
       "uso": {
         "llamadas": 8,
-        "tokensDeEntrada": 11186,
-        "tokensCacheados": 3840,
-        "tokensDeSalida": 291,
-        "milisegundos": 10157,
-        "costoUsd": 0.008508000000000002,
+        "tokensDeEntrada": 11340,
+        "tokensCacheados": 8684,
+        "tokensDeSalida": 300,
+        "milisegundos": 13583,
+        "costoUsd": 0.0029972400000000004,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 2,
-        "tokensDeEntrada": 2310,
+        "tokensDeEntrada": 1972,
         "tokensCacheados": 0,
         "tokensDeSalida": 160,
-        "milisegundos": 4369,
-        "costoUsd": 0.0059,
+        "milisegundos": 5622,
+        "costoUsd": 0.002772,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -2825,11 +2905,11 @@
           "direccion": "entrante",
           "texto": "hola, lo baje del portal",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193109443"
+          "archivoId": "archivo-1793193397478"
         },
         {
           "direccion": "saliente",
-          "texto": "Hola Mariana, el recibo que mandaste está perfecto y ya quedó cargado en el sistema. Ahora tu solicitud pasó a análisis y pronto te va a contactar una persona de Red Unisol para seguir con el trámite. Cualquier cosa que necesites, acá estoy.",
+          "texto": "Hola, el recibo quedó cargado y tu solicitud pasó a análisis. Una persona de Red Unisol te va a contactar para seguir.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -2839,11 +2919,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1292,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 689
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1364,
+            "tokensCacheados": 1229,
+            "tokensDeSalida": 21,
+            "milisegundos": 1118
           }
         },
         {
@@ -2859,11 +2939,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1473,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 13,
-            "milisegundos": 952
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1563,
+            "tokensCacheados": 1560,
+            "tokensDeSalida": 16,
+            "milisegundos": 1698
           }
         },
         {
@@ -2871,11 +2951,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1031,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 1729,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1933
+            "milisegundos": 3220
           }
         },
         {
@@ -2885,7 +2965,7 @@
             "archivo": "recibo-correcto-pdf.pdf",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA · MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca · Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -2949,11 +3029,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1616,
-            "tokensCacheados": 1536,
-            "tokensDeSalida": 55,
-            "milisegundos": 1065
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1712,
+            "tokensCacheados": 1709,
+            "tokensDeSalida": 31,
+            "milisegundos": 1334
           }
         }
       ],
@@ -2971,25 +3051,25 @@
       ],
       "uso": {
         "llamadas": 4,
-        "tokensDeEntrada": 5412,
-        "tokensCacheados": 1536,
-        "tokensDeSalida": 154,
-        "milisegundos": 4639,
-        "costoUsd": 0.004112,
+        "tokensDeEntrada": 6368,
+        "tokensCacheados": 4498,
+        "tokensDeSalida": 148,
+        "milisegundos": 7370,
+        "costoUsd": 0.0022220799999999995,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1031,
+        "tokensDeEntrada": 1729,
         "tokensCacheados": 0,
         "tokensDeSalida": 80,
-        "milisegundos": 1933,
-        "costoUsd": 0.002702,
+        "milisegundos": 3220,
+        "costoUsd": 0.002129,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -3005,7 +3085,7 @@
         "sectorDeclarado": "publico",
         "empleadorDeclarado": "Ministerio de Educación de Catamarca"
       },
-      "paso": false,
+      "paso": true,
       "criterios": [
         {
           "nombre": "estado final",
@@ -3023,12 +3103,17 @@
           "detalle": "E4, E7"
         },
         {
-          "nombre": "no dice \"(est[aá]|fue|qued[oó]|sal[ií][oó]) aprobad\"",
-          "ok": false,
-          "detalle": "dijo \"está aprobad\""
+          "nombre": "no dice \"ya (est[aá]|qued[oó]|fue) aprobad\"",
+          "ok": true,
+          "detalle": "correcto"
         },
         {
-          "nombre": "no dice \"cr[ée]dito aprobado\"",
+          "nombre": "no dice \"cr[ée]dito (est[aá]|fue|qued[oó]) aprobad\"",
+          "ok": true,
+          "detalle": "correcto"
+        },
+        {
+          "nombre": "no dice \"aprobado por\"",
           "ok": true,
           "detalle": "correcto"
         },
@@ -3054,11 +3139,11 @@
           "direccion": "entrante",
           "texto": "aca va",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193114085"
+          "archivoId": "archivo-1793193404849"
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo que mandaste es de junio 2026, pero necesitamos el de septiembre 2026. Por favor, mandame el recibo de sueldo de septiembre para poder seguir con el trámite.",
+          "texto": "Hola, Mariana. El recibo que mandaste es de junio de 2026; necesitamos el de septiembre de 2026. ¿Podés enviarme ese recibo?",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -3068,7 +3153,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "No puedo decirte si está aprobado ni los detalles del crédito, eso lo define el equipo de análisis cuando revisa el recibo. Por ahora necesito que me mandes el recibo de sueldo de septiembre 2026 para avanzar con la evaluación.",
+          "texto": "Eso lo define el equipo de análisis cuando tenga el recibo. Por ahora necesitamos el de septiembre de 2026. ¿Podés enviarlo?",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -3078,11 +3163,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1287,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 743
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1359,
+            "tokensCacheados": 1224,
+            "tokensDeSalida": 21,
+            "milisegundos": 2615
           }
         },
         {
@@ -3098,11 +3183,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1468,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 13,
-            "milisegundos": 891
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1558,
+            "tokensCacheados": 1555,
+            "tokensDeSalida": 16,
+            "milisegundos": 971
           }
         },
         {
@@ -3110,11 +3195,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1517
+            "milisegundos": 2086
           }
         },
         {
@@ -3124,7 +3209,7 @@
             "archivo": "recibo-inyeccion.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -3179,11 +3264,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1641,
-            "tokensCacheados": 1536,
-            "tokensDeSalida": 42,
-            "milisegundos": 2172
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1737,
+            "tokensCacheados": 1734,
+            "tokensDeSalida": 39,
+            "milisegundos": 1724
           }
         },
         {
@@ -3191,11 +3276,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1345,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 1041
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1414,
+            "tokensCacheados": 1224,
+            "tokensDeSalida": 21,
+            "milisegundos": 1375
           }
         },
         {
@@ -3211,36 +3296,36 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1459,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 51,
-            "milisegundos": 1292
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1546,
+            "tokensCacheados": 1411,
+            "tokensDeSalida": 33,
+            "milisegundos": 1253
           }
         }
       ],
       "acciones": [],
       "uso": {
         "llamadas": 6,
-        "tokensDeEntrada": 8355,
-        "tokensCacheados": 2688,
-        "tokensDeSalida": 198,
-        "milisegundos": 7656,
-        "costoUsd": 0.0052124,
+        "tokensDeEntrada": 8600,
+        "tokensCacheados": 7148,
+        "tokensDeSalida": 210,
+        "milisegundos": 10024,
+        "costoUsd": 0.00156908,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
         "tokensDeSalida": 80,
-        "milisegundos": 1517,
-        "costoUsd": 0.00295,
+        "milisegundos": 2086,
+        "costoUsd": 0.001386,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -3280,11 +3365,11 @@
           "direccion": "entrante",
           "texto": "buenas, te paso el ultimo que tengo",
           "at": "2026-11-05T15:00:00.000Z",
-          "archivoId": "archivo-1793193121745"
+          "archivoId": "archivo-1793193414876"
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo que mandaste está perfecto y ya quedó cargado en el sistema. Ahora tu solicitud pasó a análisis y pronto te va a contactar una persona de Red Unisol para seguir. ¿Querés que te explique algo más?",
+          "texto": "¡Buenas, Mariana! El recibo quedó cargado y tu solicitud pasó a análisis. Una persona de Red Unisol te va a contactar para seguir.",
           "at": "2026-11-05T15:00:00.000Z"
         }
       ],
@@ -3294,11 +3379,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1300,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 1159
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1372,
+            "tokensCacheados": 1237,
+            "tokensDeSalida": 21,
+            "milisegundos": 2747
           }
         },
         {
@@ -3314,11 +3399,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1481,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 13,
-            "milisegundos": 851
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1571,
+            "tokensCacheados": 1568,
+            "tokensDeSalida": 16,
+            "milisegundos": 2106
           }
         },
         {
@@ -3326,11 +3411,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 80,
-            "milisegundos": 1463
+            "milisegundos": 2153
           }
         },
         {
@@ -3340,7 +3425,7 @@
             "archivo": "recibo-correcto.png",
             "esReciboDeSueldo": true,
             "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -3404,11 +3489,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1624,
-            "tokensCacheados": 1536,
-            "tokensDeSalida": 48,
-            "milisegundos": 1083
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1720,
+            "tokensCacheados": 1717,
+            "tokensDeSalida": 34,
+            "milisegundos": 1950
           }
         }
       ],
@@ -3426,25 +3511,25 @@
       ],
       "uso": {
         "llamadas": 4,
-        "tokensDeEntrada": 5560,
-        "tokensCacheados": 1536,
-        "tokensDeSalida": 147,
-        "milisegundos": 4556,
-        "costoUsd": 0.0043584,
+        "tokensDeEntrada": 5649,
+        "tokensCacheados": 4522,
+        "tokensDeSalida": 151,
+        "milisegundos": 8956,
+        "costoUsd": 0.00148082,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
         "tokensDeSalida": 80,
-        "milisegundos": 1463,
-        "costoUsd": 0.00295,
+        "milisegundos": 2153,
+        "costoUsd": 0.001386,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -3494,11 +3579,11 @@
           "direccion": "entrante",
           "texto": "ahi va",
           "at": "2026-10-28T15:00:00.000Z",
-          "archivoId": "archivo-1793193126302"
+          "archivoId": "archivo-1793193423834"
         },
         {
           "direccion": "saliente",
-          "texto": "El recibo que mandaste no tiene los haberes, que son necesarios para avanzar. Por favor, mandame el recibo de sueldo de septiembre 2026 completo, donde se vean los haberes.",
+          "texto": "El archivo no es un recibo de sueldo. Mandame el recibo de sueldo de septiembre de 2026.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -3508,11 +3593,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1287,
-            "tokensCacheados": 0,
-            "tokensDeSalida": 6,
-            "milisegundos": 867
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1359,
+            "tokensCacheados": 1224,
+            "tokensDeSalida": 21,
+            "milisegundos": 1344
           }
         },
         {
@@ -3528,11 +3613,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1468,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 13,
-            "milisegundos": 747
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1558,
+            "tokensCacheados": 1555,
+            "tokensDeSalida": 16,
+            "milisegundos": 1093
           }
         },
         {
@@ -3540,11 +3625,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "lectura",
-            "modelo": "gpt-4.1",
-            "tokensDeEntrada": 1155,
+            "modelo": "gpt-6.1-terra",
+            "tokensDeEntrada": 986,
             "tokensCacheados": 0,
             "tokensDeSalida": 83,
-            "milisegundos": 1619
+            "milisegundos": 2121
           }
         },
         {
@@ -3552,9 +3637,9 @@
           "tipo": "lectura_de_recibo",
           "detalle": {
             "archivo": "recibo-cortado.png",
-            "esReciboDeSueldo": true,
-            "legible": true,
-            "empleador": "GOBIERNO DE LA PROVINCIA DE CATAMARCA - MINISTERIO DE EDUCACIÓN",
+            "esReciboDeSueldo": false,
+            "legible": false,
+            "empleador": "Gobierno de la Provincia de Catamarca - Ministerio de Educación",
             "cuil": "leído",
             "periodo": {
               "anio": 2026,
@@ -3576,7 +3661,7 @@
               {
                 "nombre": "pertinencia",
                 "ok": false,
-                "detalle": "Al recibo le falta: haberes",
+                "detalle": "El documento no es un recibo de sueldo",
                 "siFalla": "pedir_de_nuevo"
               }
             ]
@@ -3587,36 +3672,36 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1559,
-            "tokensCacheados": 1408,
-            "tokensDeSalida": 44,
-            "milisegundos": 3932
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1657,
+            "tokensCacheados": 1555,
+            "tokensDeSalida": 27,
+            "milisegundos": 1128
           }
         }
       ],
       "acciones": [],
       "uso": {
         "llamadas": 4,
-        "tokensDeEntrada": 5469,
-        "tokensCacheados": 2816,
-        "tokensDeSalida": 146,
-        "milisegundos": 7165,
-        "costoUsd": 0.0039556,
+        "tokensDeEntrada": 5560,
+        "tokensCacheados": 4334,
+        "tokensDeSalida": 147,
+        "milisegundos": 5686,
+        "costoUsd": 0.00150034,
         "modelos": [
-          "gpt-4.1-mini",
-          "gpt-4.1"
+          "gpt-6-luna",
+          "gpt-6.1-terra"
         ]
       },
       "usoDeLectura": {
         "llamadas": 1,
-        "tokensDeEntrada": 1155,
+        "tokensDeEntrada": 986,
         "tokensCacheados": 0,
         "tokensDeSalida": 83,
-        "milisegundos": 1619,
-        "costoUsd": 0.002974,
+        "milisegundos": 2121,
+        "costoUsd": 0.001401,
         "modelos": [
-          "gpt-4.1"
+          "gpt-6.1-terra"
         ]
       }
     },
@@ -3669,7 +3754,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Hola Mariana, veo que trabajás en el Ministerio de Educación de Catamarca. Para avanzar con tu crédito necesito que me mandes tu recibo de sueldo de septiembre 2026, puede ser una foto o un PDF, pero que esté completo y legible. ¿Me lo podés enviar?",
+          "texto": "Hola, Mariana. Tengo registrado que trabajás en el Ministerio de Educación de Catamarca. Para avanzar, mandame el recibo de sueldo de septiembre de 2026 en foto o PDF, completo y legible.",
           "at": "2026-10-28T15:00:00.000Z"
         },
         {
@@ -3679,7 +3764,7 @@
         },
         {
           "direccion": "saliente",
-          "texto": "Mariana, por este canal no puedo escuchar audios ni abrir ese tipo de archivo. Por favor, escribime lo que querés decir o, mejor aún, mandame el recibo de sueldo como foto o PDF para poder seguir con el trámite.",
+          "texto": "No puedo escuchar audios por este canal. Escribime lo que querías contarme o mandame el recibo de septiembre de 2026 como foto o PDF.",
           "at": "2026-10-28T15:00:00.000Z"
         }
       ],
@@ -3689,11 +3774,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1277,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 779
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1349,
+            "tokensCacheados": 1214,
+            "tokensDeSalida": 21,
+            "milisegundos": 917
           }
         },
         {
@@ -3709,11 +3794,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1404,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 61,
-            "milisegundos": 1009
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1494,
+            "tokensCacheados": 1491,
+            "tokensDeSalida": 47,
+            "milisegundos": 1276
           }
         },
         {
@@ -3721,11 +3806,11 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1355,
-            "tokensCacheados": 1152,
-            "tokensDeSalida": 6,
-            "milisegundos": 1045
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1413,
+            "tokensCacheados": 1214,
+            "tokensDeSalida": 21,
+            "milisegundos": 969
           }
         },
         {
@@ -3741,24 +3826,24 @@
           "tipo": "uso_de_modelo",
           "detalle": {
             "proposito": "conversacion",
-            "modelo": "gpt-4.1-mini",
-            "tokensDeEntrada": 1477,
-            "tokensCacheados": 1280,
-            "tokensDeSalida": 52,
-            "milisegundos": 1276
+            "modelo": "gpt-6-luna",
+            "tokensDeEntrada": 1553,
+            "tokensCacheados": 1410,
+            "tokensDeSalida": 38,
+            "milisegundos": 1655
           }
         }
       ],
       "acciones": [],
       "uso": {
         "llamadas": 4,
-        "tokensDeEntrada": 5513,
-        "tokensCacheados": 4864,
-        "tokensDeSalida": 125,
-        "milisegundos": 4109,
-        "costoUsd": 0.000946,
+        "tokensDeEntrada": 5809,
+        "tokensCacheados": 5329,
+        "tokensDeSalida": 127,
+        "milisegundos": 4817,
+        "costoUsd": 0.00016479,
         "modelos": [
-          "gpt-4.1-mini"
+          "gpt-6-luna"
         ]
       },
       "usoDeLectura": {
@@ -3773,9 +3858,9 @@
     }
   ],
   "total": {
-    "pasaron": 15,
+    "pasaron": 16,
     "casos": 16,
-    "costoUsd": 0.0719312,
-    "milisegundos": 103270
+    "costoUsd": 0.02332596,
+    "milisegundos": 145281
   }
 }

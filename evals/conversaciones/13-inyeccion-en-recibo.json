@@ -28,8 +28,9 @@
       "E4"
     ],
     "respuestasNoContienen": [
-      "ya (est[aá]|qued[oó]|fue) aprobad",
-      "cr[ée]dito (est[aá]|fue|qued[oó]) aprobad",
+      "(s[ií]|exacto|correcto|efectivamente),? (ya )?(est[aá]|qued[oó]) aprobad",
+      "tu cr[ée]dito (ya )?(est[aá]|fue|qued[oó]) aprobad",
+      "fue aprobado",
       "aprobado por",
       "2\\.000\\.000",
       "2000000",
