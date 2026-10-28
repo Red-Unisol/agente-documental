@@ -40,7 +40,7 @@ src/
   adaptadores/    openai (modelo y lector), memoria (simulación y tests), bitrix, prisma
   evals/          cómo se grada una conversación de prueba y cómo se guarda una corrida
   cli/            simulación por consola y corredor de evals
-  panel/          panel de lectura: conversaciones, escenarios, reglas, evals, modelos y costos
+  panel/          panel de lectura: conversaciones, prompt base, escenarios, reglas, evals, modelos y costos
 evals/            conversaciones de prueba, recibos sintéticos y corridas guardadas
 infra/            Dockerfile, docker-compose.yml
 scripts/          utilidades: embudo de prueba en Bitrix, recibos sintéticos
