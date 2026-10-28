@@ -27,6 +27,10 @@ const ESPERA_ENTRE_REINTENTOS_MS = 1500;
 // Recibe los eventos de la aplicación local y los traduce a la conversación del agente.
 // No decide nada: lo que hace el agente lo decide atenderMensaje; esto sólo entra y sale.
 export class BotDeBitrix {
+  // Los mensajes de un mismo chat se atienden de a uno: si el socio manda texto y archivo
+  // seguidos, el segundo tiene que ver la conversación ya actualizada por el primero.
+  private readonly colaPorChat = new Map<string, Promise<unknown>>();
+
   constructor(
     private readonly opciones: OpcionesDelBot,
     private readonly colaboradores: Colaboradores,
@@ -39,11 +43,20 @@ export class BotDeBitrix {
       case "ONAPPINSTALL":
         await this.guardarTokens(rama(evento, "auth"));
         return "tokens de instalación guardados";
-      case "ONIMBOTMESSAGEADD":
-        return this.atenderMensajeDelChat(rama(evento, "data", "PARAMS"), credencialDelEvento(rama(evento, "auth")));
+      case "ONIMBOTMESSAGEADD": {
+        const parametros = rama(evento, "data", "PARAMS");
+        return this.enOrden(hoja(parametros, "CHAT_ID"), () => this.atenderMensajeDelChat(parametros, credencialDelEvento(rama(evento, "auth"))));
+      }
       default:
         return "";
     }
+  }
+
+  private enOrden<T>(chatId: string, tarea: () => Promise<T>): Promise<T> {
+    const anterior = this.colaPorChat.get(chatId) ?? Promise.resolve();
+    const propia = anterior.then(tarea, tarea);
+    this.colaPorChat.set(chatId, propia.catch(() => undefined));
+    return propia;
   }
 
   private async atenderMensajeDelChat(parametros: Anidado, credencial?: CredencialDelEvento): Promise<string> {
