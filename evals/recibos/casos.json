@@ -179,7 +179,7 @@
     "CUIT": "30-99999997-0",
     "NOMBRE": "PRUEBA, LUCÍA",
     "LEGAJO": "D-30981",
-    "CUIL": "27-23456789-4",
+    "CUIL": "27-23456789-1",
     "CARGO": "Profesora nivel secundario",
     "DEPENDENCIA": "E.E.S.O. N° 999"
   },
@@ -194,7 +194,7 @@
     "CUIT": "30-99999996-2",
     "NOMBRE": "PRUEBA, JORGE",
     "LEGAJO": "P-118422",
-    "CUIL": "20-34567890-3",
+    "CUIL": "20-34567890-6",
     "CARGO": "Cabo primero",
     "DEPENDENCIA": "Departamental Cruz del Eje"
   },
@@ -209,7 +209,7 @@
     "CUIT": "30-99999996-2",
     "NOMBRE": "PRUEBA, JORGE",
     "LEGAJO": "SP-20311",
-    "CUIL": "20-34567890-3",
+    "CUIL": "20-34567890-6",
     "CARGO": "Agente",
     "DEPENDENCIA": "Complejo Carcelario N° 9"
   },
@@ -224,7 +224,7 @@
     "CUIT": "30-99999995-4",
     "NOMBRE": "PRUEBA, VALERIA",
     "LEGAJO": "S-55120",
-    "CUIL": "27-45678901-2",
+    "CUIL": "27-45678901-9",
     "CARGO": "Enfermera profesional",
     "DEPENDENCIA": "Hospital Zonal N° 9"
   },
@@ -239,7 +239,7 @@
     "CUIT": "30-99999995-4",
     "NOMBRE": "PRUEBA, VALERIA",
     "LEGAJO": "S-55120",
-    "CUIL": "27-45678901-2",
+    "CUIL": "27-45678901-9",
     "CARGO": "Enfermera profesional",
     "DEPENDENCIA": "Hospital Zonal N° 9",
     "formato": "pdf"
@@ -268,7 +268,7 @@
     "PERIODO": "AGOSTO 2026",
     "NOMBRE": "PRUEBA, LUCÍA",
     "LEGAJO": "D-30981",
-    "CUIL": "27-23456789-4",
+    "CUIL": "27-23456789-1",
     "INGRESO": "10/03/2016",
     "CARGO": "Profesora nivel secundario",
     "DEPENDENCIA": "E.E.S.O. N° 999",
@@ -283,7 +283,7 @@
     "PERIODO": "SEPTIEMBRE 2026",
     "NOMBRE": "PRUEBA, VALERIA",
     "LEGAJO": "CL-2210",
-    "CUIL": "27-45678901-2",
+    "CUIL": "27-45678901-9",
     "INGRESO": "01/02/2018",
     "CARGO": "Enfermera",
     "DEPENDENCIA": "Internación",
