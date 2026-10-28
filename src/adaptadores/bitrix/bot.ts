@@ -32,22 +32,24 @@ export class BotDeBitrix {
     private readonly colaboradores: Colaboradores,
   ) {}
 
-  async atenderEvento(evento: Anidado): Promise<void> {
+  // Devuelve una línea corta de lo que hizo, para el registro del servidor.
+  async atenderEvento(evento: Anidado): Promise<string> {
     if (hoja(evento, "AUTH_ID")) return this.guardarTokensDeApertura(evento);
     switch (hoja(evento, "event").toUpperCase()) {
       case "ONAPPINSTALL":
-        return this.guardarTokens(rama(evento, "auth"));
+        await this.guardarTokens(rama(evento, "auth"));
+        return "tokens de instalación guardados";
       case "ONIMBOTMESSAGEADD":
         return this.atenderMensajeDelChat(rama(evento, "data", "PARAMS"));
       default:
-        return;
+        return "";
     }
   }
 
-  private async atenderMensajeDelChat(parametros: Anidado): Promise<void> {
+  private async atenderMensajeDelChat(parametros: Anidado): Promise<string> {
     const chatId = hoja(parametros, "CHAT_ID");
     const dialogo = hoja(parametros, "DIALOG_ID");
-    if (!chatId || !dialogo) return;
+    if (!chatId || !dialogo) return "mensaje sin chat";
 
     await this.asegurarConversacion(chatId, parametros);
     const archivo = await this.primerArchivo(rama(parametros, "FILES"));
@@ -55,6 +57,7 @@ export class BotDeBitrix {
     const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(archivo && { archivo }) }, this.colaboradores.dependencias);
     if (resultado.tipo === "respondio") await this.responder(dialogo, resultado.texto);
     await this.colaboradores.crm.completarTransferencia(chatId);
+    return resultado.tipo === "respondio" ? `respondió (${resultado.texto.length} caracteres)` : `silencio: ${resultado.motivo}`;
   }
 
   private async asegurarConversacion(chatId: string, parametros: Anidado): Promise<void> {
@@ -102,14 +105,15 @@ export class BotDeBitrix {
 
   // Cuando alguien abre la aplicación desde el menú, Bitrix manda tokens en nombre de esa
   // persona. Se guardan sólo si es administrador: así se recuperan sin reinstalar.
-  private async guardarTokensDeApertura(peticion: Anidado): Promise<void> {
+  private async guardarTokensDeApertura(peticion: Anidado): Promise<string> {
     const dominio = hoja(peticion, "DOMAIN");
     const accessToken = hoja(peticion, "AUTH_ID");
     const refreshToken = hoja(peticion, "REFRESH_ID");
-    if (!dominio || !accessToken || !refreshToken) return;
+    if (!dominio || !accessToken || !refreshToken) return "apertura sin tokens";
     const perfil = await this.colaboradores.cliente.consultarComo<{ ADMIN?: boolean }>(dominio, accessToken, "profile");
-    if (perfil.ADMIN !== true) return;
+    if (perfil.ADMIN !== true) return "apertura de un usuario que no es administrador: tokens ignorados";
     await this.colaboradores.cliente.actualizarTokens(tokensDesdeEvento(dominio, { access_token: accessToken, refresh_token: refreshToken, expires_in: hoja(peticion, "AUTH_EXPIRES") || 3600 }));
+    return "tokens de administrador guardados";
   }
 }
 

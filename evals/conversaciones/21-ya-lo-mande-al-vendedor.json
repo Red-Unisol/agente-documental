@@ -1,0 +1,29 @@
+{
+  "nombre": "Dice que ya mandó el recibo al vendedor: pide que lo reenvíe acá",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "el recibo ya se lo mandé ayer al vendedor por whatsapp, no lo tienen?"
+    },
+    {
+      "texto": "uf, bueno, lo busco y te lo mando"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E3"
+    ],
+    "respuestasNoContienen": []
+  }
+}

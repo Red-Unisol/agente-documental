@@ -17,7 +17,10 @@ export function crearServidorDeEventos(bot: BotDeBitrix, registrar: (linea: stri
     const chat = hoja(evento, "data", "PARAMS", "DIALOG_ID");
     registrar(`${new Date().toISOString()} ${nombre}${chat ? ` ${chat}` : ""} ${peticion.url ?? ""}`);
     respuesta.writeHead(200, { "content-type": "text/html; charset=utf-8" }).end(HTML_DE_INSTALACION);
-    bot.atenderEvento(evento).catch((error: unknown) => registrar(`error al atender ${nombre}: ${error instanceof Error ? error.message : String(error)}`));
+    bot
+      .atenderEvento(evento)
+      .then((hecho) => hecho && registrar(`  ${chat || nombre}: ${hecho}`))
+      .catch((error: unknown) => registrar(`error al atender ${nombre}: ${error instanceof Error ? error.message : String(error)}`));
   });
 }
 

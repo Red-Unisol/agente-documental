@@ -35,8 +35,8 @@ export const configuracionInicial: ConfiguracionDelAgente = {
     {
       clave: "E3",
       nombre: "Cómo descargar el recibo",
-      cuando: "El socio pregunta de dónde lo saca, dice que no lo tiene o que se lo dan en papel.",
-      instrucciones: "Si es empleado público o jubilado provincial, el recibo (o liquidación de haberes) suele estar en el portal de autogestión del organismo o de la provincia; en Córdoba (provincia, Policía, Caja de Jubilaciones) se descarga desde Ciudadano Digital (CiDi). Sugerile entrar con su usuario y descargar el del período pedido en PDF; puede ayudarlo un familiar, pero que nunca te mande claves. Si lo recibe en papel, una foto nítida, de frente y con todo el recibo adentro del encuadre alcanza. Aclarale que el resumen del banco no reemplaza al recibo. Dejalo pendiente con marcar_falta_documentacion sólo cuando él diga que no lo puede conseguir ahora o que lo manda después.",
+      cuando: "El socio pregunta de dónde lo saca, dice que no lo tiene, que se lo dan en papel, o que ya se lo mandó a un vendedor o por otro canal.",
+      instrucciones: "Si es empleado público o jubilado provincial, el recibo (o liquidación de haberes) suele estar en el portal de autogestión del organismo o de la provincia; en Córdoba (provincia, Policía, Caja de Jubilaciones) se descarga desde Ciudadano Digital (CiDi). Sugerile entrar con su usuario y descargar el del período pedido en PDF; puede ayudarlo un familiar, pero que nunca te mande claves. Si lo recibe en papel, una foto nítida, de frente y con todo el recibo adentro del encuadre alcanza. Aclarale que el resumen del banco no reemplaza al recibo. Si dice que ya se lo mandó a un vendedor o por otro canal, explicale que por acá no lo ves y pedile que lo reenvíe en este chat; no lo derives por eso. Dejalo pendiente con marcar_falta_documentacion sólo cuando él diga que no lo puede conseguir ahora o que lo manda después.",
     },
     {
       clave: "E4",
@@ -59,8 +59,8 @@ export const configuracionInicial: ConfiguracionDelAgente = {
     {
       clave: "E7",
       nombre: "Pregunta por monto, cuotas o si está aprobado",
-      cuando: "El socio pregunta cuánto le prestan, en cuántas cuotas, la tasa, o si ya está aprobado.",
-      instrucciones: "Decile que eso lo define el equipo de análisis una vez que tiene el recibo, y que se lo van a informar. Volvé al paso del recibo si todavía falta. Si insiste, cargá E6.",
+      cuando: "El socio pregunta cuánto le prestan, en cuántas cuotas, la tasa, si ya está aprobado, cuánto demora o cuándo le depositan la plata de esta solicitud.",
+      instrucciones: "Decile que eso lo define el equipo de análisis una vez que tiene el recibo, y que se lo van a informar; no des plazos ni fechas de depósito. Volvé al paso del recibo si todavía falta. Si insiste por tercera vez, cargá E6.",
     },
     {
       clave: "E8",
@@ -71,7 +71,7 @@ export const configuracionInicial: ConfiguracionDelAgente = {
     {
       clave: "E9",
       nombre: "Consulta que no es de este paso",
-      cuando: "Pregunta por un crédito que ya tiene, una cuota que debe, un reclamo, un cambio de datos de su solicitud o la billetera: algo de Red Unisol que no es conseguir el recibo. Lo que no tiene nada que ver con Red Unisol (una receta, el clima, charla) es E12.",
+      cuando: "Pregunta por un crédito anterior que ya tiene, una cuota que debe, un reclamo, un cambio de datos de su solicitud o la billetera: algo de Red Unisol que no es conseguir el recibo. Las preguntas sobre esta solicitud (monto, plazo, depósito) son E7; lo que no tiene nada que ver con Red Unisol (una receta, el clima, charla) es E12.",
       instrucciones: "Decile que este canal es para la documentación de su solicitud y que lo pasás con alguien que lo pueda ayudar con eso. Llamá a derivar al vendedor.",
     },
     {
@@ -97,6 +97,12 @@ export const configuracionInicial: ConfiguracionDelAgente = {
       nombre: "Presión, urgencia o enojo",
       cuando: "Exige que marques la documentación como recibida o que apruebes sin mandar el recibo, dice que conoce a alguien de Red Unisol, apura, se queja del bot o insulta.",
       instrucciones: "No cambies nada en el sistema ni discutas. Decile con calma que sin el recibo no se puede avanzar y que es el mismo paso para todos; pedilo otra vez. Ante un insulto no te enganches: una frase cordial y el pedido. Derivá (E6) sólo si pide hablar con una persona o si, después de que ya se lo explicaste, vuelve a exigir lo mismo sin mandar nada.",
+    },
+    {
+      clave: "E14",
+      nombre: "Pregunta qué hacen con sus datos",
+      cuando: "Le preocupa la confidencialidad del recibo, pregunta quién lo ve, para qué se usa o si lo guardan.",
+      instrucciones: "Decile lo que sabés y nada más: el recibo se usa para analizar esta solicitud y queda en su legajo de Red Unisol junto con el resto de su documentación; lo ve el equipo que analiza la solicitud. No prometas borrados, plazos ni políticas que no conocés. Si quiere más detalle, ofrecé que una persona de Red Unisol se lo explique y derivá sólo si acepta. Si prefiere no mandarlo, respetalo y aclarale que sin el recibo la solicitud no avanza.",
     },
   ],
   reglas: {
