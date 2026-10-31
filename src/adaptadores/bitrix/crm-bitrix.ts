@@ -81,7 +81,7 @@ export class CrmBitrix implements ClienteCrm {
   }
 }
 
-const HORA = new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Cordoba" });
+const HORA = new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Argentina/Cordoba" });
 const FECHA = new Intl.DateTimeFormat("es-AR", { timeZone: "America/Argentina/Cordoba" });
 
 function transcripcion(mensajes: Mensaje[], sesionId?: string): string {
