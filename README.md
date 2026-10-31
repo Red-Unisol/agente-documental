@@ -62,6 +62,10 @@ npm test                      # tests unitarios, sin red
 
 La simulación usa un CRM en memoria: muestra qué habría hecho en Bitrix sin tocarlo.
 
+Conectado a Bitrix, las conversaciones se guardan en `AGENTE_DATOS_CARPETA` (un JSON por chat) para
+sobrevivir reinicios; si un chat no está guardado pero ya tiene mensajes en Bitrix, el historial se
+reconstruye desde ahí antes de responder.
+
 ### Cambiar o comparar modelos
 
 Los modelos son dos variables de entorno. Para comparar alternativas se corre la misma batería con
