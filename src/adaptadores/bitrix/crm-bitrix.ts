@@ -1,4 +1,4 @@
-import type { Archivo, Etapa } from "../../dominio/conversacion/conversacion.js";
+import type { Archivo, Etapa, Mensaje } from "../../dominio/conversacion/conversacion.js";
 import type { ClienteCrm, DestinoDeDerivacion } from "../../puertos/cliente-crm.js";
 import type { ClienteBitrix } from "./cliente-rest.js";
 import type { MapeoDeBitrix } from "./mapeo.js";
@@ -16,6 +16,7 @@ const NOMBRE_DE_ETAPA: Record<Etapa, string> = {
 export class CrmBitrix implements ClienteCrm {
   private readonly negociacionPorChat = new Map<string, string>();
   private readonly transferenciasPendientes = new Map<string, DestinoDeDerivacion>();
+  private readonly comentarioDeConversacion = new Map<string, number>();
 
   constructor(
     private readonly cliente: ClienteBitrix,
@@ -49,8 +50,21 @@ export class CrmBitrix implements ClienteCrm {
     await this.comentar(negociacionId, `Agente documental: chat derivado a ${destino}. Motivo: ${motivo}`);
   }
 
-  private async comentar(negociacionId: string, texto: string): Promise<void> {
-    await this.cliente.llamar("crm.timeline.comment.add", {
+  // Un solo comentario por chat, que se vuelve a escribir entero después de cada mensaje.
+  async copiarConversacion(chatId: string, mensajes: Mensaje[], sesionId?: string): Promise<void> {
+    const negociacionId = this.negociacionPorChat.get(chatId);
+    if (!negociacionId || !mensajes.length) return;
+    const texto = transcripcion(mensajes, sesionId);
+    const existente = this.comentarioDeConversacion.get(chatId);
+    if (existente) {
+      await this.cliente.llamar("crm.timeline.comment.update", { id: existente, fields: { COMMENT: texto } });
+      return;
+    }
+    this.comentarioDeConversacion.set(chatId, await this.comentar(negociacionId, texto));
+  }
+
+  private async comentar(negociacionId: string, texto: string): Promise<number> {
+    return this.cliente.llamar<number>("crm.timeline.comment.add", {
       fields: { ENTITY_ID: Number(negociacionId), ENTITY_TYPE: "deal", COMMENT: texto },
     });
   }
@@ -65,4 +79,18 @@ export class CrmBitrix implements ClienteCrm {
       LEAVE: "Y",
     });
   }
+}
+
+const HORA = new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Cordoba" });
+const FECHA = new Intl.DateTimeFormat("es-AR", { timeZone: "America/Argentina/Cordoba" });
+
+function transcripcion(mensajes: Mensaje[], sesionId?: string): string {
+  const lineas = mensajes.map((m) => {
+    const quien = m.direccion === "saliente" ? "[B]Agente[/B]" : "[B]Socio[/B]";
+    const adjunto = m.archivoId ? " [I]adjunta un archivo[/I]" : "";
+    const texto = m.texto === "(archivo)" ? "" : `\n${m.texto}`;
+    return `${quien} · ${HORA.format(m.at)}${adjunto}${texto}`;
+  });
+  const enlace = sesionId ? `\n\nVer la conversación en Bitrix: [URL=/online/?IM_HISTORY=imol|${sesionId}]conversación #${sesionId}[/URL] (Contact Center → Conversaciones).` : "";
+  return `[B]CHAT DE PRUEBA · conversación con el agente documental[/B] · ${FECHA.format(mensajes[0]!.at)}\nEl chat no está vinculado a esta negociación (chat público, visitante anónimo), así que el agente copia acá la conversación completa.\n\n${lineas.join("\n")}${enlace}`;
 }

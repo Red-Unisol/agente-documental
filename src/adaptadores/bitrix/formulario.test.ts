@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { negociacionDelChat } from "./bot.js";
+import { negociacionDelChat, vinculoDelChat } from "./bot.js";
 import { sectorDeLaSituacionLaboral } from "./fichas-bitrix.js";
 import { anidar, hoja, rama } from "./formulario.js";
 
@@ -29,6 +29,11 @@ describe("negociacionDelChat", () => {
     expect(negociacionDelChat("N|NONE|0|0|0|0")).toBeUndefined();
     expect(negociacionDelChat("Y|LEAD|55|0")).toBeUndefined();
     expect(negociacionDelChat("")).toBeUndefined();
+  });
+
+  it("saca también la sesión de Canales Abiertos, que es lo único que trae un chat público anónimo", () => {
+    expect(vinculoDelChat("N|NONE|0|N|N|309061|1793213250|0|0|0")).toEqual({ sesionId: "309061" });
+    expect(vinculoDelChat("Y|DEAL|1245175|N|N|0")).toEqual({ negociacionId: "1245175" });
   });
 });
 

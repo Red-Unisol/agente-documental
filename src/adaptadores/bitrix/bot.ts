@@ -64,7 +64,8 @@ export class BotDeBitrix {
     const dialogo = hoja(parametros, "DIALOG_ID");
     if (!chatId || !dialogo) return "mensaje sin chat";
 
-    await this.asegurarConversacion(chatId, parametros);
+    const vinculo = vinculoDelChat(hoja(parametros, "CHAT_ENTITY_DATA_1"));
+    await this.asegurarConversacion(chatId, vinculo.negociacionId);
     const archivo = await this.primerArchivo(rama(parametros, "FILES"), credencial);
     const texto = hoja(parametros, "MESSAGE") || (archivo ? "(archivo)" : "");
     const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(archivo && { archivo }) }, this.colaboradores.dependencias);
@@ -74,12 +75,15 @@ export class BotDeBitrix {
       // Aunque falle el envío, una derivación pendiente tiene que completarse: si no, el chat queda con el bot.
       await this.colaboradores.crm.completarTransferencia(chatId);
     }
+    // Un chat atado a la negociación ya se ve en su línea de tiempo. Si no lo está (chat público de
+    // prueba, visitante anónimo), el agente copia la conversación ahí para que quien mire la negociación la tenga.
+    if (!vinculo.negociacionId) await this.colaboradores.crm.copiarConversacion(chatId, resultado.conversacion.mensajes, vinculo.sesionId);
     return resultado.tipo === "respondio" ? `respondió (${resultado.texto.length} caracteres)` : `silencio: ${resultado.motivo}`;
   }
 
-  private async asegurarConversacion(chatId: string, parametros: Anidado): Promise<void> {
+  private async asegurarConversacion(chatId: string, negociacionVinculada: string | undefined): Promise<void> {
     if (await this.colaboradores.dependencias.conversaciones.obtener(chatId)) return;
-    const negociacionId = negociacionDelChat(hoja(parametros, "CHAT_ENTITY_DATA_1")) ?? this.opciones.negociacionDePrueba;
+    const negociacionId = negociacionVinculada ?? this.opciones.negociacionDePrueba;
     if (!negociacionId) throw new Error(`El chat ${chatId} no está atado a una negociación y no hay negociación de prueba configurada`);
     const ficha = await this.colaboradores.fichas.deNegociacion(negociacionId);
     this.colaboradores.crm.vincularChat(chatId, negociacionId);
@@ -134,10 +138,14 @@ export class BotDeBitrix {
   }
 }
 
-// CHAT_ENTITY_DATA_1 de Canales Abiertos: "Y|DEAL|123|N|N|456|..." (crm activo, tipo, id, ...).
+// CHAT_ENTITY_DATA_1 de Canales Abiertos: "Y|DEAL|123|N|N|456|..." (crm activo, tipo, id, _, _, sesión).
+export function vinculoDelChat(datosDeEntidad: string): { negociacionId?: string; sesionId?: string } {
+  const [crm, tipo, id, , , sesion] = datosDeEntidad.split("|");
+  return { ...(crm === "Y" && tipo === "DEAL" && id && { negociacionId: id }), ...(sesion && sesion !== "0" && { sesionId: sesion }) };
+}
+
 export function negociacionDelChat(datosDeEntidad: string): string | undefined {
-  const [crm, tipo, id] = datosDeEntidad.split("|");
-  return crm === "Y" && tipo === "DEAL" && id ? id : undefined;
+  return vinculoDelChat(datosDeEntidad).negociacionId;
 }
 
 export async function registrarBot(cliente: ClienteBitrix, urlDeEventos: string): Promise<number> {
