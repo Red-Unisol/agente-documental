@@ -107,6 +107,46 @@ describe("atenderMensaje", () => {
     expect(segundo.tipo).toBe("silencio");
   });
 
+  it("con el recibo ya cargado no vuelve a revisar un segundo archivo ni a mover la etapa", async () => {
+    let lecturas = 0;
+    const { crm, dependencias } = await armar([
+      { tipo: "llamadas", llamadas: [{ id: "1", nombre: "cargar_escenario", argumentos: { clave: "E4" } }] },
+      { tipo: "llamadas", llamadas: [{ id: "2", nombre: "revisar_recibo", argumentos: {} }] },
+      { tipo: "texto", texto: "Quedó cargado." },
+      { tipo: "llamadas", llamadas: [{ id: "3", nombre: "cargar_escenario", argumentos: { clave: "E10" } }] },
+      { tipo: "llamadas", llamadas: [{ id: "4", nombre: "revisar_recibo", argumentos: {} }] },
+      { tipo: "texto", texto: "Ya está cargado, no hace falta más." },
+    ]);
+    dependencias.lector = { leer: async () => { lecturas += 1; return { lectura: reciboCorrecto, uso: usoVacio("guionado") }; } };
+    await atenderMensaje({ conversacionId: "c1", texto: "", archivo }, dependencias);
+    const segundo = await atenderMensaje({ conversacionId: "c1", texto: "por las dudas", archivo: { ...archivo, id: "a2", nombre: "dni.png" } }, dependencias);
+
+    expect(lecturas).toBe(1);
+    expect(segundo.tipo).toBe("respondio");
+    expect(crm.acciones.filter((a) => a.tipo === "etapa")).toHaveLength(1);
+    expect(segundo.conversacion.auditoria.filter((e) => e.tipo === "verificacion")).toHaveLength(1);
+  });
+
+  it("le cuenta al modelo qué pasó con cada archivo del historial", async () => {
+    const { modelo, dependencias } = await armar(
+      [
+        { tipo: "llamadas", llamadas: [{ id: "1", nombre: "cargar_escenario", argumentos: { clave: "E4" } }] },
+        { tipo: "llamadas", llamadas: [{ id: "2", nombre: "revisar_recibo", argumentos: {} }] },
+        { tipo: "texto", texto: "Es de junio, mandame el de septiembre." },
+        { tipo: "llamadas", llamadas: [{ id: "3", nombre: "cargar_escenario", argumentos: { clave: "E4" } }] },
+        { tipo: "texto", texto: "Sí, lo vi: es de junio." },
+      ],
+      { ...reciboCorrecto, periodo: { anio: 2026, mes: 6 } },
+    );
+    await atenderMensaje({ conversacionId: "c1", texto: "", archivo }, dependencias);
+    await atenderMensaje({ conversacionId: "c1", texto: "pero ya te lo mandé!" }, dependencias);
+
+    const primerMensaje = modelo.peticiones.at(-1)!.mensajes[0];
+    const texto = primerMensaje?.rol === "usuario" ? primerMensaje.texto : "";
+    expect(texto).toMatch(/no sirvió/);
+    expect(texto).not.toMatch(/todavía no se revisó/);
+  });
+
   it("rechaza herramientas que no existen y lo deja auditado", async () => {
     const { dependencias } = await armar([
       { tipo: "llamadas", llamadas: [{ id: "1", nombre: "aprobar_credito", argumentos: {} }] },

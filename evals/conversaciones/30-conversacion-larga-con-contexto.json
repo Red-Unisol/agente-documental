@@ -1,0 +1,53 @@
+{
+  "nombre": "Pregunta qué es, cómo bajarlo, dice que lo manda, lo manda, pregunta si hace falta algo más: no vuelve a saludar ni a pedir lo que ya tiene",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-2",
+    "nombre": "Roberto",
+    "dni": "87654321",
+    "provincia": "Córdoba",
+    "convenio": "Fiat",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "hola"
+    },
+    {
+      "texto": "y eso que es? yo cobro por la caja"
+    },
+    {
+      "texto": "de donde lo bajo?"
+    },
+    {
+      "texto": "bueno lo estoy bajando, ahí te lo paso"
+    },
+    {
+      "texto": "",
+      "archivo": "evals/recibos/generados/roberto-caja-cordoba.png"
+    },
+    {
+      "texto": "listo? hace falta algo más?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "documentacion_cargada",
+    "decisiones": [
+      "aceptar"
+    ],
+    "escenarios": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E10"
+    ],
+    "respuestasNoContienen": [
+      "no (me )?lleg[oó] ning",
+      "recibo de sueldo",
+      "empleador",
+      "mand[aá]me (tu|el) recibo de haberes de nuevo"
+    ]
+  }
+}

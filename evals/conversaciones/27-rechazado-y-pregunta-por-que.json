@@ -1,0 +1,40 @@
+{
+  "nombre": "Le rechazan el de agosto, pregunta qué tenía de malo, manda el correcto",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-3",
+    "nombre": "Lucía",
+    "dni": "23456789",
+    "provincia": "Santa Fe",
+    "convenio": "Celesol",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Santa Fe"
+  },
+  "turnos": [
+    {
+      "texto": "",
+      "archivo": "evals/recibos/generados/lucia-docente-santa-fe-agosto.png"
+    },
+    {
+      "texto": "cómo que no sirve? qué tenía de malo?"
+    },
+    {
+      "texto": "ahh es el del mes pasado, perdón. va el otro",
+      "archivo": "evals/recibos/generados/lucia-docente-santa-fe.png"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "documentacion_cargada",
+    "decisiones": [
+      "pedir_de_nuevo",
+      "aceptar"
+    ],
+    "escenarios": [
+      "E4"
+    ],
+    "respuestasNoContienen": [
+      "no (me )?lleg[oó] ning",
+      "no veo ning[uú]n archivo"
+    ]
+  }
+}

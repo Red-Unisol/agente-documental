@@ -51,6 +51,13 @@ function cargarEscenario({ conversacion, configuracion, dependencias }: Contexto
 async function revisarRecibo({ conversacion, configuracion, dependencias }: Contexto): Promise<ResultadoDeHerramienta> {
   const archivo = ultimoArchivo(conversacion);
   if (!archivo) return { conversacion, resultado: { error: "El socio todavía no mandó ningún archivo." } };
+  if (conversacion.estado === "documentacion_cargada") {
+    return { conversacion, resultado: { yaCargado: true, efecto: "Esta solicitud ya tiene un recibo aceptado y cargado. No se revisa otro archivo: confirmale que ya está y que lo va a contactar una persona de Red Unisol." } };
+  }
+  const previa = conversacion.auditoria.find((e) => e.tipo === "verificacion" && e.detalle.archivoId === archivo.id);
+  if (previa) {
+    return { conversacion, resultado: { yaRevisado: true, decision: previa.detalle.decision, motivos: previa.detalle.motivos, efecto: "Ese archivo ya se revisó con el resultado indicado; no se vuelve a revisar. Respondé según ese resultado, sin pedirle nada nuevo salvo que mande otro archivo." } };
+  }
 
   const ahora = dependencias.reloj.ahora();
   const { lectura, uso } = await dependencias.lector.leer(archivo);

@@ -1,0 +1,40 @@
+{
+  "nombre": "Manda el recibo sin texto y después pregunta si llegó",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "",
+      "archivo": "evals/recibos/generados/recibo-correcto.png"
+    },
+    {
+      "texto": "hola, te llegó?"
+    },
+    {
+      "texto": "ok gracias, entonces no mando nada más?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "documentacion_cargada",
+    "decisiones": [
+      "aceptar"
+    ],
+    "escenarios": [
+      "E4",
+      "E10"
+    ],
+    "respuestasNoContienen": [
+      "no (me )?lleg[oó]",
+      "mand[aá]me (tu|el|otra vez|de nuevo)",
+      "adjunt[aá]"
+    ]
+  }
+}
