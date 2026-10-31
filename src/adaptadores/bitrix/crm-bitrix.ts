@@ -54,13 +54,24 @@ export class CrmBitrix implements ClienteCrm {
   async copiarConversacion(chatId: string, mensajes: Mensaje[], sesionId?: string): Promise<void> {
     const negociacionId = this.negociacionPorChat.get(chatId);
     if (!negociacionId || !mensajes.length) return;
-    const texto = transcripcion(mensajes, sesionId);
-    const existente = this.comentarioDeConversacion.get(chatId);
+    const texto = transcripcion(chatId, mensajes, sesionId);
+    const existente = this.comentarioDeConversacion.get(chatId) ?? (await this.comentarioExistente(negociacionId, chatId));
     if (existente) {
       await this.cliente.llamar("crm.timeline.comment.update", { id: existente, fields: { COMMENT: texto } });
       return;
     }
     this.comentarioDeConversacion.set(chatId, await this.comentar(negociacionId, texto));
+  }
+
+  // Tras un reinicio el mapa está vacío: se busca el comentario de este chat en la negociación.
+  private async comentarioExistente(negociacionId: string, chatId: string): Promise<number | undefined> {
+    const comentarios = await this.cliente.llamar<{ ID: string; COMMENT: string }[]>("crm.timeline.comment.list", {
+      filter: { ENTITY_ID: Number(negociacionId), ENTITY_TYPE: "deal" },
+      select: ["ID", "COMMENT"],
+    });
+    const propio = comentarios.find((c) => c.COMMENT.includes(marcaDelChat(chatId)));
+    if (propio) this.comentarioDeConversacion.set(chatId, Number(propio.ID));
+    return propio ? Number(propio.ID) : undefined;
   }
 
   private async comentar(negociacionId: string, texto: string): Promise<number> {
@@ -84,7 +95,9 @@ export class CrmBitrix implements ClienteCrm {
 const HORA = new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Argentina/Cordoba" });
 const FECHA = new Intl.DateTimeFormat("es-AR", { timeZone: "America/Argentina/Cordoba" });
 
-function transcripcion(mensajes: Mensaje[], sesionId?: string): string {
+const marcaDelChat = (chatId: string) => `chat ${chatId}`;
+
+function transcripcion(chatId: string, mensajes: Mensaje[], sesionId?: string): string {
   const lineas = mensajes.map((m) => {
     const quien = m.direccion === "saliente" ? "[B]Agente[/B]" : "[B]Socio[/B]";
     const adjunto = m.archivoId ? " [I]adjunta un archivo[/I]" : "";
@@ -92,5 +105,5 @@ function transcripcion(mensajes: Mensaje[], sesionId?: string): string {
     return `${quien} · ${HORA.format(m.at)}${adjunto}${texto}`;
   });
   const enlace = sesionId ? `\n\nVer la conversación en Bitrix: [URL=/online/?IM_HISTORY=imol|${sesionId}]conversación #${sesionId}[/URL] (Contact Center → Conversaciones).` : "";
-  return `[B]CHAT DE PRUEBA · conversación con el agente documental[/B] · ${FECHA.format(mensajes[0]!.at)}\nEl chat no está vinculado a esta negociación (chat público, visitante anónimo), así que el agente copia acá la conversación completa.\n\n${lineas.join("\n")}${enlace}`;
+  return `[B]CHAT DE PRUEBA · conversación con el agente documental[/B] · ${FECHA.format(mensajes[0]!.at)} · ${marcaDelChat(chatId)}\nEl chat no está vinculado a esta negociación (chat público, visitante anónimo), así que el agente copia acá la conversación completa.\n\n${lineas.join("\n")}${enlace}`;
 }

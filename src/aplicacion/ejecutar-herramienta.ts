@@ -58,7 +58,7 @@ async function revisarRecibo({ conversacion, configuracion, dependencias }: Cont
 
   let actualizada = conEvento(conversacion, { at: ahora, tipo: "uso_de_modelo", detalle: { proposito: "lectura", ...uso } });
   actualizada = conEvento(actualizada, { at: ahora, tipo: "lectura_de_recibo", detalle: { archivo: archivo.nombre, ...lectura, cuil: lectura.cuil ? "leído" : "ausente" } });
-  actualizada = conEvento(actualizada, { at: ahora, tipo: "verificacion", detalle: { decision: verificacion.decision, chequeos: verificacion.chequeos } });
+  actualizada = conEvento(actualizada, { at: ahora, tipo: "verificacion", detalle: { archivoId: archivo.id, decision: verificacion.decision, motivos: verificacion.motivos, chequeos: verificacion.chequeos } });
   actualizada = await aplicarDecision({ ...actualizada, ultimaVerificacion: verificacion }, archivo, dependencias);
 
   const chequeos = verificacion.chequeos.map((c) => `${c.ok ? "OK" : "FALLA"} ${c.nombre}: ${c.detalle}`);

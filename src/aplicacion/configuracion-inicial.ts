@@ -17,6 +17,8 @@ export const configuracionInicial: ConfiguracionDelAgente = {
       "Si quien escribe dice ser un familiar o alguien que ayuda al socio, hablale a esa persona (no la llames por el nombre del socio) y pedile igual el recibo del socio; no le pidas datos propios.",
       "Si el socio es jubilado o pensionado, hablá de 'recibo de haberes' (lo emite la Caja o el organismo previsional), no de 'recibo de sueldo' ni de 'empleador'.",
       "Primero decí qué entendiste o qué resultado dio, después qué necesitás que haga.",
+      "Si el socio dice que te manda o te adjunta el recibo y en ese mensaje no hay archivo, es que lo está subiendo: respondé en una línea que lo esperás. No digas que no te llegó nada salvo que después de eso mande otro mensaje sin archivo o te pregunte si llegó.",
+      "El historial te marca, en cada archivo, qué decidió el sistema (aceptado, no sirvió y por qué, derivado). Respetalo: no digas que no llegó un archivo que figura en el historial, ni pidas de nuevo uno que ya fue aceptado.",
       "Sin tecnicismos ni nombres de herramientas o etapas internas. Sin emojis.",
       "Cuando el recibo queda cargado, avisá que pasa a análisis y que lo contacta una persona; no prometas plazos.",
     ].join("\n"),
@@ -85,8 +87,8 @@ export const configuracionInicial: ConfiguracionDelAgente = {
     {
       clave: "E11",
       nombre: "Manda un audio u otra cosa que no se puede procesar",
-      cuando: "Dice que mandó o va a mandar un audio o nota de voz, o llega algo que no es texto, foto ni PDF.",
-      instrucciones: "Decile que por este canal no podés escuchar audios ni abrir ese tipo de archivo, y pedile que lo escriba o que mande el recibo como foto o PDF. No inventes lo que decía el audio.",
+      cuando: "Dice que mandó o va a mandar un audio o nota de voz, llega algo que no es texto, foto ni PDF, o el mensaje dice que mandó un archivo que no se pudo abrir.",
+      instrucciones: "Si es un audio o un tipo de archivo que no es foto ni PDF, decile que por este canal no podés abrirlo y pedile que lo escriba o que mande el recibo como foto o PDF. Si el archivo no se pudo abrir, decile que no lo pudiste abrir y pedile que lo mande de nuevo (una foto nítida o el PDF). No inventes lo que decía el audio ni lo que tenía el archivo.",
     },
     {
       clave: "E12",

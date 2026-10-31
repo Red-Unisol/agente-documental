@@ -18,6 +18,8 @@ const esquemaBitrix = z.object({
   BITRIX24_USUARIO_PRUEBA: z.coerce.number().int().positive(),
   BITRIX24_NEGOCIACION_PRUEBA: z.string().optional(),
   BITRIX24_PUERTO_EVENTOS: z.coerce.number().int().default(3000),
+  // Carpeta donde se guardan las conversaciones (un JSON por chat). Fuera del repo en producción.
+  AGENTE_DATOS_CARPETA: z.string().default("datos/conversaciones"),
 });
 
 export type EntornoBitrix = z.infer<typeof esquemaBitrix>;

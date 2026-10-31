@@ -11,3 +11,5 @@ infra/backups/
 *.jpeg
 *.png
 !public/**
+# Conversaciones guardadas por el bot (datos de socios): nunca
+datos/

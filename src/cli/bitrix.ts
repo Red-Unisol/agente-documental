@@ -10,7 +10,8 @@ import { FichasDesdeBitrix } from "../adaptadores/bitrix/fichas-bitrix.js";
 import { mapeoDelEmbudoDePrueba } from "../adaptadores/bitrix/mapeo.js";
 import { crearServidorDeEventos } from "../adaptadores/bitrix/servidor-eventos.js";
 import { TokensEnArchivo } from "../adaptadores/bitrix/tokens.js";
-import { ConfiguracionEnMemoria, ConversacionesEnMemoria, RelojDelSistema } from "../adaptadores/memoria/repositorios.js";
+import { ConversacionesEnArchivos } from "../adaptadores/archivos/conversaciones-en-archivos.js";
+import { ConfiguracionEnMemoria, RelojDelSistema } from "../adaptadores/memoria/repositorios.js";
 import { crearClienteOpenAI } from "../adaptadores/openai/cliente.js";
 import { LectorDeReciboOpenAI } from "../adaptadores/openai/lector-de-recibo.js";
 import { ModeloConversacionalOpenAI } from "../adaptadores/openai/modelo-conversacional.js";
@@ -97,7 +98,7 @@ function armarDependencias(crmReal: CrmBitrix): Dependencias {
     modelo: new ModeloConversacionalOpenAI(openai, entorno.OPENAI_MODELO_CONVERSACION),
     lector: new LectorDeReciboOpenAI(openai, entorno.OPENAI_MODELO_LECTURA),
     crm: crmReal,
-    conversaciones: new ConversacionesEnMemoria(),
+    conversaciones: new ConversacionesEnArchivos(entornoBitrix.AGENTE_DATOS_CARPETA),
     configuracion: new ConfiguracionEnMemoria(configuracionInicial),
     reloj: new RelojDelSistema(),
   };

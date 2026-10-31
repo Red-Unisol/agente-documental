@@ -1,6 +1,6 @@
 import { atenderMensaje } from "../../aplicacion/atender-mensaje.js";
 import type { Dependencias } from "../../aplicacion/dependencias.js";
-import { type Archivo, nuevaConversacion } from "../../dominio/conversacion/conversacion.js";
+import { type Archivo, type Conversacion, conMensaje, nuevaConversacion } from "../../dominio/conversacion/conversacion.js";
 import type { ClienteBitrix } from "./cliente-rest.js";
 import type { CrmBitrix } from "./crm-bitrix.js";
 import type { FichasDesdeBitrix } from "./fichas-bitrix.js";
@@ -65,10 +65,10 @@ export class BotDeBitrix {
     if (!chatId || !dialogo) return "mensaje sin chat";
 
     const vinculo = vinculoDelChat(hoja(parametros, "CHAT_ENTITY_DATA_1"));
-    await this.asegurarConversacion(chatId, vinculo.negociacionId);
-    const archivo = await this.primerArchivo(rama(parametros, "FILES"), credencial);
-    const texto = hoja(parametros, "MESSAGE") || (archivo ? "(archivo)" : "");
-    const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(archivo && { archivo }) }, this.colaboradores.dependencias);
+    await this.asegurarConversacion(chatId, vinculo.negociacionId, hoja(parametros, "MESSAGE_ID"));
+    const adjunto = await this.primerArchivo(rama(parametros, "FILES"), credencial);
+    const texto = hoja(parametros, "MESSAGE") || adjunto.marca || "";
+    const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(adjunto.archivo && { archivo: adjunto.archivo }) }, this.colaboradores.dependencias);
     try {
       if (resultado.tipo === "respondio") await this.responder(dialogo, resultado.texto);
     } finally {
@@ -81,25 +81,56 @@ export class BotDeBitrix {
     return resultado.tipo === "respondio" ? `respondió (${resultado.texto.length} caracteres)` : `silencio: ${resultado.motivo}`;
   }
 
-  private async asegurarConversacion(chatId: string, negociacionVinculada: string | undefined): Promise<void> {
-    if (await this.colaboradores.dependencias.conversaciones.obtener(chatId)) return;
+  private async asegurarConversacion(chatId: string, negociacionVinculada: string | undefined, mensajeActualId: string): Promise<void> {
+    const guardada = await this.colaboradores.dependencias.conversaciones.obtener(chatId);
+    if (guardada) {
+      this.colaboradores.crm.vincularChat(chatId, guardada.ficha.negociacionId);
+      return;
+    }
     const negociacionId = negociacionVinculada ?? this.opciones.negociacionDePrueba;
     if (!negociacionId) throw new Error(`El chat ${chatId} no está atado a una negociación y no hay negociación de prueba configurada`);
     const ficha = await this.colaboradores.fichas.deNegociacion(negociacionId);
     this.colaboradores.crm.vincularChat(chatId, negociacionId);
-    await this.colaboradores.dependencias.conversaciones.guardar(nuevaConversacion(chatId, chatId, ficha));
+    const conversacion = await this.conHistorialDeBitrix(nuevaConversacion(chatId, chatId, ficha), mensajeActualId);
+    await this.colaboradores.dependencias.conversaciones.guardar(conversacion);
   }
 
-  private async primerArchivo(archivos: Anidado, credencial?: CredencialDelEvento): Promise<Archivo | undefined> {
+  // Si no hay nada guardado pero el chat ya tiene mensajes en Bitrix (el agente se reinició y perdió
+  // sus datos), se reconstruye el historial desde ahí para no arrancar de cero con el socio.
+  private async conHistorialDeBitrix(conversacion: Conversacion, mensajeActualId: string): Promise<Conversacion> {
+    let historial: { message?: Record<string, { id: string; senderid: string; date: string; text?: string; params?: { fileId?: unknown[] } }> };
+    try {
+      historial = await this.colaboradores.cliente.llamar("imopenlines.session.history.get", { CHAT_ID: Number(conversacion.chatId) });
+    } catch {
+      return conversacion;
+    }
+    const previos = Object.values(historial.message ?? {})
+      .filter((m) => m.senderid !== "0" && (!mensajeActualId || Number(m.id) < Number(mensajeActualId)))
+      .sort((a, b) => Number(a.id) - Number(b.id));
+    return previos.reduce((acumulada, m) => {
+      const delBot = Number(m.senderid) === this.opciones.botId;
+      const texto = m.text?.trim() || (m.params?.fileId?.length ? "(archivo mandado antes de que el agente se reiniciara; si hace falta, pedilo de nuevo)" : "");
+      return texto ? conMensaje(acumulada, { direccion: delBot ? "saliente" : "entrante", texto, at: new Date(m.date) }) : acumulada;
+    }, conversacion);
+  }
+
+  // Si el archivo no es foto ni PDF, o no se pudo bajar, el mensaje igual entra a la conversación
+  // con una marca: el agente le pide al socio que lo mande de nuevo, en vez de quedarse callado.
+  private async primerArchivo(archivos: Anidado, credencial?: CredencialDelEvento): Promise<{ archivo?: Archivo; marca?: string }> {
     const primero = Object.values(archivos).find((a): a is Anidado => typeof a === "object");
-    if (!primero) return undefined;
+    if (!primero) return {};
     const nombre = hoja(primero, "name") || "archivo";
     const extension = nombre.split(".").pop()?.toLowerCase() ?? "";
     const tipoMime = TIPOS_MIME[extension];
-    if (!tipoMime) return undefined; // audio, video, etc.: el agente lo trata como "no se puede procesar"
+    if (!tipoMime) return { marca: `(mandó un archivo que no es foto ni PDF: ${extension || "tipo desconocido"})` };
     const id = hoja(primero, "id");
-    const bytes = await this.colaboradores.cliente.descargarArchivo(id, credencial);
-    return { id, nombre, tipoMime, bytes };
+    try {
+      const bytes = await this.colaboradores.cliente.descargarArchivo(id, credencial);
+      return { archivo: { id, nombre, tipoMime, bytes }, marca: "(archivo)" };
+    } catch (error) {
+      console.log(`  no se pudo bajar el archivo ${id}: ${error instanceof Error ? error.message : String(error)}`);
+      return { marca: "(mandó un archivo que no se pudo abrir)" };
+    }
   }
 
   // Si la respuesta llega antes de que Bitrix termine de abrir la sesión del chat, el envío

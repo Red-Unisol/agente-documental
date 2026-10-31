@@ -80,10 +80,26 @@ function responder(conversacion: Conversacion, textoDelModelo: string, at: Date)
   return { tipo: "respondio", texto, conversacion: conMensaje(auditada, { direccion: "saliente", texto, at }) };
 }
 
+// El modelo ve la conversación entera y, en cada archivo, qué decidió el sistema con él:
+// así no vuelve a pedir lo que ya aceptó ni dice que no llegó lo que ya revisó.
 function historialParaElModelo(conversacion: Conversacion): MensajeParaElModelo[] {
   return conversacion.mensajes.map((mensaje) => {
     if (mensaje.direccion === "saliente") return { rol: "asistente", texto: mensaje.texto };
-    const adjunto = mensaje.archivoId ? " [el socio adjuntó un archivo]" : "";
+    const adjunto = mensaje.archivoId ? ` [${resultadoDelArchivo(conversacion, mensaje.archivoId)}]` : "";
     return { rol: "usuario", texto: `${mensaje.texto}${adjunto}`.trim() };
   });
+}
+
+function resultadoDelArchivo(conversacion: Conversacion, archivoId: string): string {
+  const verificacion = conversacion.auditoria.find((e) => e.tipo === "verificacion" && e.detalle.archivoId === archivoId);
+  if (!verificacion) return "el socio adjuntó un archivo que todavía no se revisó";
+  const motivos = Array.isArray(verificacion.detalle.motivos) ? verificacion.detalle.motivos.join("; ") : "";
+  switch (verificacion.detalle.decision) {
+    case "aceptar":
+      return "el socio adjuntó un archivo: recibo aceptado y cargado";
+    case "derivar":
+      return "el socio adjuntó un archivo: derivado a una persona";
+    default:
+      return `el socio adjuntó un archivo: no sirvió (${motivos || "se pidió de nuevo"})`;
+  }
 }
