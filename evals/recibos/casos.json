@@ -288,5 +288,20 @@
     "CARGO": "Enfermera",
     "DEPENDENCIA": "Internación",
     "FECHA_PAGO": "02/10/2026"
+  },
+  {
+    "archivo": "nicolas-desarrollo-social-cordoba",
+    "EMPLEADOR": "GOBIERNO DE LA PROVINCIA DE CÓRDOBA · MINISTERIO DE DESARROLLO SOCIAL",
+    "DIRECCION": "Córdoba Capital",
+    "CUIT": "30-99999997-0",
+    "NUMERO": "0001-00512877",
+    "PERIODO": "SEPTIEMBRE 2026",
+    "NOMBRE": "PRUEBA, NICOLÁS",
+    "LEGAJO": "61422",
+    "CUIL": "20-28123456-1",
+    "INGRESO": "01/02/2017",
+    "CARGO": "Administrativo",
+    "DEPENDENCIA": "Dirección de Programas Sociales",
+    "FECHA_PAGO": "02/10/2026"
   }
 ]

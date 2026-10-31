@@ -1,0 +1,30 @@
+{
+  "nombre": "Dice que recién el lunes lo puede conseguir: queda en FALTA DOCUMENTACIÓN y lo espera",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-2",
+    "nombre": "Roberto",
+    "dni": "87654321",
+    "provincia": "Córdoba",
+    "convenio": "Fiat",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "hola"
+    },
+    {
+      "texto": "el recibo lo tiene mi hija y viene el lunes, te lo mando ese dia"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "faltaDocumentacion": true,
+    "respuestasNoContienen": [
+      "no (me )?lleg[oó]",
+      "derivad"
+    ]
+  }
+}

@@ -7,6 +7,8 @@ export const esquemaDeEsperado = z.object({
   escenarios: z.array(z.string()).default([]),
   derivadoA: z.enum(["vendedor", "analista"]).optional(),
   respuestasNoContienen: z.array(z.string()).default([]),
+  // true: tiene que haber marcado FALTA DOCUMENTACIÓN; false: no tiene que haberlo hecho.
+  faltaDocumentacion: z.boolean().optional(),
 });
 
 export type Esperado = z.infer<typeof esquemaDeEsperado>;
@@ -23,6 +25,7 @@ export function graduar(conversacion: Conversacion, esperado: Esperado): Criteri
     decisiones(conversacion, esperado),
     ...escenarios(conversacion, esperado),
     ...derivacion(conversacion, esperado),
+    ...faltaDocumentacion(conversacion, esperado),
     ...fugas(conversacion, esperado),
   ];
 }
@@ -47,6 +50,12 @@ function derivacion(conversacion: Conversacion, esperado: Esperado): Criterio[] 
   if (!esperado.derivadoA) return [];
   const destino = conversacion.auditoria.find((e) => e.tipo === "derivacion")?.detalle.destino;
   return [{ nombre: "destino de la derivación", ok: destino === esperado.derivadoA, detalle: `${destino ?? "no derivó"} (esperado ${esperado.derivadoA})` }];
+}
+
+function faltaDocumentacion(conversacion: Conversacion, esperado: Esperado): Criterio[] {
+  if (esperado.faltaDocumentacion === undefined) return [];
+  const marco = conversacion.auditoria.some((e) => e.tipo === "accion_crm" && e.detalle.etapa === "FALTA_DOCUMENTACION");
+  return [{ nombre: "marca FALTA DOCUMENTACIÓN", ok: marco === esperado.faltaDocumentacion, detalle: marco ? "la marcó" : "no la marcó" }];
 }
 
 function fugas(conversacion: Conversacion, esperado: Esperado): Criterio[] {

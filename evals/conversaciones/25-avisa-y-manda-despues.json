@@ -30,6 +30,7 @@
     "respuestasNoContienen": [
       "no (me )?lleg[oó] (ning[uú]n|nada)",
       "no veo ning[uú]n archivo"
-    ]
+    ],
+    "faltaDocumentacion": false
   }
 }
