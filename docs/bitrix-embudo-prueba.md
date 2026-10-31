@@ -41,3 +41,11 @@ BITRIX24_WEBHOOK_URL=… python3 scripts/bitrix/embudo_prueba.py borrar 19
 ```
 
 Borra el embudo y sus etapas. Si tiene negociaciones adentro, el script avisa y no sigue.
+
+## Chats sin vincular
+
+El chat público del Canal Abierto de prueba lo abre un visitante anónimo, así que Bitrix no lo vincula a
+ninguna negociación y la conversación no aparece en su línea de tiempo (en WhatsApp sí, porque el canal
+ya conoce al contacto). En ese caso el agente usa la negociación de `BITRIX24_NEGOCIACION_PRUEBA` y copia
+la conversación completa en su línea de tiempo como comentario "CHAT DE PRUEBA", que reescribe después de
+cada mensaje, con el link a la sesión en Contact Center. Cuando el chat viene vinculado no copia nada.
