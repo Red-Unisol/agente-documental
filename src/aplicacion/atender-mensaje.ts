@@ -2,10 +2,10 @@ import { HERRAMIENTA_CARGAR_ESCENARIO, nombresDeHerramientas } from "../dominio/
 import { armarPromptDelSistema } from "../dominio/agente/prompt.js";
 import { type Archivo, type Conversacion, conArchivo, conEvento, conMensaje } from "../dominio/conversacion/conversacion.js";
 import { omitirIdentificadores } from "../dominio/conversacion/datos-sensibles.js";
-import type { MensajeParaElModelo } from "../puertos/modelo-conversacional.js";
 import type { ConfiguracionDelAgente } from "../puertos/repositorios.js";
 import type { Dependencias } from "./dependencias.js";
 import { ejecutarHerramienta } from "./ejecutar-herramienta.js";
+import { conHistorialResumidoSiHaceFalta, historialParaElModelo } from "./historial.js";
 
 const MAXIMO_DE_VUELTAS = 6;
 
@@ -25,7 +25,8 @@ export async function atenderMensaje(entrante: MensajeEntrante, dependencias: De
   if (existente.estado === "derivada") return { tipo: "silencio", motivo: "La conversación ya fue derivada a una persona", conversacion: existente };
 
   const configuracion = await dependencias.configuracion.obtener();
-  const conversacion = registrarEntrante(existente, entrante, dependencias.reloj.ahora());
+  const registrada = registrarEntrante(existente, entrante, dependencias.reloj.ahora());
+  const conversacion = await conHistorialResumidoSiHaceFalta(registrada, dependencias);
   const resultado = await conversar(conversacion, configuracion, dependencias);
   await dependencias.conversaciones.guardar(resultado.conversacion);
   return resultado;
@@ -78,28 +79,4 @@ function responder(conversacion: Conversacion, textoDelModelo: string, at: Date)
   const { texto, omitidos } = omitirIdentificadores(textoBase);
   const auditada = omitidos.length ? conEvento(conversacion, { at, tipo: "dato_sensible_omitido", detalle: { tipos: omitidos } }) : conversacion;
   return { tipo: "respondio", texto, conversacion: conMensaje(auditada, { direccion: "saliente", texto, at }) };
-}
-
-// El modelo ve la conversación entera y, en cada archivo, qué decidió el sistema con él:
-// así no vuelve a pedir lo que ya aceptó ni dice que no llegó lo que ya revisó.
-function historialParaElModelo(conversacion: Conversacion): MensajeParaElModelo[] {
-  return conversacion.mensajes.map((mensaje) => {
-    if (mensaje.direccion === "saliente") return { rol: "asistente", texto: mensaje.texto };
-    const adjunto = mensaje.archivoId ? ` [${resultadoDelArchivo(conversacion, mensaje.archivoId)}]` : "";
-    return { rol: "usuario", texto: `${mensaje.texto}${adjunto}`.trim() };
-  });
-}
-
-function resultadoDelArchivo(conversacion: Conversacion, archivoId: string): string {
-  const verificacion = conversacion.auditoria.find((e) => e.tipo === "verificacion" && e.detalle.archivoId === archivoId);
-  if (!verificacion) return "el socio adjuntó un archivo que todavía no se revisó";
-  const motivos = Array.isArray(verificacion.detalle.motivos) ? verificacion.detalle.motivos.join("; ") : "";
-  switch (verificacion.detalle.decision) {
-    case "aceptar":
-      return "el socio adjuntó un archivo: recibo aceptado y cargado";
-    case "derivar":
-      return "el socio adjuntó un archivo: derivado a una persona";
-    default:
-      return `el socio adjuntó un archivo: no sirvió (${motivos || "se pidió de nuevo"})`;
-  }
 }

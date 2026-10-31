@@ -18,8 +18,10 @@ export class ModeloConversacionalOpenAI implements ModeloConversacional {
       model: this.modelo,
       ...parametrosDeGeneracion(this.modelo, TEMPERATURA),
       messages: [{ role: "system", content: peticion.sistema }, ...peticion.mensajes.map(aMensajeDeOpenAI)],
-      tools: peticion.herramientas.map(aHerramientaDeOpenAI),
-      tool_choice: peticion.herramientaObligatoria ? { type: "function", function: { name: peticion.herramientaObligatoria } } : "auto",
+      ...(peticion.herramientas.length > 0 && {
+        tools: peticion.herramientas.map(aHerramientaDeOpenAI),
+        tool_choice: peticion.herramientaObligatoria ? { type: "function", function: { name: peticion.herramientaObligatoria } } : "auto",
+      }),
     });
     const eleccion = respuesta.choices[0]?.message;
     if (!eleccion) throw new Error("OpenAI no devolvió ninguna respuesta");

@@ -33,6 +33,12 @@ export interface EventoDeAuditoria {
   detalle: Record<string, unknown>;
 }
 
+// Resumen de los primeros `mensajesCubiertos` mensajes, para conversaciones que se hicieron muy largas.
+export interface ResumenDelHistorial {
+  mensajesCubiertos: number;
+  texto: string;
+}
+
 export interface Conversacion {
   id: string;
   chatId: string;
@@ -41,6 +47,7 @@ export interface Conversacion {
   mensajes: Mensaje[];
   archivos: Archivo[];
   ultimaVerificacion?: Verificacion;
+  resumen?: ResumenDelHistorial;
   auditoria: EventoDeAuditoria[];
 }
 
@@ -62,4 +69,8 @@ export function conEvento(conversacion: Conversacion, evento: EventoDeAuditoria)
 
 export function ultimoArchivo(conversacion: Conversacion): Archivo | undefined {
   return conversacion.archivos.at(-1);
+}
+
+export function conResumen(conversacion: Conversacion, resumen: ResumenDelHistorial): Conversacion {
+  return { ...conversacion, resumen };
 }
