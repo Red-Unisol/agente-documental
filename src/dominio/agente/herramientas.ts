@@ -12,7 +12,7 @@ export const definicionesDeHerramientas = {
     argumentos: z.object({}),
   },
   marcar_falta_documentacion: {
-    descripcion: "Marca la negociación como FALTA DOCUMENTACION cuando el socio no puede mandar el recibo ahora o lo mandado no sirve y hay que esperar otro.",
+    descripcion: "Marca la negociación como FALTA DOCUMENTACION sólo cuando el socio dice con sus palabras que no puede mandar el recibo ahora (lo manda otro día, no lo tiene, lo tiene otra persona). Que pregunte qué es o de dónde se baja, o que avise que lo está mandando, NO es motivo para marcarla.",
     argumentos: z.object({ motivo: z.string() }),
   },
   derivar: {
