@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<style>
+  body { margin: 0; background: #fff; font-family: Arial, Helvetica, sans-serif; color: #222; }
+  .hoja { width: 760px; padding: 22px 30px; box-sizing: border-box; }
+  .banda { background: #1f4e79; color: #fff; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .banda h1 { font-size: 14px; margin: 0; font-weight: 600; letter-spacing: .04em; }
+  .banda small { font-size: 10px; opacity: .85; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px 18px; font-size: 11px; margin: 14px 0; }
+  .meta b { color: #1f4e79; display: block; font-size: 9.5px; text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th { background: #e8eef5; color: #1f4e79; text-align: left; padding: 5px 6px; border-bottom: 1px solid #b7c6d8; }
+  td { padding: 4px 6px; border-bottom: 1px solid #e3e8ee; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .neto { margin-top: 10px; text-align: right; font-size: 13px; font-weight: 700; color: #1f4e79; }
+  .pie { font-size: 9px; color: #666; margin-top: 14px; border-top: 1px dashed #bbb; padding-top: 6px; }
+</style></head>
+<body><div class="hoja" style="{{ESTILO}}">
+  <div class="banda"><div><h1>{{EMPLEADOR}}</h1><small>{{DIRECCION}} · CUIT {{CUIT}}</small></div><div style="text-align:right"><small>Recibo de haberes</small><br><b>{{PERIODO}}</b></div></div>
+  <div class="meta">
+    <div><b>Agente</b>{{NOMBRE}}</div><div><b>Legajo</b>{{LEGAJO}}</div><div><b>CUIL</b>{{CUIL}}</div>
+    <div><b>Cargo</b>{{CARGO}}</div><div><b>Repartición</b>{{DEPENDENCIA}}</div><div><b>Ingreso</b>{{INGRESO}}</div>
+  </div>
+  <table>
+    <thead><tr><th>Cód.</th><th>Concepto</th><th class="num">Haberes c/aportes</th><th class="num">Haberes s/aportes</th><th class="num">Deducciones</th></tr></thead>
+    <tbody>
+      <tr><td>100</td><td>Asignación básica</td><td class="num">498.300,00</td><td></td><td></td></tr>
+      <tr><td>110</td><td>Antigüedad</td><td class="num">124.575,00</td><td></td><td></td></tr>
+      <tr><td>150</td><td>Zona desfavorable</td><td></td><td class="num">62.287,50</td><td></td></tr>
+      <tr><td>300</td><td>Aporte jubilatorio</td><td></td><td></td><td class="num">68.516,25</td></tr>
+      <tr><td>310</td><td>Obra social</td><td></td><td></td><td class="num">31.143,75</td></tr>
+      <tr><td>320</td><td>Seguro</td><td></td><td></td><td class="num">4.100,00</td></tr>
+    </tbody>
+  </table>
+  <div class="neto">NETO: $ 581.402,50</div>
+  <p class="pie">Comprobante emitido por el portal de autogestión el {{FECHA_PAGO}}. Documento generado para pruebas: persona y datos ficticios. {{NOTA}}</p>
+</div></body></html>

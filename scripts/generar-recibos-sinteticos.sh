@@ -5,8 +5,9 @@ cd "$(dirname "$0")/../evals/recibos"
 mkdir -p generados
 CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 node -e '
-const fs=require("fs");const plantilla=fs.readFileSync("plantilla.html","utf8");
+const fs=require("fs");
 for(const caso of JSON.parse(fs.readFileSync("casos.json","utf8"))){
+  const plantilla=fs.readFileSync(caso.plantilla?`plantilla-${caso.plantilla}.html`:"plantilla.html","utf8");
   const campos={ESTILO:"",NOTA:"",...caso};
   const html=Object.entries(campos).reduce((h,[k,v])=>h.replaceAll(`{{${k}}}`,v),plantilla);
   fs.writeFileSync(`generados/${caso.archivo}.${caso.formato==="pdf"?"pdf":"png"}.html`,html);
