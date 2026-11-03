@@ -1,0 +1,31 @@
+{
+  "nombre": "Jubilado con DNI de 7 cifras: el CUIL con cero adelante se lee y se acepta",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-5",
+    "nombre": "Osvaldo",
+    "dni": "8333444",
+    "provincia": "Córdoba",
+    "convenio": "Fiat",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "",
+      "archivo": "evals/recibos/generados/osvaldo-caja-cordoba.png"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "documentacion_cargada",
+    "decisiones": [
+      "aceptar"
+    ],
+    "escenarios": [
+      "E4"
+    ],
+    "respuestasNoContienen": [
+      "CUIL"
+    ]
+  }
+}

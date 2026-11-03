@@ -83,6 +83,12 @@ describe("verificarRecibo", () => {
     expect(resultado.decision).toBe("derivar");
   });
 
+  it("acepta un CUIL de DNI de 7 cifras aunque venga sin el cero", () => {
+    const lectura = { ...reciboCorrecto, cuil: "20-8333444-5" };
+    const resultado = verificarRecibo({ lectura, ficha: { ...ficha, dni: "8333444" }, reglas, hoy });
+    expect(resultado.chequeos.find((c) => c.nombre === "identidad")?.ok).toBe(true);
+  });
+
   it("derivar pesa más que pedir de nuevo cuando fallan los dos", () => {
     expect(verificar({ sector: "privado", periodo: undefined }).decision).toBe("derivar");
   });
