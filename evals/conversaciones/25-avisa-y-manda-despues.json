@@ -8,7 +8,8 @@
     "provincia": "Catamarca",
     "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
     "sectorDeclarado": "publico",
-    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca",
+    "situacionDeclarada": "Docente"
   },
   "turnos": [
     {

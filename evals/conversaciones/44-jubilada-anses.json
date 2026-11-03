@@ -1,0 +1,35 @@
+{
+  "nombre": "Jubilada de ANSES: habla de recibo de haberes y Mi ANSES, no de 'trabajás en ANSES'",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-6",
+    "nombre": "Beatriz",
+    "dni": "14000111",
+    "provincia": "Córdoba",
+    "convenio": "Celesol",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "ANSES",
+    "situacionDeclarada": "Jubilado Nacional"
+  },
+  "turnos": [
+    {
+      "texto": "hola"
+    },
+    {
+      "texto": "yo cobro la jubilacion por el banco, les mando el resumen del banco?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E1",
+      "E2"
+    ],
+    "respuestasNoContienen": [
+      "trabaj[aá]s en",
+      "recibo de sueldo",
+      "empleador"
+    ]
+  }
+}

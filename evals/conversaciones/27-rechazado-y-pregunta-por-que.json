@@ -8,7 +8,8 @@
     "provincia": "Santa Fe",
     "convenio": "Celesol",
     "sectorDeclarado": "publico",
-    "empleadorDeclarado": "Ministerio de Educación de Santa Fe"
+    "empleadorDeclarado": "Ministerio de Educación de Santa Fe",
+    "situacionDeclarada": "Docente"
   },
   "turnos": [
     {

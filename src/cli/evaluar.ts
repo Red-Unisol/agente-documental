@@ -21,6 +21,7 @@ const esquemaDeEval = z.object({
     convenio: z.string(),
     sectorDeclarado: z.enum(["publico", "privado"]),
     empleadorDeclarado: z.string(),
+    situacionDeclarada: z.string().optional(),
   }),
   turnos: z.array(z.object({ texto: z.string(), archivo: z.string().optional() })),
   esperado: esquemaDeEsperado,
@@ -48,7 +49,9 @@ async function main(): Promise<void> {
 
 async function correr(archivo: string): Promise<CasoCorrido> {
   const evaluacion = esquemaDeEval.parse(JSON.parse(await readFile(join(CARPETA_DE_CASOS, archivo), "utf8")));
-  const simulacion = await iniciarSimulacion(evaluacion.ficha, evaluacion.hoy ? new Date(`${evaluacion.hoy}T12:00:00`) : undefined);
+  const { situacionDeclarada, ...resto } = evaluacion.ficha;
+  const ficha = { ...resto, ...(situacionDeclarada && { situacionDeclarada }) };
+  const simulacion = await iniciarSimulacion(ficha, evaluacion.hoy ? new Date(`${evaluacion.hoy}T12:00:00`) : undefined);
   for (const turno of evaluacion.turnos) await simulacion.enviar(turno.texto, turno.archivo);
 
   const conversacion = await simulacion.conversacion();

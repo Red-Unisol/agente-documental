@@ -8,6 +8,9 @@ export interface Ficha {
   convenio: string;
   sectorDeclarado: Sector;
   empleadorDeclarado: string;
+  // Tal como está en el CRM: "Jubilado Provincial", "Docente", "Policia", "Pensionado"... Le dice al
+  // agente si habla con un activo o con un jubilado, y de qué tipo.
+  situacionDeclarada?: string;
 }
 
 export interface Periodo {

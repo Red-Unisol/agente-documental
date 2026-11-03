@@ -32,6 +32,7 @@ export class FichasDesdeBitrix {
       convenio: etiqueta(etiquetas, this.mapeo.campos.convenio, negociacion[this.mapeo.campos.convenio]) || "sin informar",
       sectorDeclarado: sectorDeLaSituacionLaboral(situacionLaboral),
       empleadorDeclarado: empleador || "sin informar",
+      ...(situacionLaboral && { situacionDeclarada: situacionLaboral }),
     };
   }
 

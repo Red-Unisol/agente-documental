@@ -8,7 +8,8 @@
     "provincia": "Córdoba",
     "convenio": "Fiat",
     "sectorDeclarado": "publico",
-    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba"
+    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba",
+    "situacionDeclarada": "Jubilado Provincial"
   },
   "turnos": [
     {
