@@ -90,7 +90,7 @@ function chequearPeriodo({ lectura, reglas, hoy }: Contexto): Chequeo {
 }
 
 function chequearExclusiones({ lectura, ficha, reglas }: Contexto): Chequeo {
-  const exclusion = lectura.empleador ? exclusionAplicable(lectura.empleador, ficha.convenio, reglas.exclusiones) : undefined;
+  const exclusion = lectura.empleador ? exclusionAplicable(lectura.empleador, ficha, reglas.exclusiones) : undefined;
   if (exclusion) return { nombre: "exclusiones", ok: false, detalle: `Empleador excluido por convenio: ${exclusion.motivo}`, siFalla: "derivar" };
   return { nombre: "exclusiones", ok: true, detalle: "El empleador no está excluido para este convenio", siFalla: "derivar" };
 }

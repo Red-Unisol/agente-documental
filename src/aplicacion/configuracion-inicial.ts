@@ -141,10 +141,10 @@ export const configuracionInicial: ConfiguracionDelAgente = {
     diaDeGracia: 10,
     exclusiones: [
       { convenio: null, patron: "policia federal", motivo: "Policía Federal no califica" },
-      { convenio: "EMPLEADOS_PUBLICOS_CATAMARCA", patron: "bombero", motivo: "Bomberos no califica en Catamarca" },
-      { convenio: "EMPLEADOS_PUBLICOS_CATAMARCA", patron: "diputados", motivo: "Cámara de Diputados no califica en Catamarca" },
-      { convenio: "EMPLEADOS_PUBLICOS_CATAMARCA", patron: "poder judicial", motivo: "Poder Judicial no califica en Catamarca" },
-      { convenio: "EMPLEADOS_PUBLICOS_CATAMARCA", patron: "municipalidad", motivo: "Empleados municipales no califican en Catamarca" },
+      { convenio: null, provincia: "catamarca", patron: "bombero", motivo: "Bomberos no califica en Catamarca" },
+      { convenio: null, provincia: "catamarca", patron: "diputados", motivo: "Cámara de Diputados no califica en Catamarca" },
+      { convenio: null, provincia: "catamarca", patron: "poder judicial", motivo: "Poder Judicial no califica en Catamarca" },
+      { convenio: null, provincia: "catamarca", patron: "municipalidad", motivo: "Empleados municipales no califican en Catamarca" },
     ],
   },
 };

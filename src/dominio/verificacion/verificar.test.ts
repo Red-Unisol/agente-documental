@@ -14,7 +14,7 @@ const ficha: Ficha = {
 
 const reglas: Reglas = {
   diaDeGracia: 10,
-  exclusiones: [{ convenio: "EMPLEADOS_PUBLICOS_CATAMARCA", patron: "bomberos", motivo: "Bomberos no califica en Catamarca" }],
+  exclusiones: [{ convenio: null, provincia: "catamarca", patron: "bomberos", motivo: "Bomberos no califica en Catamarca" }],
 };
 
 const reciboCorrecto: LecturaDeRecibo = {
@@ -75,6 +75,12 @@ describe("verificarRecibo", () => {
     const resultado = verificar({ empleador: "Cuerpo de Bomberos de la Provincia de Catamarca", provincia: "Catamarca" });
     expect(resultado.decision).toBe("derivar");
     expect(resultado.motivos[0]).toContain("Bomberos");
+  });
+
+  it("la exclusión por provincia aplica aunque el convenio venga con la etiqueta de Bitrix", () => {
+    const lectura = { ...reciboCorrecto, empleador: "Cuerpo de Bomberos de la Provincia de Catamarca", provincia: "Catamarca" };
+    const resultado = verificarRecibo({ lectura, ficha: { ...ficha, convenio: "Amejuca" }, reglas, hoy });
+    expect(resultado.decision).toBe("derivar");
   });
 
   it("derivar pesa más que pedir de nuevo cuando fallan los dos", () => {

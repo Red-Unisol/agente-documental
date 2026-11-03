@@ -27,7 +27,12 @@ export interface LecturaDeRecibo {
 }
 
 export interface Exclusion {
+  // A quién aplica: patrón sobre el convenio y/o sobre la provincia de la ficha (sin acentos, sin
+  // distinguir mayúsculas). Si los dos son null, aplica a todos. En Bitrix el convenio llega como la
+  // etiqueta del campo ("Amejuca", "Fiat", "Celesol"), así que conviene atarse a la provincia.
   convenio: string | null;
+  provincia?: string | null;
+  // Patrón sobre el empleador que figura en el recibo.
   patron: string;
   motivo: string;
 }
