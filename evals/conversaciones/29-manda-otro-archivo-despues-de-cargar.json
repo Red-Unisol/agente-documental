@@ -26,8 +26,7 @@
       "aceptar"
     ],
     "escenarios": [
-      "E4",
-      "E10"
+      "E4"
     ],
     "respuestasNoContienen": [
       "mand[aá]me (tu|el) recibo",

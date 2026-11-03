@@ -1,5 +1,5 @@
 {
-  "nombre": "Consulta de mora: no es este paso, deriva",
+  "nombre": "Consulta de mora: da el número de cobranzas (E17) y deriva",
   "hoy": "2026-10-28",
   "ficha": {
     "negociacionId": "SIM-1",
@@ -18,7 +18,7 @@
   "esperado": {
     "estadoFinal": "derivada",
     "escenarios": [
-      "E9"
+      "E17"
     ],
     "derivadoA": "vendedor"
   }

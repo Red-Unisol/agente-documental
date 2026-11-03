@@ -1,0 +1,32 @@
+{
+  "nombre": "Catamarca: pregunta los requisitos antes de mandar nada; responde con la línea de Mutual 25 de Agosto, sin montos, y pide el recibo",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "hola, antes de mandar nada, cuales son los requisitos? yo soy docente"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E15"
+    ],
+    "faltaDocumentacion": false,
+    "respuestasNoContienen": [
+      "\\$ ?[0-9]",
+      "cuotas? de",
+      "Celesol",
+      "Fiat"
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "nombre": "Dice que lo va a pensar: pregunta el motivo con el texto estándar, no insiste con el recibo, y deriva",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-4",
+    "nombre": "Nicolás",
+    "dni": "28123456",
+    "provincia": "Córdoba",
+    "convenio": "Linea Propia",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Desarrollo Social de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "hola"
+    },
+    {
+      "texto": "mira, lo voy a pensar, por ahora no"
+    },
+    {
+      "texto": "es que me parece mucho compromiso ahora"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "derivada",
+    "decisiones": [],
+    "escenarios": [
+      "E18"
+    ],
+    "derivadoA": "vendedor",
+    "respuestasNoContienen": [
+      "mand[aá]me (tu|el) recibo igual",
+      "insist"
+    ]
+  }
+}

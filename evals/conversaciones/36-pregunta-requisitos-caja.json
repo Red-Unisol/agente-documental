@@ -1,0 +1,31 @@
+{
+  "nombre": "Jubilado de la Caja pregunta si le corresponde: responde con Fiat Concord / Caja, sin montos",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-2",
+    "nombre": "Roberto",
+    "dni": "87654321",
+    "provincia": "Córdoba",
+    "convenio": "Fiat",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "hola, soy jubilado de la provincia, a mi me corresponde esto? con que banco trabajan?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E15"
+    ],
+    "respuestasNoContienen": [
+      "\\$ ?[0-9]",
+      "25 de Agosto",
+      "Bancor obligatorio",
+      "necesit[aá]s cobrar por Bancor"
+    ]
+  }
+}

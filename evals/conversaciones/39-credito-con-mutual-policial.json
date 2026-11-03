@@ -1,0 +1,30 @@
+{
+  "nombre": "Tiene un crédito con Mutual Policial: da el número oficial y deriva",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-4",
+    "nombre": "Nicolás",
+    "dni": "28123456",
+    "provincia": "Córdoba",
+    "convenio": "Linea Propia",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Desarrollo Social de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "hola, yo ya tengo un prestamo con la mutual policial por cruz del eje, puedo sacar otro con ustedes?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "derivada",
+    "decisiones": [],
+    "escenarios": [
+      "E17"
+    ],
+    "derivadoA": "vendedor",
+    "respuestasNoContienen": [
+      "mand[aá]me (tu|el) recibo",
+      "3513 10-5768"
+    ]
+  }
+}

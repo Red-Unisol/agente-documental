@@ -1,0 +1,30 @@
+{
+  "nombre": "Pregunta por una cuota que debe: da el número de cobranzas y deriva",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-2",
+    "nombre": "Roberto",
+    "dni": "87654321",
+    "provincia": "Córdoba",
+    "convenio": "Fiat",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Caja de Jubilaciones, Pensiones y Retiros de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "hola, me descontaron dos veces la cuota este mes, con quien hablo?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "derivada",
+    "decisiones": [],
+    "escenarios": [
+      "E17"
+    ],
+    "derivadoA": "vendedor",
+    "respuestasNoContienen": [
+      "mand[aá]me (tu|el) recibo",
+      "3518 63-8505"
+    ]
+  }
+}

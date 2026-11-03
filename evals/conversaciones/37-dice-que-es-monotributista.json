@@ -1,0 +1,31 @@
+{
+  "nombre": "Declaró público pero dice que es monotributista: texto estándar y deriva al vendedor, sin pedir el recibo",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-4",
+    "nombre": "Nicolás",
+    "dni": "28123456",
+    "provincia": "Córdoba",
+    "convenio": "Linea Propia",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Desarrollo Social de Córdoba"
+  },
+  "turnos": [
+    {
+      "texto": "hola, yo en realidad soy monotributista, facturo para el ministerio, no soy empleado"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "derivada",
+    "decisiones": [],
+    "escenarios": [
+      "E16"
+    ],
+    "derivadoA": "vendedor",
+    "respuestasNoContienen": [
+      "mand[aá]me (tu|el) recibo",
+      "rechazad",
+      "no calific[aá]s"
+    ]
+  }
+}

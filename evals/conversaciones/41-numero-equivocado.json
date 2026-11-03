@@ -1,0 +1,30 @@
+{
+  "nombre": "Dice que no pidió nada y que se equivocaron: texto de equivocado y deriva",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Mariana",
+    "dni": "12345678",
+    "provincia": "Catamarca",
+    "convenio": "EMPLEADOS_PUBLICOS_CATAMARCA",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Educación de Catamarca"
+  },
+  "turnos": [
+    {
+      "texto": "yo no pedi ningun prestamo, se equivocaron de numero"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "derivada",
+    "decisiones": [],
+    "escenarios": [
+      "E18"
+    ],
+    "derivadoA": "vendedor",
+    "respuestasNoContienen": [
+      "mand[aá]me (tu|el) recibo",
+      "recibo de sueldo"
+    ]
+  }
+}
