@@ -8,6 +8,7 @@ import { ClienteBitrix } from "../adaptadores/bitrix/cliente-rest.js";
 import { CrmBitrix } from "../adaptadores/bitrix/crm-bitrix.js";
 import { FichasDesdeBitrix } from "../adaptadores/bitrix/fichas-bitrix.js";
 import { mapeoDelEmbudoDePrueba } from "../adaptadores/bitrix/mapeo.js";
+import { leerListaBlanca } from "../adaptadores/bitrix/politica-de-atencion.js";
 import { crearServidorDeEventos } from "../adaptadores/bitrix/servidor-eventos.js";
 import { TokensEnArchivo } from "../adaptadores/bitrix/tokens.js";
 import { ConversacionesEnArchivos } from "../adaptadores/archivos/conversaciones-en-archivos.js";
@@ -84,8 +85,10 @@ const comandos: Record<string, () => Promise<void>> = {
   async servir() {
     const { botId } = await tokens.leer();
     if (!botId) throw new Error("Primero registrá el bot (registrar-bot)");
-    const bot = new BotDeBitrix({ botId, negociacionDePrueba: entornoBitrix.BITRIX24_NEGOCIACION_PRUEBA }, { cliente, crm, fichas: new FichasDesdeBitrix(cliente, mapeo), dependencias: armarDependencias(crm) });
-    crearServidorDeEventos(bot).listen(entornoBitrix.BITRIX24_PUERTO_EVENTOS, () => console.log(`Agente escuchando eventos de Bitrix en :${entornoBitrix.BITRIX24_PUERTO_EVENTOS}${RUTA_DE_EVENTOS}`));
+    const listaBlanca = leerListaBlanca(entornoBitrix.AGENTE_LISTA_BLANCA);
+    console.log(`Modo ${entornoBitrix.AGENTE_MODO}${entornoBitrix.BITRIX24_USUARIO_AGENTE ? ` · usuario del agente ${entornoBitrix.BITRIX24_USUARIO_AGENTE}` : ""}${listaBlanca ? ` · lista blanca de ${listaBlanca.telefonos.size} teléfono(s)` : " · sin lista blanca"}`);
+    const bot = new BotDeBitrix({ botId, negociacionDePrueba: entornoBitrix.BITRIX24_NEGOCIACION_PRUEBA, modo: entornoBitrix.AGENTE_MODO, usuarioAgente: entornoBitrix.BITRIX24_USUARIO_AGENTE, listaBlanca }, { cliente, crm, fichas: new FichasDesdeBitrix(cliente, mapeo), dependencias: armarDependencias(crm) });
+    crearServidorDeEventos(bot, { volcarEventosEn: entornoBitrix.AGENTE_VOLCAR_EVENTOS }).listen(entornoBitrix.BITRIX24_PUERTO_EVENTOS, () => console.log(`Agente escuchando eventos de Bitrix en :${entornoBitrix.BITRIX24_PUERTO_EVENTOS}${RUTA_DE_EVENTOS}`));
   },
 };
 

@@ -20,6 +20,13 @@ const esquemaBitrix = z.object({
   BITRIX24_PUERTO_EVENTOS: z.coerce.number().int().default(3000),
   // Carpeta donde se guardan las conversaciones (un JSON por chat). Fuera del repo en producción.
   AGENTE_DATOS_CARPETA: z.string().default("datos/conversaciones"),
+  // canal: atiende todo chat de la línea. asignacion: sólo si la negociación está asignada a BITRIX24_USUARIO_AGENTE.
+  AGENTE_MODO: z.enum(["canal", "asignacion"]).default("canal"),
+  BITRIX24_USUARIO_AGENTE: z.coerce.number().int().positive().optional(),
+  // Teléfonos habilitados (etapa 2), "tel[:negociación],tel[:negociación]". Vacío = sin restricción.
+  AGENTE_LISTA_BLANCA: z.string().optional(),
+  // Diagnóstico: archivo donde se anexa cada evento crudo que manda Bitrix (sin tokens).
+  AGENTE_VOLCAR_EVENTOS: z.string().optional(),
 });
 
 export type EntornoBitrix = z.infer<typeof esquemaBitrix>;

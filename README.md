@@ -112,3 +112,22 @@ El canal de prueba se prueba desde su "Chat en vivo" (Contact Center → canal �
 público). Las derivaciones van al usuario `BITRIX24_USUARIO_PRUEBA`; el motivo queda como comentario en
 la línea de tiempo de la negociación. Si el chat no viene atado a una negociación (pasa con el chat en
 vivo), se usa `BITRIX24_NEGOCIACION_PRUEBA`.
+
+### Cuándo atiende y cuándo se corre
+
+Un bot de Canales Abiertos sólo recibe los chats de las líneas donde está como bot de bienvenida, y no
+puede entrar a una sesión ya abierta (Bitrix rechaza `imopenlines.operator.transfer` a un bot,
+`imbot.chat.user.add` y `imopenlines.crm.chat.user.add`). Por eso el bot entra a todos los chats de la
+línea y decide **en cada mensaje** si atiende o se corre, sin escribirle nada al socio
+(`src/adaptadores/bitrix/politica-de-atencion.ts`):
+
+| Variable | Qué hace |
+|---|---|
+| `AGENTE_MODO=canal` | Atiende todo chat que le llegue (línea de prueba). |
+| `AGENTE_MODO=asignacion` | Atiende sólo si la negociación del chat tiene como responsable a `BITRIX24_USUARIO_AGENTE` (un usuario empleado normal: Bitrix no deja elegir bots como responsables). Si se la sacan, al siguiente mensaje del socio cede el chat al nuevo responsable y se va. |
+| `AGENTE_LISTA_BLANCA` | `tel[:negociación],tel[:negociación]`. Con lista, los chats de otros números se ceden a la cola. El teléfono sale del id externo del conector (`CHAT_ENTITY_ID`); en el chat web no hay teléfono, así que con lista blanca el chat web no se atiende. La negociación opcional se usa cuando el chat no viene atado a una (prueba con WhatsApp real y negociaciones precargadas). |
+| `AGENTE_VOLCAR_EVENTOS` | Archivo donde anexa cada evento crudo (sin tokens), para diagnóstico. |
+
+Si una persona de Red Unisol escribe en el chat mientras el bot está, el bot se lo deja y se retira.
+Para la línea real, dejar `WELCOME_BOT_TIME` en unos segundos: si el agente está caído, Bitrix pasa el
+chat a la cola solo.

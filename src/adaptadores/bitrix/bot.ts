@@ -5,12 +5,17 @@ import type { ClienteBitrix } from "./cliente-rest.js";
 import type { CrmBitrix } from "./crm-bitrix.js";
 import type { FichasDesdeBitrix } from "./fichas-bitrix.js";
 import { type Anidado, hoja, rama } from "./formulario.js";
+import { type Decision, type ListaBlanca, type ModoDeAtencion, decidirAtencion, entradaDeListaBlanca, telefonoDelChat } from "./politica-de-atencion.js";
 import { tokensDesdeEvento } from "./tokens.js";
 
 export interface OpcionesDelBot {
   botId: number;
   // Mientras el chat de prueba no venga atado a una negociación, se usa esta.
   negociacionDePrueba: string | undefined;
+  // canal: atiende todo chat que le llegue. asignacion: sólo si la negociación está asignada al usuario del agente.
+  modo?: ModoDeAtencion | undefined;
+  usuarioAgente?: number | undefined;
+  listaBlanca?: ListaBlanca | undefined;
 }
 
 interface Colaboradores {
@@ -45,7 +50,7 @@ export class BotDeBitrix {
         return "tokens de instalación guardados";
       case "ONIMBOTMESSAGEADD": {
         const parametros = rama(evento, "data", "PARAMS");
-        return this.enOrden(hoja(parametros, "CHAT_ID"), () => this.atenderMensajeDelChat(parametros, credencialDelEvento(rama(evento, "auth"))));
+        return this.enOrden(hoja(parametros, "CHAT_ID"), () => this.atenderMensajeDelChat(parametros, rama(evento, "data", "USER"), credencialDelEvento(rama(evento, "auth"))));
       }
       default:
         return "";
@@ -59,13 +64,25 @@ export class BotDeBitrix {
     return propia;
   }
 
-  private async atenderMensajeDelChat(parametros: Anidado, credencial?: CredencialDelEvento): Promise<string> {
+  private async atenderMensajeDelChat(parametros: Anidado, usuario: Anidado, credencial?: CredencialDelEvento): Promise<string> {
     const chatId = hoja(parametros, "CHAT_ID");
     const dialogo = hoja(parametros, "DIALOG_ID");
     if (!chatId || !dialogo) return "mensaje sin chat";
 
+    if (hoja(usuario, "IS_CONNECTOR") === "N" && hoja(usuario, "IS_BOT") !== "Y") {
+      // Escribió una persona de Red Unisol en el chat (no el socio, que entra por un conector): el agente se lo deja y se va.
+      await this.cederChat(chatId, Number(hoja(parametros, "FROM_USER_ID")) || undefined);
+      return "una persona escribió en el chat: el agente se retira";
+    }
     const vinculo = vinculoDelChat(hoja(parametros, "CHAT_ENTITY_DATA_1"));
-    await this.asegurarConversacion(chatId, vinculo.negociacionId, hoja(parametros, "MESSAGE_ID"));
+    const telefono = telefonoDelChat(hoja(parametros, "CHAT_ENTITY_ID"));
+    const negociacionId = vinculo.negociacionId ?? this.negociacionDeListaBlanca(telefono) ?? this.opciones.negociacionDePrueba;
+    const decision = await this.decidir(telefono, negociacionId);
+    if (!decision.atender) {
+      await this.cederChat(chatId, decision.cederA);
+      return `cedido a una persona: ${decision.motivo}`;
+    }
+    await this.asegurarConversacion(chatId, negociacionId, hoja(parametros, "MESSAGE_ID"));
     const adjunto = await this.primerArchivo(rama(parametros, "FILES"), credencial);
     const texto = hoja(parametros, "MESSAGE") || adjunto.marca || "";
     const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(adjunto.archivo && { archivo: adjunto.archivo }) }, this.colaboradores.dependencias);
@@ -81,13 +98,32 @@ export class BotDeBitrix {
     return resultado.tipo === "respondio" ? `respondió (${resultado.texto.length} caracteres)` : `silencio: ${resultado.motivo}`;
   }
 
-  private async asegurarConversacion(chatId: string, negociacionVinculada: string | undefined, mensajeActualId: string): Promise<void> {
+  private negociacionDeListaBlanca(telefono: string | undefined): string | undefined {
+    if (!telefono || !this.opciones.listaBlanca) return undefined;
+    return entradaDeListaBlanca(this.opciones.listaBlanca, telefono)?.negociacionId;
+  }
+
+  private async decidir(telefono: string | undefined, negociacionId: string | undefined): Promise<Decision> {
+    const modo = this.opciones.modo ?? "canal";
+    const negociacion = modo === "asignacion" && negociacionId ? { id: negociacionId, responsableId: await this.colaboradores.crm.responsable(negociacionId) } : undefined;
+    return decidirAtencion({ modo, listaBlanca: this.opciones.listaBlanca, telefono, negociacion, usuarioAgente: this.opciones.usuarioAgente });
+  }
+
+  // Se corre del chat sin escribirle nada al socio: a una persona concreta si la hay, si no a la cola de la línea.
+  private async cederChat(chatId: string, aUsuario?: number): Promise<void> {
+    if (aUsuario) {
+      await this.colaboradores.cliente.llamar("imopenlines.bot.session.transfer", { CHAT_ID: Number(chatId), USER_ID: aUsuario, LEAVE: "Y" });
+      return;
+    }
+    await this.colaboradores.cliente.llamar("imopenlines.bot.session.operator", { CHAT_ID: Number(chatId) });
+  }
+
+  private async asegurarConversacion(chatId: string, negociacionId: string | undefined, mensajeActualId: string): Promise<void> {
     const guardada = await this.colaboradores.dependencias.conversaciones.obtener(chatId);
     if (guardada) {
       this.colaboradores.crm.vincularChat(chatId, guardada.ficha.negociacionId);
       return;
     }
-    const negociacionId = negociacionVinculada ?? this.opciones.negociacionDePrueba;
     if (!negociacionId) throw new Error(`El chat ${chatId} no está atado a una negociación y no hay negociación de prueba configurada`);
     const ficha = await this.colaboradores.fichas.deNegociacion(negociacionId);
     this.colaboradores.crm.vincularChat(chatId, negociacionId);
