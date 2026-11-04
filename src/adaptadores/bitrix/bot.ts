@@ -6,7 +6,7 @@ import type { CrmBitrix } from "./crm-bitrix.js";
 import type { FichasDesdeBitrix } from "./fichas-bitrix.js";
 import type { SesionesDeBitrix } from "./sesiones-bitrix.js";
 import { type Anidado, hoja, rama } from "./formulario.js";
-import { type Decision, type ListaBlanca, type ModoDeAtencion, decidirAtencion, entradaDeListaBlanca, telefonoDelChat } from "./politica-de-atencion.js";
+import { type Decision, type ListaBlanca, type ModoDeAtencion, decidirAtencion, entradaDeListaBlanca, origenDelChat } from "./politica-de-atencion.js";
 import { tokensDesdeEvento } from "./tokens.js";
 
 export interface OpcionesDelBot {
@@ -81,9 +81,11 @@ export class BotDeBitrix {
       return "una persona escribió en el chat: el agente se retira";
     }
     const vinculo = vinculoDelChat(hoja(parametros, "CHAT_ENTITY_DATA_1"));
-    const telefono = telefonoDelChat(hoja(parametros, "CHAT_ENTITY_ID"));
-    const negociacionId = vinculo.negociacionId ?? this.negociacionDeListaBlanca(telefono) ?? this.opciones.negociacionDePrueba;
-    const decision = await this.decidir(telefono, negociacionId);
+    const origen = origenDelChat(hoja(parametros, "CHAT_ENTITY_ID"));
+    // La negociación de prueba de la lista blanca manda sobre la que Bitrix ató al chat: un número de
+    // prueba puede venir atado a una negociación real, y esa no se toca.
+    const negociacionId = this.negociacionDeListaBlanca(origen.telefono) ?? vinculo.negociacionId ?? this.opciones.negociacionDePrueba;
+    const decision = await this.decidir(origen, negociacionId);
     if (!decision.atender) {
       await this.cederChat(chatId, decision.cederA);
       return `cedido a una persona: ${decision.motivo}`;
@@ -129,10 +131,10 @@ export class BotDeBitrix {
     return entradaDeListaBlanca(this.opciones.listaBlanca, telefono)?.negociacionId;
   }
 
-  private async decidir(telefono: string | undefined, negociacionId: string | undefined): Promise<Decision> {
+  private async decidir(origen: { telefono?: string | undefined; linea?: string | undefined }, negociacionId: string | undefined): Promise<Decision> {
     const modo = this.opciones.modo ?? "canal";
-    const negociacion = modo === "asignacion" && negociacionId ? { id: negociacionId, responsableId: await this.colaboradores.crm.responsable(negociacionId) } : undefined;
-    return decidirAtencion({ modo, listaBlanca: this.opciones.listaBlanca, telefono, negociacion, usuarioAgente: this.opciones.usuarioAgente });
+    const negociacion = negociacionId ? { id: negociacionId, ...(await this.colaboradores.crm.asignacion(negociacionId)) } : undefined;
+    return decidirAtencion({ modo, listaBlanca: this.opciones.listaBlanca, telefono: origen.telefono, linea: origen.linea, negociacion, usuarioAgente: this.opciones.usuarioAgente });
   }
 
   // Se corre del chat sin escribirle nada al socio: a una persona concreta si la hay, si no a la cola de la línea.

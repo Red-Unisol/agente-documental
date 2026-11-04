@@ -8,14 +8,17 @@ export type ModoDeAtencion = "canal" | "asignacion";
 export interface ListaBlanca {
   // Teléfono normalizado (sólo dígitos) → negociación de prueba asociada, si la hay.
   telefonos: Map<string, string | undefined>;
+  // Líneas (canales abiertos) cuyos chats se atienden aunque no tengan teléfono, como el chat web de prueba.
+  lineas: Set<string>;
 }
 
 export interface SituacionDelChat {
   modo: ModoDeAtencion;
   listaBlanca?: ListaBlanca | undefined;
   telefono?: string | undefined;
-  // Negociación del chat y quién la tiene asignada; en modo asignación se exige al usuario del agente.
-  negociacion?: { id: string; responsableId: number } | undefined;
+  linea?: string | undefined;
+  // Negociación del chat, quién la tiene asignada y si pertenece al embudo donde trabaja el agente.
+  negociacion?: { id: string; responsableId: number; esDelEmbudo: boolean } | undefined;
   usuarioAgente?: number | undefined;
 }
 
@@ -23,7 +26,8 @@ export type Decision = { atender: true } | { atender: false; motivo: string; ced
 
 const DIGITOS_QUE_IDENTIFICAN = 10;
 
-// "5493510001230, 3514445566:1246803" → teléfonos con su negociación opcional. Vacío = sin lista.
+// "5493510001230, 3514445566:1246803, linea:9" → teléfonos con su negociación opcional, y líneas
+// enteras que se atienden sin teléfono. Vacío = sin lista.
 export function leerListaBlanca(texto: string | undefined): ListaBlanca | undefined {
   const entradas = (texto ?? "")
     .split(",")
@@ -31,20 +35,29 @@ export function leerListaBlanca(texto: string | undefined): ListaBlanca | undefi
     .filter(Boolean);
   if (!entradas.length) return undefined;
   const telefonos = new Map<string, string | undefined>();
+  const lineas = new Set<string>();
   for (const entrada of entradas) {
-    const [telefono, negociacion] = entrada.split(":");
-    const digitos = soloDigitos(telefono ?? "");
-    if (digitos) telefonos.set(digitos, negociacion?.trim() || undefined);
+    const [clave, valor] = entrada.split(":");
+    if (clave?.trim().toLowerCase() === "linea") {
+      if (valor?.trim()) lineas.add(valor.trim());
+      continue;
+    }
+    const digitos = soloDigitos(clave ?? "");
+    if (digitos) telefonos.set(digitos, valor?.trim() || undefined);
   }
-  return { telefonos };
+  return { telefonos, lineas };
 }
 
 // CHAT_ENTITY_ID de Canales Abiertos: "conector|línea|idExterno|usuario". En WhatsApp el id
 // externo es el número; en el chat web es un hash, y no hay teléfono.
-export function telefonoDelChat(chatEntityId: string): string | undefined {
-  const [, , idExterno] = chatEntityId.split("|");
+export function origenDelChat(chatEntityId: string): { conector?: string | undefined; linea?: string | undefined; telefono?: string | undefined } {
+  const [conector, linea, idExterno] = chatEntityId.split("|");
   const digitos = soloDigitos(idExterno ?? "");
-  return digitos.length >= DIGITOS_QUE_IDENTIFICAN ? digitos : undefined;
+  return { conector: conector || undefined, linea: linea || undefined, telefono: digitos.length >= DIGITOS_QUE_IDENTIFICAN ? digitos : undefined };
+}
+
+export function telefonoDelChat(chatEntityId: string): string | undefined {
+  return origenDelChat(chatEntityId).telefono;
 }
 
 // Dos números son el mismo si coinciden en sus últimos 10 dígitos: así da igual el 54, el 9 o el 0 de área.
@@ -60,7 +73,11 @@ export function entradaDeListaBlanca(lista: ListaBlanca, telefono: string): { te
 }
 
 export function decidirAtencion(situacion: SituacionDelChat): Decision {
-  if (situacion.listaBlanca) {
+  // El agente sólo trabaja sobre su embudo: una negociación de otro embudo no se toca ni por error.
+  if (situacion.negociacion && !situacion.negociacion.esDelEmbudo) {
+    return { atender: false, motivo: `la negociación ${situacion.negociacion.id} no es del embudo del agente` };
+  }
+  if (situacion.listaBlanca && !(situacion.linea && situacion.listaBlanca.lineas.has(situacion.linea))) {
     if (!situacion.telefono) return { atender: false, motivo: "hay lista blanca y el chat no tiene teléfono" };
     if (!entradaDeListaBlanca(situacion.listaBlanca, situacion.telefono)) return { atender: false, motivo: "teléfono fuera de la lista blanca" };
   }

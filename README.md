@@ -123,10 +123,11 @@ decide **en cada mensaje** si atiende o se corre, sin escribirle nada al socio
 |---|---|
 | `AGENTE_MODO=canal` | Atiende todo chat que le llegue (línea de prueba). |
 | `AGENTE_MODO=asignacion` | Atiende sólo si la negociación del chat tiene como responsable a `BITRIX24_USUARIO_AGENTE` (un usuario empleado normal: Bitrix no deja elegir bots como responsables). Si se la sacan, al siguiente mensaje del socio cede el chat al nuevo responsable y se va. |
-| `AGENTE_LISTA_BLANCA` | `tel[:negociación],tel[:negociación]`. Con lista, los chats de otros números se ceden a la cola. El teléfono sale del id externo del conector (`CHAT_ENTITY_ID`); en el chat web no hay teléfono, así que con lista blanca el chat web no se atiende. La negociación opcional se usa cuando el chat no viene atado a una (prueba con WhatsApp real y negociaciones precargadas). |
+| `AGENTE_LISTA_BLANCA` | `tel[:negociación],tel[:negociación],linea:<id>`. Con lista, los chats de otros números se ceden a la cola. El teléfono sale del id externo del conector (`CHAT_ENTITY_ID`); el chat web no tiene teléfono, así que para seguir usando el chat de prueba se habilita su línea entera con `linea:9`. La negociación asociada a un teléfono **manda sobre la que Bitrix ató al chat**: un número de prueba puede venir atado a una negociación real, y esa no se toca. |
 | `AGENTE_VOLCAR_EVENTOS` | Archivo donde anexa cada evento crudo (sin tokens), para diagnóstico. |
 
-Si una persona de Red Unisol escribe en el chat mientras el bot está, el bot se lo deja y se retira.
+En cualquier modo, si la negociación del chat no pertenece al embudo configurado, el agente se corre: nunca
+escribe sobre otro embudo. Si una persona de Red Unisol escribe en el chat mientras el bot está, el bot se lo deja y se retira.
 Para la línea real, dejar `WELCOME_BOT_TIME` en unos segundos: si el agente está caído, Bitrix pasa el
 chat a la cola solo.
 
