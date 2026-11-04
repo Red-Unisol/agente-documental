@@ -2,6 +2,8 @@
 //   tsx src/cli/bitrix.ts registrar-bot              registra el chatbot de Canales Abiertos
 //   tsx src/cli/bitrix.ts crear-negociacion-prueba   crea una negociación ficticia en el embudo 19
 //   tsx src/cli/bitrix.ts crear-canal-prueba         crea un Canal Abierto de prueba atendido por el bot
+//   tsx src/cli/bitrix.ts vincular-eventos           suscribe el cambio de negociación (disparador por asignación)
+//   tsx src/cli/bitrix.ts tomar-chat <chatId>        mete el bot en un chat ya abierto (a mano)
 //   tsx src/cli/bitrix.ts servir                     escucha los eventos y atiende los chats
 import { BotDeBitrix, registrarBot } from "../adaptadores/bitrix/bot.js";
 import { ClienteBitrix } from "../adaptadores/bitrix/cliente-rest.js";
@@ -9,6 +11,7 @@ import { CrmBitrix } from "../adaptadores/bitrix/crm-bitrix.js";
 import { FichasDesdeBitrix } from "../adaptadores/bitrix/fichas-bitrix.js";
 import { mapeoDelEmbudoDePrueba } from "../adaptadores/bitrix/mapeo.js";
 import { leerListaBlanca } from "../adaptadores/bitrix/politica-de-atencion.js";
+import { SesionesDeBitrix } from "../adaptadores/bitrix/sesiones-bitrix.js";
 import { crearServidorDeEventos } from "../adaptadores/bitrix/servidor-eventos.js";
 import { TokensEnArchivo } from "../adaptadores/bitrix/tokens.js";
 import { ConversacionesEnArchivos } from "../adaptadores/archivos/conversaciones-en-archivos.js";
@@ -82,12 +85,32 @@ const comandos: Record<string, () => Promise<void>> = {
     console.log(`Canal Abierto de prueba ${lineaId} con el bot ${botId}. Activá "Chat en vivo" para ese canal en el Contact Center y compartí el enlace público.`);
   },
 
+  // El bot ya recibe sus propios eventos al registrarse; el cambio de negociación hay que pedirlo aparte.
+  async "vincular-eventos"() {
+    const vinculados = await cliente.llamar<{ event: string; handler: string }[]>("event.get");
+    if (vinculados.some((e) => e.event.toUpperCase() === "ONCRMDEALUPDATE" && e.handler === urlDeEventos)) {
+      console.log("ONCRMDEALUPDATE ya estaba vinculado");
+      return;
+    }
+    await cliente.llamar("event.bind", { event: "ONCRMDEALUPDATE", handler: urlDeEventos });
+    console.log(`ONCRMDEALUPDATE → ${urlDeEventos}`);
+  },
+
+  async "tomar-chat"() {
+    const chatId = process.argv[3];
+    if (!chatId) throw new Error("Falta el id del chat");
+    if (!entornoBitrix.BITRIX24_USUARIO_AGENTE) throw new Error("Falta BITRIX24_USUARIO_AGENTE");
+    const { botId } = await tokens.leer();
+    if (!botId) throw new Error("Primero registrá el bot (registrar-bot)");
+    console.log(await new SesionesDeBitrix(cliente, botId).tomarChat(chatId, entornoBitrix.BITRIX24_USUARIO_AGENTE));
+  },
+
   async servir() {
     const { botId } = await tokens.leer();
     if (!botId) throw new Error("Primero registrá el bot (registrar-bot)");
     const listaBlanca = leerListaBlanca(entornoBitrix.AGENTE_LISTA_BLANCA);
     console.log(`Modo ${entornoBitrix.AGENTE_MODO}${entornoBitrix.BITRIX24_USUARIO_AGENTE ? ` · usuario del agente ${entornoBitrix.BITRIX24_USUARIO_AGENTE}` : ""}${listaBlanca ? ` · lista blanca de ${listaBlanca.telefonos.size} teléfono(s)` : " · sin lista blanca"}`);
-    const bot = new BotDeBitrix({ botId, negociacionDePrueba: entornoBitrix.BITRIX24_NEGOCIACION_PRUEBA, modo: entornoBitrix.AGENTE_MODO, usuarioAgente: entornoBitrix.BITRIX24_USUARIO_AGENTE, listaBlanca }, { cliente, crm, fichas: new FichasDesdeBitrix(cliente, mapeo), dependencias: armarDependencias(crm) });
+    const bot = new BotDeBitrix({ botId, negociacionDePrueba: entornoBitrix.BITRIX24_NEGOCIACION_PRUEBA, modo: entornoBitrix.AGENTE_MODO, usuarioAgente: entornoBitrix.BITRIX24_USUARIO_AGENTE, listaBlanca }, { cliente, crm, fichas: new FichasDesdeBitrix(cliente, mapeo), sesiones: new SesionesDeBitrix(cliente, botId), dependencias: armarDependencias(crm) });
     crearServidorDeEventos(bot, { volcarEventosEn: entornoBitrix.AGENTE_VOLCAR_EVENTOS }).listen(entornoBitrix.BITRIX24_PUERTO_EVENTOS, () => console.log(`Agente escuchando eventos de Bitrix en :${entornoBitrix.BITRIX24_PUERTO_EVENTOS}${RUTA_DE_EVENTOS}`));
   },
 };

@@ -31,8 +31,12 @@ export class CrmBitrix implements ClienteCrm {
 
   // Quién tiene asignada la negociación hoy; en modo asignación decide si el agente atiende.
   async responsable(negociacionId: string): Promise<number> {
-    const negociacion = await this.cliente.llamar<{ ASSIGNED_BY_ID?: string }>("crm.deal.get", { id: negociacionId });
-    return Number(negociacion.ASSIGNED_BY_ID ?? 0);
+    return (await this.asignacion(negociacionId)).responsableId;
+  }
+
+  async asignacion(negociacionId: string): Promise<{ responsableId: number; esDelEmbudo: boolean }> {
+    const negociacion = await this.cliente.llamar<{ ASSIGNED_BY_ID?: string; CATEGORY_ID?: string }>("crm.deal.get", { id: negociacionId });
+    return { responsableId: Number(negociacion.ASSIGNED_BY_ID ?? 0), esDelEmbudo: Number(negociacion.CATEGORY_ID) === this.mapeo.embudo };
   }
 
   async cargarRecibo(negociacionId: string, archivo: Archivo): Promise<void> {

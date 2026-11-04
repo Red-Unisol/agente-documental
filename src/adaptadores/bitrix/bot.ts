@@ -4,6 +4,7 @@ import { type Archivo, type Conversacion, conMensaje, nuevaConversacion } from "
 import type { ClienteBitrix } from "./cliente-rest.js";
 import type { CrmBitrix } from "./crm-bitrix.js";
 import type { FichasDesdeBitrix } from "./fichas-bitrix.js";
+import type { SesionesDeBitrix } from "./sesiones-bitrix.js";
 import { type Anidado, hoja, rama } from "./formulario.js";
 import { type Decision, type ListaBlanca, type ModoDeAtencion, decidirAtencion, entradaDeListaBlanca, telefonoDelChat } from "./politica-de-atencion.js";
 import { tokensDesdeEvento } from "./tokens.js";
@@ -22,6 +23,7 @@ interface Colaboradores {
   cliente: ClienteBitrix;
   crm: CrmBitrix;
   fichas: FichasDesdeBitrix;
+  sesiones: SesionesDeBitrix;
   dependencias: Dependencias;
 }
 
@@ -51,6 +53,10 @@ export class BotDeBitrix {
       case "ONIMBOTMESSAGEADD": {
         const parametros = rama(evento, "data", "PARAMS");
         return this.enOrden(hoja(parametros, "CHAT_ID"), () => this.atenderMensajeDelChat(parametros, rama(evento, "data", "USER"), credencialDelEvento(rama(evento, "auth"))));
+      }
+      case "ONCRMDEALUPDATE": {
+        const negociacionId = hoja(rama(evento, "data", "FIELDS"), "ID");
+        return this.enOrden(`negociacion:${negociacionId}`, () => this.atenderCambioDeNegociacion(negociacionId));
       }
       default:
         return "";
@@ -96,6 +102,26 @@ export class BotDeBitrix {
     // prueba, visitante anónimo), el agente copia la conversación ahí para que quien mire la negociación la tenga.
     if (!vinculo.negociacionId) await this.colaboradores.crm.copiarConversacion(chatId, resultado.conversacion.mensajes, vinculo.sesionId);
     return resultado.tipo === "respondio" ? `respondió (${resultado.texto.length} caracteres)` : `silencio: ${resultado.motivo}`;
+  }
+
+  // Disparador por asignación: si la negociación pasa al usuario del agente, el bot entra a sus chats
+  // abiertos; si deja de ser suya, los suelta y quedan con el nuevo responsable.
+  async atenderCambioDeNegociacion(negociacionId: string): Promise<string> {
+    const agente = this.opciones.usuarioAgente;
+    if (this.opciones.modo !== "asignacion" || !agente || !negociacionId) return "";
+    const { responsableId, esDelEmbudo } = await this.colaboradores.crm.asignacion(negociacionId);
+    if (!esDelEmbudo) return "";
+    const chats = await this.colaboradores.sesiones.chatsDeNegociacion(negociacionId);
+    if (!chats.length) return `negociación ${negociacionId}: sin chats abiertos`;
+    if (responsableId !== agente) {
+      for (const chatId of chats) await this.colaboradores.sesiones.soltarChat(chatId, responsableId || undefined);
+      return `negociación ${negociacionId} asignada a ${responsableId}: el agente suelta ${chats.length} chat(s)`;
+    }
+    if (this.opciones.listaBlanca && ![...this.opciones.listaBlanca.telefonos.values()].includes(negociacionId)) {
+      return `negociación ${negociacionId} asignada al agente pero fuera de la lista blanca: no se toma`;
+    }
+    const hechos = await Promise.all(chats.map((chatId) => this.colaboradores.sesiones.tomarChat(chatId, agente).then((h) => `${chatId} ${h}`)));
+    return `negociación ${negociacionId} asignada al agente: ${hechos.join(", ")}`;
   }
 
   private negociacionDeListaBlanca(telefono: string | undefined): string | undefined {

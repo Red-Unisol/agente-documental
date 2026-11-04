@@ -115,10 +115,8 @@ vivo), se usa `BITRIX24_NEGOCIACION_PRUEBA`.
 
 ### Cuándo atiende y cuándo se corre
 
-Un bot de Canales Abiertos sólo recibe los chats de las líneas donde está como bot de bienvenida, y no
-puede entrar a una sesión ya abierta (Bitrix rechaza `imopenlines.operator.transfer` a un bot,
-`imbot.chat.user.add` y `imopenlines.crm.chat.user.add`). Por eso el bot entra a todos los chats de la
-línea y decide **en cada mensaje** si atiende o se corre, sin escribirle nada al socio
+Un bot de Canales Abiertos recibe los chats nuevos de las líneas donde está como bot de bienvenida. Ahí
+decide **en cada mensaje** si atiende o se corre, sin escribirle nada al socio
 (`src/adaptadores/bitrix/politica-de-atencion.ts`):
 
 | Variable | Qué hace |
@@ -131,3 +129,15 @@ línea y decide **en cada mensaje** si atiende o se corre, sin escribirle nada a
 Si una persona de Red Unisol escribe en el chat mientras el bot está, el bot se lo deja y se retira.
 Para la línea real, dejar `WELCOME_BOT_TIME` en unos segundos: si el agente está caído, Bitrix pasa el
 chat a la cola solo.
+
+**Chats ya abiertos (que no pasaron por el bot).** Bitrix no deja transferir un diálogo a un bot
+(`operator.transfer` → OPERATOR_WRONG) ni que el bot se sume solo. Lo que sí funciona, y hace
+`src/adaptadores/bitrix/sesiones-bitrix.ts`: el administrador de la app toma el chat, lo transfiere al
+usuario `BITRIX24_USUARIO_AGENTE`, se suma como observador, agrega el bot con `im.chat.user.add`
+(requiere el alcance **`im`** en la app) y se va. El bot queda adentro con el historial. Se dispara de
+dos maneras:
+
+- Automática, en modo `asignacion`: `npm run bitrix vincular-eventos` suscribe `ONCRMDEALUPDATE`; cuando
+  una negociación del embudo pasa al usuario del agente, el bot entra a sus chats abiertos; cuando deja
+  de ser suya, los suelta al nuevo responsable.
+- A mano: `npm run bitrix tomar-chat <chatId>`.
