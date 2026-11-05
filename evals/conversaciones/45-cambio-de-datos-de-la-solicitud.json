@@ -1,0 +1,26 @@
+{
+  "nombre": "Consulta que no es de este paso: quiere cambiar el CBU de su solicitud; se deriva al vendedor sin pedir datos",
+  "hoy": "2026-10-28",
+  "ficha": {
+    "negociacionId": "SIM-1",
+    "nombre": "Carlos",
+    "dni": "12345678",
+    "provincia": "Cordoba",
+    "convenio": "CELESOL",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Seguridad de Córdoba",
+    "situacionDeclarada": "Empleado Publico Provincial"
+  },
+  "turnos": [
+    {
+      "texto": "Hola, necesito cambiar la cuenta donde me van a depositar, puse mal el CBU en la solicitud. Te lo paso por acá?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "derivada",
+    "decisiones": [],
+    "escenarios": ["E9"],
+    "derivadoA": "vendedor",
+    "respuestasNoContienen": ["pasame el cbu", "mandame el cbu", "decime el cbu"]
+  }
+}

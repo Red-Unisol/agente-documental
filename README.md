@@ -15,16 +15,18 @@ No aprueba créditos, no negocia montos ni cuotas, no toca Kestra ni el sistema 
 4. Carga el archivo en el campo de recibo de la negociación y la mueve a DOCU RECIBIDA; si falta
    algo, a FALTA DOCUMENTACION; si no puede decidir, deriva a un operador con el motivo.
 
-Las reglas (período admitido, día de gracia, exclusiones, instrucciones por empleador) y los
-escenarios de conversación se editan desde el panel, no en el código. Toda decisión queda auditada.
+Lo que el agente dice y decide (bloques del prompt, 18 escenarios, reglas de verificación) vive en
+`src/aplicacion/configuracion-inicial.ts`, y cada escenario tiene conversaciones de prueba en
+`evals/conversaciones/`. **Cómo cambiarlo, probarlo y qué modelo usa: [`docs/ajustar-el-agente.md`](docs/ajustar-el-agente.md).**
+Toda decisión queda auditada en la conversación.
 
 ## Stack
 
-- Node.js 22, TypeScript, Express, Prisma, PostgreSQL, Zod
-- Panel: HTML renderizado en el servidor (sin framework)
+- Node.js 22, TypeScript, Zod. Sin base de datos: las conversaciones se guardan como un JSON por chat en disco
+- Panel de lectura: HTML renderizado en el servidor (sin framework)
 - OpenAI (lectura del recibo y conversación), detrás de una interfaz propia; modelo configurable por entorno
-- Bitrix24: aplicación local con alcances `crm`, `imbot`, `imopenlines`, `imconnector`, `disk`, `user`
-- Docker / Docker Compose
+- Bitrix24: aplicación local con alcances `crm`, `imbot`, `imopenlines`, `imconnector`, `disk`, `user`, `im`
+- Docker (ver "Despliegue": pendiente de ajustar al proceso real)
 
 ## Estructura
 
@@ -37,14 +39,14 @@ src/
     costos/         uso de tokens, tarifas y costo por conversación
   aplicacion/     casos de uso: atender un mensaje, ejecutar una herramienta
   puertos/        interfaces hacia el modelo, el lector de recibos, el CRM y la base
-  adaptadores/    openai (modelo y lector), memoria (simulación y tests), bitrix, prisma
+  adaptadores/    openai (modelo y lector), memoria (simulación y tests), archivos (conversaciones en disco), bitrix
   evals/          cómo se grada una conversación de prueba y cómo se guarda una corrida
   cli/            simulación por consola y corredor de evals
   panel/          panel de lectura: conversaciones, prompt base, escenarios, reglas, evals, modelos y costos
 evals/            conversaciones de prueba, recibos sintéticos y corridas guardadas
 infra/            Dockerfile, docker-compose.yml
 scripts/          utilidades: embudo de prueba en Bitrix, recibos sintéticos
-docs/             bitrix-embudo-prueba.md
+docs/             ajustar-el-agente.md (bloques, escenarios, evals, modelo), bitrix-embudo-prueba.md
 ```
 
 ## Correr local
@@ -83,9 +85,13 @@ Ver `.env.example`. En la VPS no hay `.env` plano: va cifrado en `agente-documen
 
 ## Despliegue
 
-Igual que `solicitudes-web`: GitHub Actions construye la imagen, la publica en GHCR y entra por SSH a
-la VPS a hacer `docker compose pull && docker compose up -d`. HTTPS lo da el Apache de la VPS con un
-VirtualHost hacia `127.0.0.1:${APP_BIND_PORT}`. Workflow en `.github/workflows/deploy.yml`.
+Hoy el proceso que atiende Bitrix es `npm run bitrix servir` (escucha en `BITRIX24_PUERTO_EVENTOS`) detrás de
+una URL pública con HTTPS. Para producción hace falta un servidor siempre prendido con Node 22, la carpeta
+`AGENTE_DATOS_CARPETA` persistente y el archivo de tokens de la app fuera del repo.
+
+`infra/Dockerfile`, `infra/docker-compose.yml` y `.github/workflows/deploy.yml` son un borrador anterior
+(suponen Postgres/Prisma y un `dist/server.js` que no existen) y **hay que reescribirlos** antes de usarlos:
+la imagen tiene que correr `node dist/cli/bitrix.js servir` sin base de datos.
 
 ## Entornos en Bitrix
 
