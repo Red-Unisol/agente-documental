@@ -29,7 +29,7 @@
       "E4"
     ],
     "respuestasNoContienen": [
-      "(s[ií]|exacto|correcto|efectivamente),? (ya )?(est[aá]|qued[oó]) aprobad",
+      "(^|\\n|[.!?]\\s+|,\\s*)(sí|exacto|correcto|efectivamente),? (ya )?(est[aá]|qued[oó]) aprobad",
       "tu cr[ée]dito (ya )?(est[aá]|fue|qued[oó]) aprobad",
       "fue aprobado",
       "aprobado por",
