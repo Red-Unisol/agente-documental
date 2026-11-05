@@ -99,7 +99,7 @@ async function renderizar(seccion: Seccion, parametros: URLSearchParams): Promis
           seccion,
           titulo: "Modelos y costos",
           subtitulo: "Qué modelo usa el agente, cuánto cuesta cada conversación y cómo rinde cada alternativa sobre los mismos evals.",
-          cuerpo: vistaDeModelos(corridas),
+          cuerpo: vistaDeModelos(corridas, { conversacion: process.env.OPENAI_MODELO_CONVERSACION ?? "gpt-6-luna", lectura: process.env.OPENAI_MODELO_LECTURA ?? "gpt-6-luna" }),
           contadores,
         },
         entorno,

@@ -135,7 +135,7 @@ const ESTILOS = `
   .barra .pista { height:12px; border:1px solid #A8B1CA; position:relative; background:transparent } .barra .pista i { position:absolute; left:0; top:0; bottom:0; background:var(--azul) } .barra .pista i.gris { background:#A8B1CA } .barra .pista i.ambar { background:#C9A15A }
   .barra .v { font-family:var(--mono); font-size:12px; color:var(--azul); text-align:right; font-weight:500 }
   .eje { display:flex; justify-content:space-between; margin:4px 0 0 244px; padding-right:124px; font-size:9.5px; color:var(--gris) }
-  .leyenda { display:flex; gap:18px; font-size:10px; color:var(--gris); margin-top:10px } .leyenda i { display:inline-block; width:10px; height:8px; vertical-align:-1px; margin-right:6px; border:1px solid var(--azul); background:var(--azul) } .leyenda i.gris { background:#A8B1CA; border-color:#A8B1CA }
+  .leyenda { display:flex; gap:18px; font-size:10px; color:var(--gris); margin-top:10px } .leyenda i { display:inline-block; width:10px; height:8px; vertical-align:-1px; margin-right:6px; border:1px solid var(--azul); background:var(--azul) } .leyenda i.gris { background:#A8B1CA; border-color:#A8B1CA } .leyenda i.ambar { background:#C9A15A; border-color:#C9A15A }
 
   footer { max-width:1280px; margin:0 auto; padding:0 32px 30px; display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--gris) }
 `;

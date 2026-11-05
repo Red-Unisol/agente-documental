@@ -6,8 +6,14 @@ import { seccionHtml } from "./plantilla.js";
 const CONVERSACIONES_POR_MES = 2000;
 const SE_RETIRA = /^gpt-4\.1/;
 
-export function vistaDeModelos(corridas: Corrida[]): Html {
+export interface ModelosEnUso {
+  conversacion: string;
+  lectura: string;
+}
+
+export function vistaDeModelos(corridas: Corrida[], enUso: ModelosEnUso): Html {
   const comparables = ultimaPorCombinacion(corridas);
+  const esActual = (c: Corrida) => c.modelos.conversacion === enUso.conversacion && c.modelos.lectura === enUso.lectura;
   const porConversacion = (c: Corrida) => (c.total.costoUsd === undefined ? undefined : c.total.costoUsd / c.total.casos);
   const maximo = Math.max(...comparables.map((c) => porConversacion(c) ?? 0), 0.0001);
 
@@ -16,7 +22,8 @@ export function vistaDeModelos(corridas: Corrida[]): Html {
       const costo = porConversacion(c);
       const ancho = costo === undefined ? 0 : (costo / maximo) * 100;
       const retira = SE_RETIRA.test(c.modelos.conversacion);
-      return `<div class="barra"><div class="et">${escapar(c.modelos.conversacion)}<small>lectura ${escapar(c.modelos.lectura)}${retira ? " · se retira 14/01/2027" : ""}</small></div><div class="pista"><i class="${retira ? "gris" : ""}" style="width:${ancho.toFixed(1)}%"></i></div><div class="v">${usd(costo)}</div></div>`;
+      const nota = esActual(c) ? " · en uso" : retira ? " · se retira 14/01/2027" : "";
+      return `<div class="barra"><div class="et">${escapar(c.modelos.conversacion)}<small>lectura ${escapar(c.modelos.lectura)}${nota}</small></div><div class="pista"><i class="${retira ? "gris" : esActual(c) ? "" : "ambar"}" style="width:${ancho.toFixed(1)}%"></i></div><div class="v">${usd(costo)}</div></div>`;
     })
     .join("");
 
@@ -38,7 +45,7 @@ export function vistaDeModelos(corridas: Corrida[]): Html {
   return `
   <div class="bloque">
     ${seccionHtml("A", "Costo por conversación, misma batería de evals", `${comparables.length} combinaciones`)}
-    ${comparables.length ? `<div class="panel barras">${barras}<div class="leyenda"><span><i></i>candidatos</span><span><i class="gris"></i>modelo actual, se retira el 14/01/2027</span></div></div>` : sinCorridas}
+    ${comparables.length ? `<div class="panel barras">${barras}<div class="leyenda"><span><i></i>en uso (${escapar(enUso.conversacion)} · lectura ${escapar(enUso.lectura)})</span><span><i class="ambar"></i>alternativas probadas</span><span><i class="gris"></i>retirado por OpenAI el 14/01/2027</span></div></div>` : sinCorridas}
   </div>
   <div class="bloque">
     ${seccionHtml("B", "Detalle de la comparación")}
