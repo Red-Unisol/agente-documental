@@ -2,11 +2,14 @@
 //   tsx src/cli/bitrix.ts registrar-bot              registra el chatbot de Canales Abiertos
 //   tsx src/cli/bitrix.ts crear-negociacion-prueba   crea una negociación ficticia en el embudo 19
 //   tsx src/cli/bitrix.ts crear-canal-prueba         crea un Canal Abierto de prueba atendido por el bot
+//   tsx src/cli/bitrix.ts actualizar-url             apunta los eventos del bot a BITRIX24_URL_PUBLICA (mudanza de servidor)
 //   tsx src/cli/bitrix.ts vincular-eventos           suscribe el cambio de negociación (disparador por asignación)
 //   tsx src/cli/bitrix.ts tomar-chat <chatId>        mete el bot en un chat ya abierto (a mano)
+//   tsx src/cli/bitrix.ts copiar-negociacion <id>    copia una negociación al embudo de prueba (la original no se toca)
 //   tsx src/cli/bitrix.ts servir                     escucha los eventos y atiende los chats
 import { BotDeBitrix, registrarBot } from "../adaptadores/bitrix/bot.js";
 import { ClienteBitrix } from "../adaptadores/bitrix/cliente-rest.js";
+import { CopiaDeNegociacion } from "../adaptadores/bitrix/copia-de-negociacion.js";
 import { CrmBitrix } from "../adaptadores/bitrix/crm-bitrix.js";
 import { FichasDesdeBitrix } from "../adaptadores/bitrix/fichas-bitrix.js";
 import { mapeoDelEmbudoDePrueba } from "../adaptadores/bitrix/mapeo.js";
@@ -85,6 +88,22 @@ const comandos: Record<string, () => Promise<void>> = {
     console.log(`Canal Abierto de prueba ${lineaId} con el bot ${botId}. Activá "Chat en vivo" para ese canal en el Contact Center y compartí el enlace público.`);
   },
 
+  // Mudanza de servidor: apunta los eventos del bot (y el de cambio de negociación, si estaba suscripto) a
+  // BITRIX24_URL_PUBLICA. Antes hay que cambiar la URL de la aplicación local en Bitrix: sólo acepta su mismo dominio.
+  async "actualizar-url"() {
+    const { botId } = await tokens.leer();
+    if (!botId) throw new Error("Primero registrá el bot (registrar-bot)");
+    await cliente.llamar("imbot.update", { BOT_ID: botId, FIELDS: { EVENT_MESSAGE_ADD: urlDeEventos, EVENT_WELCOME_MESSAGE: urlDeEventos, EVENT_BOT_DELETE: urlDeEventos } });
+    console.log(`Bot ${botId}: eventos en ${urlDeEventos}`);
+    const vinculados = await cliente.llamar<{ event: string; handler: string }[]>("event.get");
+    const anteriores = vinculados.filter((e) => e.event.toUpperCase() === "ONCRMDEALUPDATE" && e.handler !== urlDeEventos && e.handler.endsWith(RUTA_DE_EVENTOS));
+    for (const anterior of anteriores) await cliente.llamar("event.unbind", { event: "ONCRMDEALUPDATE", handler: anterior.handler });
+    if (anteriores.length) {
+      await cliente.llamar("event.bind", { event: "ONCRMDEALUPDATE", handler: urlDeEventos });
+      console.log(`ONCRMDEALUPDATE → ${urlDeEventos}`);
+    }
+  },
+
   // El bot ya recibe sus propios eventos al registrarse; el cambio de negociación hay que pedirlo aparte.
   async "vincular-eventos"() {
     const vinculados = await cliente.llamar<{ event: string; handler: string }[]>("event.get");
@@ -105,17 +124,38 @@ const comandos: Record<string, () => Promise<void>> = {
     console.log(await new SesionesDeBitrix(cliente, botId).tomarChat(chatId, entornoBitrix.BITRIX24_USUARIO_AGENTE));
   },
 
+  async "copiar-negociacion"() {
+    const negociacionId = /(\d+)\/?$/.exec(process.argv[3] ?? "")?.[1];
+    if (!negociacionId) throw new Error("Falta el id o el enlace de la negociación");
+    const copia = await copias.copiar(negociacionId);
+    console.log(copia.esCopia ? `Negociación ${negociacionId} copiada en ${copia.negociacionId}` : `La negociación ${negociacionId} ya es del embudo de prueba`);
+    console.log(`Etapa: ${copia.etapa} · mensajes de la conversación anterior: ${copia.mensajes.length}`);
+  },
+
   async servir() {
     const { botId } = await tokens.leer();
     if (!botId) throw new Error("Primero registrá el bot (registrar-bot)");
     const listaBlanca = leerListaBlanca(entornoBitrix.AGENTE_LISTA_BLANCA);
     console.log(`Modo ${entornoBitrix.AGENTE_MODO}${entornoBitrix.BITRIX24_USUARIO_AGENTE ? ` · usuario del agente ${entornoBitrix.BITRIX24_USUARIO_AGENTE}` : ""}${listaBlanca ? ` · lista blanca de ${listaBlanca.telefonos.size} teléfono(s)` : " · sin lista blanca"}`);
-    const bot = new BotDeBitrix({ botId, negociacionDePrueba: entornoBitrix.BITRIX24_NEGOCIACION_PRUEBA, modo: entornoBitrix.AGENTE_MODO, usuarioAgente: entornoBitrix.BITRIX24_USUARIO_AGENTE, listaBlanca }, { cliente, crm, fichas: new FichasDesdeBitrix(cliente, mapeo), sesiones: new SesionesDeBitrix(cliente, botId), dependencias: armarDependencias(crm) });
+    if (entornoBitrix.AGENTE_CLAVE_DE_PRUEBAS) console.log("Modo de prueba con negociaciones reales: encendido (AGENTE_CLAVE_DE_PRUEBAS)");
+    const bot = new BotDeBitrix(
+      {
+        botId,
+        negociacionDePrueba: entornoBitrix.BITRIX24_NEGOCIACION_PRUEBA,
+        modo: entornoBitrix.AGENTE_MODO,
+        usuarioAgente: entornoBitrix.BITRIX24_USUARIO_AGENTE,
+        listaBlanca,
+        claveDePruebas: entornoBitrix.AGENTE_CLAVE_DE_PRUEBAS,
+      },
+      { cliente, crm, fichas: new FichasDesdeBitrix(cliente, mapeo), sesiones: new SesionesDeBitrix(cliente, botId), copias, dependencias: armarDependencias(crm) },
+    );
     crearServidorDeEventos(bot, { volcarEventosEn: entornoBitrix.AGENTE_VOLCAR_EVENTOS }).listen(entornoBitrix.BITRIX24_PUERTO_EVENTOS, () => console.log(`Agente escuchando eventos de Bitrix en :${entornoBitrix.BITRIX24_PUERTO_EVENTOS}${RUTA_DE_EVENTOS}`));
   },
 };
 
 const crm = new CrmBitrix(cliente, mapeo);
+// La copia queda a nombre del usuario del agente (o del de prueba), nunca del vendedor de la negociación original.
+const copias = new CopiaDeNegociacion(cliente, mapeo, entornoBitrix.BITRIX24_USUARIO_AGENTE ?? entornoBitrix.BITRIX24_USUARIO_PRUEBA);
 
 function armarDependencias(crmReal: CrmBitrix): Dependencias {
   const entorno = leerEntorno();

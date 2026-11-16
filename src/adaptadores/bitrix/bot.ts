@@ -2,6 +2,7 @@ import { atenderMensaje } from "../../aplicacion/atender-mensaje.js";
 import type { Dependencias } from "../../aplicacion/dependencias.js";
 import { type Archivo, type Conversacion, conMensaje, nuevaConversacion } from "../../dominio/conversacion/conversacion.js";
 import type { ClienteBitrix } from "./cliente-rest.js";
+import { type CopiaDeNegociacion, pedidoDePrueba } from "./copia-de-negociacion.js";
 import type { CrmBitrix } from "./crm-bitrix.js";
 import type { FichasDesdeBitrix } from "./fichas-bitrix.js";
 import type { SesionesDeBitrix } from "./sesiones-bitrix.js";
@@ -17,6 +18,9 @@ export interface OpcionesDelBot {
   modo?: ModoDeAtencion | undefined;
   usuarioAgente?: number | undefined;
   listaBlanca?: ListaBlanca | undefined;
+  // Con esta clave, quien prueba puede pedir en el chat que el agente copie una negociación real al
+  // embudo de prueba y siga la charla ahí. Sin clave, el modo está apagado.
+  claveDePruebas?: string | undefined;
 }
 
 interface Colaboradores {
@@ -24,6 +28,7 @@ interface Colaboradores {
   crm: CrmBitrix;
   fichas: FichasDesdeBitrix;
   sesiones: SesionesDeBitrix;
+  copias: CopiaDeNegociacion;
   dependencias: Dependencias;
 }
 
@@ -90,6 +95,8 @@ export class BotDeBitrix {
       await this.cederChat(chatId, decision.cederA);
       return `cedido a una persona: ${decision.motivo}`;
     }
+    const pedido = pedidoDePrueba(hoja(parametros, "MESSAGE"), this.opciones.claveDePruebas);
+    if (pedido) return this.probarConNegociacion(chatId, dialogo, pedido.negociacionId);
     await this.asegurarConversacion(chatId, negociacionId, hoja(parametros, "MESSAGE_ID"));
     const adjuntos = await this.archivosDelMensaje(rama(parametros, "FILES"), credencial);
     const texto = hoja(parametros, "MESSAGE") || adjuntos.marca || "";
@@ -104,6 +111,26 @@ export class BotDeBitrix {
     // prueba, visitante anónimo), el agente copia la conversación ahí para que quien mire la negociación la tenga.
     if (!vinculo.negociacionId) await this.colaboradores.crm.copiarConversacion(chatId, resultado.conversacion.mensajes, vinculo.sesionId);
     return resultado.tipo === "respondio" ? `respondió (${resultado.texto.length} caracteres)` : `silencio: ${resultado.motivo}`;
+  }
+
+  // Modo de prueba: el chat deja la negociación que tenía y sigue sobre una copia de la que le pasaron,
+  // con la conversación anterior cargada como historial. El pedido no entra a la conversación ni llega al modelo.
+  private async probarConNegociacion(chatId: string, dialogo: string, negociacionId: string): Promise<string> {
+    let copia: Awaited<ReturnType<CopiaDeNegociacion["copiar"]>>;
+    try {
+      copia = await this.colaboradores.copias.copiar(negociacionId);
+    } catch (error) {
+      await this.responder(dialogo, `Modo de prueba: no pude leer la negociación ${negociacionId}. Revisá el enlace y probá de nuevo.`);
+      return `modo de prueba: no se pudo copiar la negociación ${negociacionId} (${error instanceof Error ? error.message : String(error)})`;
+    }
+    const ficha = await this.colaboradores.fichas.deNegociacion(copia.negociacionId);
+    this.colaboradores.crm.vincularChat(chatId, copia.negociacionId);
+    const conversacion = copia.mensajes.reduce(conMensaje, nuevaConversacion(chatId, chatId, ficha));
+    await this.colaboradores.dependencias.conversaciones.guardar(conversacion);
+    const origen = copia.esCopia ? `Copié la negociación ${negociacionId} en la negociación de prueba ${copia.negociacionId}; la original no se modificó.` : `La negociación ${negociacionId} ya es de prueba: sigo sobre esa.`;
+    const historial = copia.mensajes.length ? `Traje los últimos ${copia.mensajes.length} mensajes de su conversación.` : "No encontré una conversación anterior: arranca sin historial.";
+    await this.responder(dialogo, `Modo de prueba. ${origen} Etapa: ${copia.etapa}. ${historial} Desde el próximo mensaje, escribí como si fueras el socio.`);
+    return `modo de prueba: negociación ${negociacionId} → ${copia.negociacionId} (${copia.mensajes.length} mensajes anteriores)`;
   }
 
   // Disparador por asignación: si la negociación pasa al usuario del agente, el bot entra a sus chats
