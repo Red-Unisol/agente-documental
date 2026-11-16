@@ -12,6 +12,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/cli/bitrix.js servir",
+    "start:panel": "node dist/panel/servidor.js",
     "evals": "tsx src/cli/evaluar.ts",
     "evals:lecturas": "tsx src/cli/evaluar-lecturas.ts",
     "bitrix": "tsx src/cli/bitrix.ts"

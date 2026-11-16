@@ -26,7 +26,7 @@ export type Decision = { atender: true } | { atender: false; motivo: string; ced
 
 const DIGITOS_QUE_IDENTIFICAN = 10;
 
-// "5493510001230, 3514445566:1246803, linea:9" → teléfonos con su negociación opcional, y líneas
+// "5493510001234, 3514445566:1246803, linea:9" → teléfonos con su negociación opcional, y líneas
 // enteras que se atienden sin teléfono. Vacío = sin lista.
 export function leerListaBlanca(texto: string | undefined): ListaBlanca | undefined {
   const entradas = (texto ?? "")

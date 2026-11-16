@@ -5,17 +5,32 @@ preevaluados, lo carga en la negociación del CRM y deriva a una persona cuando 
 
 No aprueba créditos, no negocia montos ni cuotas, no toca Kestra ni el sistema de solicitudes.
 
+## Por dónde empezar
+
+| Quiero… | Leer |
+|---|---|
+| Cambiar lo que el agente dice o decide (el prompt, en castellano) | **`src/aplicacion/configuracion-inicial.ts`** y [`docs/ajustar-el-agente.md`](docs/ajustar-el-agente.md) |
+| Levantarlo en un servidor | [`docs/despliegue.md`](docs/despliegue.md) |
+| Probarlo en Bitrix, también con una negociación real copiada | [`docs/pruebas-en-bitrix.md`](docs/pruebas-en-bitrix.md) |
+| Entender cómo lee y verifica un recibo | [`docs/lectura-de-recibos.md`](docs/lectura-de-recibos.md) |
+| Trabajar en el código con un asistente (Codex, Claude Code, Cursor) | [`AGENTS.md`](AGENTS.md) |
+
 ## Qué hace
 
-1. Recibe los mensajes del Canal Abierto en las negociaciones de la etapa DOCUMENTACION.
-2. Pide el recibo con lo que la ficha ya declara (provincia, empleador, convenio) y guía su descarga.
+1. Recibe los mensajes del Canal Abierto de las negociaciones de su embudo.
+2. Lee la negociación en cada mensaje: con la ficha (provincia, empleador, convenio) pide el recibo y
+   guía su descarga; con los datos cargados (etapa, créditos activos, oferta) responde las consultas
+   del socio sobre su solicitud. Si el recibo ya está cargado o la negociación está en una etapa
+   posterior a la documentación, no lo pide.
 3. Lee el recibo y verifica: que sea un recibo de sueldo legible, que el CUIL coincida con el DNI de
    la ficha, que el empleador coincida con lo declarado, que el período sea el admitido y que el
    empleador no esté excluido por convenio.
 4. Carga el archivo en el campo de recibo de la negociación y la mueve a DOCU RECIBIDA; si falta
-   algo, a FALTA DOCUMENTACION; si no puede decidir, deriva a un operador con el motivo.
+   algo, a FALTA DOCUMENTACION; si no puede decidir, deriva a un operador con el motivo. Sólo mueve
+   la etapa cuando la negociación está en una de sus etapas de documentación: nunca la hace
+   retroceder desde una etapa posterior ni reabre una cerrada.
 
-Lo que el agente dice y decide (bloques del prompt, 18 escenarios, reglas de verificación) vive en
+Lo que el agente dice y decide (bloques del prompt, 19 escenarios, reglas de verificación) vive en
 `src/aplicacion/configuracion-inicial.ts`, y cada escenario tiene conversaciones de prueba en
 `evals/conversaciones/`. **Cómo cambiarlo, probarlo y qué modelo usa: [`docs/ajustar-el-agente.md`](docs/ajustar-el-agente.md).**
 Toda decisión queda auditada en la conversación.
@@ -26,7 +41,7 @@ Toda decisión queda auditada en la conversación.
 - Panel de lectura: HTML renderizado en el servidor (sin framework)
 - OpenAI (lectura del recibo y conversación), detrás de una interfaz propia; modelo configurable por entorno
 - Bitrix24: aplicación local con alcances `crm`, `imbot`, `imopenlines`, `imconnector`, `disk`, `user`, `im`
-- Docker (ver "Despliegue": pendiente de ajustar al proceso real)
+- Docker opcional (`infra/`); también corre con Node solo
 
 ## Estructura
 
@@ -44,15 +59,15 @@ src/
   cli/            simulación por consola y corredor de evals
   panel/          panel de lectura: conversaciones, prompt base, escenarios, reglas, evals, modelos y costos
 evals/            conversaciones de prueba, recibos sintéticos y corridas guardadas
-infra/            Dockerfile, docker-compose.yml
+infra/            Dockerfile, docker-compose.yml (agente y panel, sin base de datos)
 scripts/          utilidades: embudo de prueba en Bitrix, recibos sintéticos
-docs/             ajustar-el-agente.md (bloques, escenarios, evals, modelo), bitrix-embudo-prueba.md
+docs/             ajustar-el-agente.md, despliegue.md, pruebas-en-bitrix.md, lectura-de-recibos.md, bitrix-embudo-prueba.md
 ```
 
 ## Correr local
 
 ```bash
-cp .env.example .env          # alcanza con OPENAI_API_KEY para la simulación
+cp .env.example .env          # alcanza con OPENAI_API_KEY para la simulación; el .env se carga solo
 npm install
 ./scripts/generar-recibos-sinteticos.sh   # recibos ficticios para probar (requiere Chrome)
 npm run dev                   # conversación por consola; `/archivo <ruta>` adjunta un recibo
@@ -88,17 +103,19 @@ archivos separados), cómo decide cada verificación y cómo probarlo con docume
 
 ## Variables de entorno
 
-Ver `.env.example`. En la VPS no hay `.env` plano: va cifrado en `agente-documental.{dev,prod}.env.enc`.
+Todas están en [`.env.example`](.env.example), comentadas. El `.env` no se versiona.
 
 ## Despliegue
 
-Hoy el proceso que atiende Bitrix es `npm run bitrix servir` (escucha en `BITRIX24_PUERTO_EVENTOS`) detrás de
-una URL pública con HTTPS. Para producción hace falta un servidor siempre prendido con Node 22, la carpeta
-`AGENTE_DATOS_CARPETA` persistente y el archivo de tokens de la app fuera del repo.
+```bash
+npm ci && npm run build && npm start                           # con Node 22
+docker compose -f infra/docker-compose.yml up -d --build       # o con Docker
+```
 
-`infra/Dockerfile`, `infra/docker-compose.yml` y `.github/workflows/deploy.yml` son un borrador anterior
-(suponen Postgres/Prisma y un `dist/server.js` que no existen) y **hay que reescribirlos** antes de usarlos:
-la imagen tiene que correr `node dist/cli/bitrix.js servir` sin base de datos.
+Un solo proceso (`node dist/cli/bitrix.js servir`) detrás de una URL pública con HTTPS, sin base de
+datos: el estado es el archivo de tokens de la aplicación de Bitrix y la carpeta de conversaciones.
+Requisitos, la aplicación local de Bitrix, systemd, proxy, cómo mudarlo de servidor y cómo pasar del
+embudo de prueba a producción: [`docs/despliegue.md`](docs/despliegue.md).
 
 ## Entornos en Bitrix
 
@@ -119,12 +136,19 @@ npm run bitrix registrar-bot              # registra el chatbot de Canales Abier
 npm run bitrix crear-negociacion-prueba   # negociación ficticia en el embudo 19, etapa DOCUMENTACIÓN
 npm run bitrix crear-canal-prueba         # Canal Abierto nuevo atendido por el bot (no toca el canal real)
 npm run bitrix servir                     # escucha los eventos en /bitrix/eventos y atiende los chats
+npm run bitrix copiar-negociacion <id>    # copia una negociación al embudo de prueba (la original no se toca)
+npm run bitrix actualizar-url             # apunta los eventos del bot a BITRIX24_URL_PUBLICA (mudanza de servidor)
 ```
 
 El canal de prueba se prueba desde su "Chat en vivo" (Contact Center → canal → Chat en vivo → enlace
 público). Las derivaciones van al usuario `BITRIX24_USUARIO_PRUEBA`; el motivo queda como comentario en
 la línea de tiempo de la negociación. Si el chat no viene atado a una negociación (pasa con el chat en
 vivo), se usa `BITRIX24_NEGOCIACION_PRUEBA`.
+
+Para probar con un caso real sin tocarlo, el agente puede copiar una negociación al embudo de prueba,
+con sus datos y la conversación que tuvo, y seguir la charla sobre la copia: se le manda en el chat de
+prueba el enlace de la negociación y `AGENTE_CLAVE_DE_PRUEBAS`. Paso a paso y cuidados:
+[`docs/pruebas-en-bitrix.md`](docs/pruebas-en-bitrix.md).
 
 ### Cuándo atiende y cuándo se corre
 
@@ -137,6 +161,7 @@ decide **en cada mensaje** si atiende o se corre, sin escribirle nada al socio
 | `AGENTE_MODO=canal` | Atiende todo chat que le llegue (línea de prueba). |
 | `AGENTE_MODO=asignacion` | Atiende sólo si la negociación del chat tiene como responsable a `BITRIX24_USUARIO_AGENTE` (un usuario empleado normal: Bitrix no deja elegir bots como responsables). Si se la sacan, al siguiente mensaje del socio cede el chat al nuevo responsable y se va. |
 | `AGENTE_LISTA_BLANCA` | `tel[:negociación],tel[:negociación],linea:<id>`. Con lista, los chats de otros números se ceden a la cola. El teléfono sale del id externo del conector (`CHAT_ENTITY_ID`); el chat web no tiene teléfono, así que para seguir usando el chat de prueba se habilita su línea entera con `linea:9`. La negociación asociada a un teléfono **manda sobre la que Bitrix ató al chat**: un número de prueba puede venir atado a una negociación real, y esa no se toca. |
+| `AGENTE_CLAVE_DE_PRUEBAS` | Enciende el modo de prueba con negociaciones reales copiadas. Vacía = apagado; en producción va vacía. |
 | `AGENTE_VOLCAR_EVENTOS` | Archivo donde anexa cada evento crudo (sin tokens), para diagnóstico. |
 
 En cualquier modo, si la negociación del chat no pertenece al embudo configurado, el agente se corre: nunca

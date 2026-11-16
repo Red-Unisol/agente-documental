@@ -3,14 +3,14 @@ import { decidirAtencion, entradaDeListaBlanca, leerListaBlanca, mismoTelefono, 
 
 describe("lista blanca", () => {
   it("lee teléfonos con y sin negociación asociada", () => {
-    const lista = leerListaBlanca(" 5493510001230:1246803, +54 9 351 444-5566 ")!;
-    expect(lista.telefonos.get("5493510001230")).toBe("1246803");
+    const lista = leerListaBlanca(" 5493510001234:1246803, +54 9 351 444-5566 ")!;
+    expect(lista.telefonos.get("5493510001234")).toBe("1246803");
     expect(lista.telefonos.get("5493514445566")).toBeUndefined();
     expect(lista.telefonos.size).toBe(2);
   });
 
   it("acepta líneas enteras con linea:<id>", () => {
-    const lista = leerListaBlanca("linea:9, 5493510001230")!;
+    const lista = leerListaBlanca("linea:9, 5493510001234")!;
     expect(lista.lineas.has("9")).toBe(true);
     expect(lista.telefonos.size).toBe(1);
   });
@@ -21,16 +21,16 @@ describe("lista blanca", () => {
   });
 
   it("encuentra el mismo número aunque cambie el prefijo", () => {
-    const lista = leerListaBlanca("5493510001230:1246803")!;
-    expect(entradaDeListaBlanca(lista, "3510001230")?.negociacionId).toBe("1246803");
-    expect(entradaDeListaBlanca(lista, "03510001230")?.negociacionId).toBe("1246803");
-    expect(entradaDeListaBlanca(lista, "3510001231")).toBeUndefined();
+    const lista = leerListaBlanca("5493510001234:1246803")!;
+    expect(entradaDeListaBlanca(lista, "3510001234")?.negociacionId).toBe("1246803");
+    expect(entradaDeListaBlanca(lista, "03510001234")?.negociacionId).toBe("1246803");
+    expect(entradaDeListaBlanca(lista, "3510001235")).toBeUndefined();
   });
 });
 
 describe("teléfono del chat", () => {
   it("lo saca del id externo del conector de WhatsApp", () => {
-    expect(telefonoDelChat("whatsappbyedna|1|5493510001230|127375")).toBe("5493510001230");
+    expect(telefonoDelChat("whatsappbyedna|1|5493510001234|127375")).toBe("5493510001234");
   });
 
   it("el chat web no tiene teléfono", () => {
@@ -38,13 +38,13 @@ describe("teléfono del chat", () => {
   });
 
   it("compara por los últimos diez dígitos", () => {
-    expect(mismoTelefono("+54 9 351 000-1230", "3510001230")).toBe(true);
+    expect(mismoTelefono("+54 9 351 000-1234", "3510001234")).toBe(true);
     expect(mismoTelefono("12345", "12345")).toBe(false);
   });
 });
 
 describe("decisión de atención", () => {
-  const lista = leerListaBlanca("5493510001230");
+  const lista = leerListaBlanca("5493510001234");
 
   it("en modo canal sin lista atiende a todos", () => {
     expect(decidirAtencion({ modo: "canal" })).toEqual({ atender: true });
@@ -53,11 +53,11 @@ describe("decisión de atención", () => {
   it("con lista blanca cede los chats sin teléfono o fuera de la lista", () => {
     expect(decidirAtencion({ modo: "canal", listaBlanca: lista }).atender).toBe(false);
     expect(decidirAtencion({ modo: "canal", listaBlanca: lista, telefono: "5493510000000" }).atender).toBe(false);
-    expect(decidirAtencion({ modo: "canal", listaBlanca: lista, telefono: "3510001230" })).toEqual({ atender: true });
+    expect(decidirAtencion({ modo: "canal", listaBlanca: lista, telefono: "3510001234" })).toEqual({ atender: true });
   });
 
   it("con lista blanca, una línea habilitada se atiende aunque el chat no tenga teléfono", () => {
-    const conLinea = leerListaBlanca("linea:9, 5493510001230");
+    const conLinea = leerListaBlanca("linea:9, 5493510001234");
     expect(decidirAtencion({ modo: "canal", listaBlanca: conLinea, linea: "9" })).toEqual({ atender: true });
     expect(decidirAtencion({ modo: "canal", listaBlanca: conLinea, linea: "1" }).atender).toBe(false);
   });
