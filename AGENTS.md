@@ -19,3 +19,6 @@ Antes de tocar bloques, escenarios, reglas o evals, leer `docs/ajustar-el-agente
 - `npm run evals` corre contra el modelo real; `npm run evals -- --solo <texto>` filtra por archivo.
 - El modelo se cambia por `OPENAI_MODELO_CONVERSACION` / `OPENAI_MODELO_LECTURA`, nunca sin una corrida
   completa guardada (`--guardar`) para comparar en el panel.
+- La lectura de recibos (qué se extrae, cómo decide cada verificación) está en
+  `docs/lectura-de-recibos.md`. Si se toca el lector o `src/dominio/verificacion/`, correr
+  `npm run evals:lecturas` con documentos reales; el manifiesto y los resultados viven fuera del repo.

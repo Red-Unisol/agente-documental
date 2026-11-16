@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",
     "evals": "tsx src/cli/evaluar.ts",
+    "evals:lecturas": "tsx src/cli/evaluar-lecturas.ts",
     "bitrix": "tsx src/cli/bitrix.ts"
   },
   "dependencies": {

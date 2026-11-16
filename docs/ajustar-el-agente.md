@@ -121,9 +121,10 @@ Esto no lo lee el modelo: lo aplica el código cuando revisa un recibo (`src/dom
   y la ficha es de esa `provincia` / `convenio` (`null` = cualquiera), el recibo se deriva a un
   analista con ese `motivo`. El socio no ve el motivo.
 
-Las verificaciones de identidad (CUIL del recibo vs. DNI de la ficha), empleador declarado vs. del
-recibo y período tienen tests unitarios en `src/dominio/verificacion/verificar.test.ts`; si se
-cambia una regla, se cambia ahí el test.
+Qué se lee de cada archivo y cómo decide cada verificación (pertinencia, identidad, empleador,
+período, exclusiones) está explicado en [`lectura-de-recibos.md`](lectura-de-recibos.md). Tienen
+tests unitarios en `src/dominio/verificacion/verificar.test.ts`; si se cambia una regla, se cambia
+ahí el test y se corre el eval de lectura con documentos reales (`npm run evals:lecturas`).
 
 ## 5. Evals: las conversaciones de prueba
 
@@ -196,15 +197,18 @@ Los evals que mandan archivos usan recibos **inventados** de `evals/recibos/caso
 a PNG/PDF con `./scripts/generar-recibos-sinteticos.sh` (requiere Chrome; la carpeta `generados/`
 no se versiona, hay que generarla en cada máquina). Para un caso nuevo, agregar una entrada a
 `casos.json` con los campos de la plantilla (`EMPLEADOR`, `PERIODO`, `CUIL`, `NOMBRE`, …) y volver a
-correr el script. Nunca usar un recibo real de un socio en el repo ni en los evals.
+correr el script. Nunca usar un recibo real de un socio en el repo ni en estos evals. Para probar
+la lectura con recibos reales está `npm run evals:lecturas`, que trabaja con archivos y resultados
+fuera del repositorio ([`lectura-de-recibos.md`](lectura-de-recibos.md), sección 5).
 
 ## 7. El modelo
 
-Dos variables de entorno, en `.env`:
+Tres variables de entorno, en `.env`:
 
 ```bash
-OPENAI_MODELO_CONVERSACION=gpt-6-luna   # el que conversa y elige escenarios
-OPENAI_MODELO_LECTURA=gpt-6-luna        # el que lee el recibo (visión)
+OPENAI_MODELO_CONVERSACION=gpt-6-luna        # el que conversa y elige escenarios
+OPENAI_MODELO_LECTURA=gpt-6-luna             # el que lee el recibo (visión)
+OPENAI_MODELO_LECTURA_RESPALDO=gpt-6.1-terra # relee sólo los archivos que la primera lectura no dejó aceptar
 ```
 
 La elección actual salió de correr toda la batería con cinco combinaciones: `gpt-6-luna` para las dos
@@ -217,13 +221,16 @@ OPENAI_MODELO_CONVERSACION=<modelo> npm run evals -- --guardar
 y compararlo en el panel (`npm run panel` → Modelos): casos que pasan, costo por conversación y
 tiempo de respuesta, lado a lado con las corridas anteriores. Las tarifas por token para estimar el
 costo están en `src/dominio/costos/tarifas.ts`; si aparece un modelo nuevo hay que agregarlo ahí.
-No cambiar el modelo en producción sin una corrida completa guardada.
+No cambiar el modelo en producción sin una corrida completa guardada. Si lo que cambia es un modelo
+de lectura, además hay que correr `npm run evals:lecturas` con documentos reales: los evals de
+conversación usan pocos recibos inventados y no alcanzan para medir la lectura.
 
 ## 8. Antes de subir un cambio
 
 ```bash
 npm test          # tests unitarios, sin red: configuración consistente, verificación, política de atención
 npm run evals     # con el modelo real
+npm run evals:lecturas -- --manifiesto <casos.jsonl> --salida <carpeta>   # si se tocó la lectura o una verificación
 ```
 
 - Un cambio de escenario sin eval que lo cubra no se mergea.

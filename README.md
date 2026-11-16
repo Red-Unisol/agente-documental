@@ -58,6 +58,7 @@ npm install
 npm run dev                   # conversación por consola; `/archivo <ruta>` adjunta un recibo
 npm run evals                 # corre evals/conversaciones/*.json y grada el resultado
 npm run evals -- --guardar    # además guarda la corrida en evals/corridas/ (la lee el panel)
+npm run evals:lecturas -- --manifiesto <casos.jsonl> --salida <carpeta>   # lectura de recibos reales, fuera del repo
 npm run panel                 # http://localhost:3011
 npm test                      # tests unitarios, sin red
 ```
@@ -70,7 +71,7 @@ reconstruye desde ahí antes de responder.
 
 ### Cambiar o comparar modelos
 
-Los modelos son dos variables de entorno. Para comparar alternativas se corre la misma batería con
+Los modelos son variables de entorno (conversación, lectura y lectura de respaldo). Para comparar alternativas se corre la misma batería con
 cada una y el panel las muestra lado a lado (pasan, costo por conversación, tiempo):
 
 ```bash
@@ -78,6 +79,12 @@ OPENAI_MODELO_CONVERSACION=gpt-6-luna OPENAI_MODELO_LECTURA=gpt-6.1-terra npm ru
 ```
 
 Las tarifas para estimar el costo están en `src/dominio/costos/tarifas.ts`.
+
+### Lectura de recibos
+
+Qué se lee de cada archivo (recibo solo, varias liquidaciones, paquete con DNI y otros documentos,
+archivos separados), cómo decide cada verificación y cómo probarlo con documentos reales:
+[`docs/lectura-de-recibos.md`](docs/lectura-de-recibos.md).
 
 ## Variables de entorno
 
