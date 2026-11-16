@@ -144,7 +144,7 @@ Un JSON por línea:
 Corrida del 16/11/2026 sobre 500 archivos reales de cinco convenios (solicitudes de agosto 2025 a
 septiembre 2026), con `gpt-6-luna` y segunda lectura de `gpt-6.1-terra`:
 
-| Tipo de archivo | Archivos | Decisión correcta |
+| Tipo de archivo | Archivos | Leídos y decididos bien |
 |---|---|---|
 | PDF sólo con el recibo | 210 | 210 |
 | PDF con otros documentos adentro (DNI, CBU, facturas) | 178 | 177 |
@@ -152,21 +152,23 @@ septiembre 2026), con `gpt-6-luna` y segunda lectura de `gpt-6.1-terra`:
 | PDF con varias liquidaciones | 31 | 31 |
 | **Total** | **500** | **498 (99,6 %)** |
 
-- 487 se aceptan y 13 se piden de nuevo: 10 por ser de un mes más viejo que el admitido, 2 porque no
-  eran un recibo completo y 1 ticket fotografiado que no se llega a leer. Ninguno se deriva.
-- Las dos diferencias: ese ticket borroso (pide una foto mejor) y una foto girada donde se leyó
-  noviembre en vez de diciembre (la decisión igual fue la correcta).
-- 25 archivos (5 %) necesitaron la segunda lectura, casi todos fotos.
-- Costo: US$ 0,00058 por archivo (US$ 0,29 los 500). Tiempo: 2,8 s de mediana, 9,7 s el más lento.
+- 488 se aceptan y 12 se piden de nuevo: 6 por ser de un mes más viejo que el admitido, 2 por ser
+  del mes en curso (más nuevo que el admitido), 3 porque no eran un recibo completo y 1 ticket
+  fotografiado que no se llega a leer. Ninguno se deriva.
+- Las dos diferencias: ese ticket borroso (pide una foto mejor cuando se podía aceptar) y una foto
+  girada donde se leyó noviembre en vez de diciembre (la decisión igual fue la correcta). Es decir,
+  499 de 500 con la decisión correcta.
+- 20 archivos (4 %) necesitaron la segunda lectura, la mitad fotos.
+- Costo: US$ 0,00054 por archivo (US$ 0,27 los 500). Tiempo: 2,7 s de mediana, 8,0 s el más lento.
 - Con `gpt-6-luna` sola: 480 de 500 a US$ 0,00037. Con `gpt-6.1-terra` sola: 498 de 500 a
   US$ 0,0038. La combinación da el acierto de la cara a un costo cercano al de la económica.
 
 Con los mismos paquetes partidos en dos archivos (118 casos): los 59 que quedaron **sin** el recibo
-se reconocen todos ("falta el recibo"); de los 59 con **sólo** el recibo, 56 deciden igual que el
-paquete entero y 3 piden de nuevo porque en la foto no se lee el número de documento.
+se reconocen todos ("falta el recibo"); de los 59 con **sólo** el recibo, entre 55 y 56 según la corrida deciden
+igual que el paquete entero y el resto pide de nuevo porque en la foto no se lee el número de documento.
 
 La referencia contra la que se compara salió del proceso anterior y se corrigió a mano donde estaba
-mal (14 casos, casi todos con el año mal leído por el OCR viejo).
+mal o no alcanzaba (22 casos mirados uno por uno, casi todos con el año mal leído por el OCR viejo).
 
 ### Cuándo correrlo
 
