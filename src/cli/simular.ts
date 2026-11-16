@@ -15,7 +15,9 @@ const esquemaDeGuion = z.object({
     convenio: z.string(),
     sectorDeclarado: z.enum(["publico", "privado"]),
     empleadorDeclarado: z.string(),
+    situacionDeclarada: z.string().optional(),
   }),
+  negociacion: z.object({ hayQuePedirElRecibo: z.boolean().default(true), datos: z.array(z.object({ etiqueta: z.string(), valor: z.string() })).default([]) }).optional(),
   turnos: z.array(z.object({ texto: z.string(), archivo: z.string().optional() })),
 });
 
@@ -38,7 +40,9 @@ async function main(): Promise<void> {
 
 async function correrGuion(ruta: string, salida?: string): Promise<void> {
   const guion = esquemaDeGuion.parse(JSON.parse(await readFile(ruta, "utf8")));
-  const simulacion = await iniciarSimulacion(guion.ficha, guion.hoy ? new Date(`${guion.hoy}T12:00:00`) : undefined);
+  const { situacionDeclarada, ...resto } = guion.ficha;
+  const ficha = { ...resto, ...(situacionDeclarada && { situacionDeclarada }) };
+  const simulacion = await iniciarSimulacion(ficha, guion.hoy ? new Date(`${guion.hoy}T12:00:00`) : undefined, guion.negociacion);
   for (const turno of guion.turnos) {
     imprimir("Socio", turno.archivo ? `${turno.texto} 📎 ${turno.archivo}` : turno.texto);
     const resultado = await simulacion.enviar(turno.texto, turno.archivo);

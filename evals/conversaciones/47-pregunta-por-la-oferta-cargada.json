@@ -1,0 +1,67 @@
+{
+  "nombre": "Pregunta cuánto paga por mes y hay una oferta cargada: la cuenta sin darla por aprobada",
+  "hoy": "2026-11-16",
+  "ficha": {
+    "negociacionId": "SIM-47",
+    "nombre": "Daniel",
+    "dni": "30555444",
+    "provincia": "Córdoba",
+    "convenio": "Linea Propia",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Salud de Córdoba",
+    "situacionDeclarada": "Empleado Publico Provincial"
+  },
+  "negociacion": {
+    "hayQuePedirElRecibo": false,
+    "datos": [
+      {
+        "etiqueta": "Etapa de la solicitud",
+        "valor": "OFERTA"
+      },
+      {
+        "etiqueta": "Recibo cargado en la negociación",
+        "valor": "sí"
+      },
+      {
+        "etiqueta": "Monto cargado en la negociación",
+        "valor": "$ 850.000"
+      },
+      {
+        "etiqueta": "Oferta: cantidad de cuotas",
+        "valor": "12"
+      },
+      {
+        "etiqueta": "Oferta: valor de la cuota",
+        "valor": "$ 98.500"
+      }
+    ]
+  },
+  "turnos": [
+    {
+      "texto": "hola, me dijeron que tenia una oferta, de cuanto seria la cuota?"
+    },
+    {
+      "texto": "y eso ya esta aprobado? cuando me lo depositan?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": [
+      "activa",
+      "derivada"
+    ],
+    "decisiones": [],
+    "escenarios": [
+      "E19"
+    ],
+    "respuestasContienen": [
+      "98\\.500",
+      "12"
+    ],
+    "respuestasNoContienen": [
+      "(ya|sí,?) est[áa] aprobad",
+      "fue aprobad",
+      "te lo depositan (el|ma|ho|en)",
+      "mand[aá]me"
+    ]
+  }
+}

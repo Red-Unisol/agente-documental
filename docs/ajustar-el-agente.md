@@ -5,10 +5,10 @@ Bitrix ni con OpenAI. Todo lo que hay que editar está en dos lugares:
 
 | Qué | Dónde | Formato |
 |---|---|---|
-| Lo que el agente es, hace y no hace (bloques), los 18 escenarios y las reglas de verificación | `src/aplicacion/configuracion-inicial.ts` | TypeScript (un objeto) |
+| Lo que el agente es, hace y no hace (bloques), los 19 escenarios y las reglas de verificación | `src/aplicacion/configuracion-inicial.ts` | TypeScript (un objeto) |
 | Las conversaciones de prueba que verifican cada escenario (evals) | `evals/conversaciones/*.json` | JSON, uno por caso |
 
-El modelo de lenguaje se elige por variable de entorno (sección 5). El panel (`npm run panel`) muestra
+El modelo de lenguaje se elige por variable de entorno (sección 8). El panel (`npm run panel`) muestra
 todo esto pero **no lo edita**: la fuente de verdad es el código, y cada cambio pasa por un commit, los
 tests y los evals.
 
@@ -17,10 +17,11 @@ tests y los evals.
 ## 1. Cómo piensa el agente en cada mensaje
 
 1. Recibe el mensaje del socio con la **ficha** de la negociación (nombre, provincia, convenio,
-   situación laboral, empleador declarado).
+   situación laboral, empleador declarado) y lee del CRM los **datos de la negociación** como están
+   en ese momento (etapa, si el recibo está cargado, créditos activos, oferta; sección 5).
 2. Arma el prompt del sistema: `ROL` + `OBJETIVO` + `QUÉ NO HACÉS` + `FORMA DE RESPONDER` (los cuatro
-   bloques) + la ficha + un **índice** de escenarios (clave, nombre y *cuándo* aplica; sin las
-   instrucciones).
+   bloques) + la ficha + los datos de la negociación + un **índice** de escenarios (clave, nombre y
+   *cuándo* aplica; sin las instrucciones).
 3. El modelo elige el escenario que encaja y lo **carga** con la herramienta `cargar_escenario`:
    recién ahí recibe las instrucciones completas de ese escenario. Puede cargar más de uno.
 4. Responde siguiendo esas instrucciones. Si hace falta, usa las otras herramientas:
@@ -68,7 +69,7 @@ no en un bloque.
 
 | Campo | Qué es | Consejos |
 |---|---|---|
-| `clave` | Identificador corto y único (`E1`…`E18`). Es lo que el modelo pasa a `cargar_escenario` y lo que graban los evals. | No reutilizar una clave borrada. Para uno nuevo, el siguiente número libre. |
+| `clave` | Identificador corto y único (`E1`…`E19`). Es lo que el modelo pasa a `cargar_escenario` y lo que graban los evals. | No reutilizar una clave borrada. Para uno nuevo, el siguiente número libre. |
 | `nombre` | Título de una línea. | Que se entienda sin leer el resto. |
 | `cuando` | Señales en el mensaje o en el historial que disparan este escenario. **Es lo único que el modelo ve antes de elegir.** | Concreto, con ejemplos de lo que dice el socio. Si se pisa con otro escenario, decir explícitamente cuál gana («las cuotas impagas son E17; esto es E9»). |
 | `instrucciones` | Qué hacer y qué decir. Puede incluir texto oficial entre comillas, qué herramienta llamar y a qué otro escenario pasar («si insiste, cargá E6»). | Escribir como se le explicaría a una persona nueva. Nombrar las herramientas por su nombre exacto. |
@@ -78,7 +79,7 @@ no en un bloque.
 1. Agregar el objeto al final de `escenarios` en `configuracion-inicial.ts` con la siguiente clave libre.
 2. Revisar los `cuando` de los escenarios vecinos: si el caso nuevo antes caía en otro, aclarar ahí
    que ahora es del nuevo.
-3. Escribir al menos **un eval** que lo dispare (sección 4) y que espere `"escenarios": ["E19"]`.
+3. Escribir al menos **un eval** que lo dispare (sección 6) y que espere `"escenarios": ["E20"]`.
 4. Correr `npm test` (verifica que la configuración sea consistente) y `npm run evals`.
 5. Commit con el porqué del cambio en el mensaje.
 
@@ -126,7 +127,47 @@ período, exclusiones) está explicado en [`lectura-de-recibos.md`](lectura-de-r
 tests unitarios en `src/dominio/verificacion/verificar.test.ts`; si se cambia una regla, se cambia
 ahí el test y se corre el eval de lectura con documentos reales (`npm run evals:lecturas`).
 
-## 5. Evals: las conversaciones de prueba
+## 5. Datos de la negociación
+
+En cada mensaje el agente lee la negociación y recibe dos cosas
+(`src/adaptadores/bitrix/datos-de-negociacion.ts`):
+
+**Si hay que pedirle el recibo.** Sí, cuando la negociación está en DOCUMENTACIÓN o FALTA
+DOCUMENTACIÓN y no tiene recibo cargado. No, cuando el recibo ya está o la negociación está en otra
+etapa: el socio puede escribir en cualquier momento y el agente no se lo reclama. Lo decide el código,
+no el modelo; el prompt sólo recibe el resultado.
+
+**Los datos que puede contarle al socio**, como una lista de `etiqueta: valor`:
+
+- La etapa, por su nombre. De una etapa de cierre (SIN CUPO, SIT. NEG. EN BCRA, LISTA NEGRA…) el
+  modelo sólo recibe «cerrada sin avanzar»: el nombre dice el motivo, y eso lo informa una persona.
+- Si el recibo está cargado, el monto de la negociación y la fecha en que empezó.
+- Los campos listados en `datosParaElSocio` del mapeo (`src/adaptadores/bitrix/mapeo.ts`): línea,
+  forma y banco de cobro, si es socio, créditos activos y su detalle, cuotas y valor de cuota de la oferta.
+
+Un campo vacío no aparece, y un campo que no está en esa lista el agente **no lo ve**: no puede
+contarlo ni por error. Para que vea uno más se agrega una línea, con la etiqueta como se la diría a
+una persona y el código del campo en Bitrix:
+
+```ts
+datosParaElSocio: [
+  { etiqueta: "Cantidad de créditos activos", campo: "UF_CRM_6A34379BDE41B" },
+  { etiqueta: "Fecha estimada de acreditación", campo: "UF_CRM_…" },
+]
+```
+
+Qué hace con esos datos lo dice el prompt: el bloque `limites` (sólo cuenta lo que figura, sin
+presentarlo como una aprobación; si un dato no figura, dice que no lo tiene a la vista) y el
+escenario **E19** (cómo responder una consulta sobre la solicitud, cómo nombrar la etapa, qué hacer
+si está cerrada). Para cambiar lo que dice de cada etapa o qué puede adelantar de una oferta, se
+edita E19 o se agrega un escenario; no hace falta tocar código.
+
+Dos reglas quedan en el código y no dependen del prompt: el agente sólo escribe en negociaciones de
+su embudo, y sólo mueve la etapa cuando la negociación está en una de sus cuatro etapas de
+documentación. Un recibo que llega con la negociación en OFERTA se carga y queda anotado en la línea
+de tiempo, pero la etapa no cambia.
+
+## 6. Evals: las conversaciones de prueba
 
 Cada archivo de `evals/conversaciones/` es una conversación completa con lo que se espera al final.
 Se corren contra el modelo real (cuestan centavos cada una) con un CRM simulado en memoria: no tocan
@@ -169,9 +210,25 @@ Bitrix.
 | `derivadoA` | `vendedor` o `analista`, si derivó. |
 | `faltaDocumentacion` | `true`: tuvo que marcar FALTA DOCUMENTACIÓN; `false`: no tuvo que hacerlo. |
 | `respuestasNoContienen` | Expresiones regulares que no pueden aparecer en ninguna respuesta (montos, claves, nombres de terceros). |
+| `respuestasContienen` | Expresiones regulares que tienen que aparecer en alguna respuesta (el dato de la negociación que el socio preguntó). |
 
 `hoy` fija la fecha para que el período admitido no cambie con el calendario. `archivo` apunta a un
-recibo sintético (sección 6). La `ficha` tiene los mismos campos que llegan desde Bitrix.
+recibo sintético (sección 7). La `ficha` tiene los mismos campos que llegan desde Bitrix.
+
+Para probar una consulta sobre la solicitud, el eval dice qué tiene cargado la negociación con el
+campo opcional `negociacion`, al lado de `ficha` (ejemplos en los casos 46 a 50):
+
+```json
+"negociacion": {
+  "hayQuePedirElRecibo": false,
+  "datos": [
+    { "etiqueta": "Etapa de la solicitud", "valor": "OFERTA" },
+    { "etiqueta": "Oferta: valor de la cuota", "valor": "$ 98.500" }
+  ]
+}
+```
+
+Sin ese campo, el eval corre como si la negociación no tuviera datos y hubiera que pedir el recibo.
 
 ### Correr
 
@@ -191,7 +248,7 @@ Para probar a mano antes de escribir el eval: `npm run dev` abre una conversaci�
 ficha por defecto (`/archivo <ruta>` adjunta un recibo), o `npm run dev -- --guion caso.json`
 corre un guion sin graduarlo.
 
-## 6. Recibos sintéticos
+## 7. Recibos sintéticos
 
 Los evals que mandan archivos usan recibos **inventados** de `evals/recibos/casos.json`, renderizados
 a PNG/PDF con `./scripts/generar-recibos-sinteticos.sh` (requiere Chrome; la carpeta `generados/`
@@ -201,7 +258,7 @@ correr el script. Nunca usar un recibo real de un socio en el repo ni en estos e
 la lectura con recibos reales está `npm run evals:lecturas`, que trabaja con archivos y resultados
 fuera del repositorio ([`lectura-de-recibos.md`](lectura-de-recibos.md), sección 5).
 
-## 7. El modelo
+## 8. El modelo
 
 Tres variables de entorno, en `.env`:
 
@@ -225,7 +282,7 @@ No cambiar el modelo en producción sin una corrida completa guardada. Si lo que
 de lectura, además hay que correr `npm run evals:lecturas` con documentos reales: los evals de
 conversación usan pocos recibos inventados y no alcanzan para medir la lectura.
 
-## 8. Antes de subir un cambio
+## 9. Antes de subir un cambio
 
 ```bash
 npm test          # tests unitarios, sin red: configuración consistente, verificación, política de atención
@@ -239,5 +296,6 @@ npm run evals:lecturas -- --manifiesto <casos.jsonl> --salida <carpeta>   # si s
 - Los datos de socios reales no entran al repo: ni en evals, ni en recibos, ni en logs. Las
   conversaciones guardadas por el bot viven en `AGENTE_DATOS_CARPETA`, fuera del repo.
 
-Después de mergear, reiniciar el proceso que atiende Bitrix (`npm run bitrix servir`): la configuración
-se lee al arrancar.
+Después de mergear, compilar y reiniciar el proceso que atiende Bitrix ([`despliegue.md`](despliegue.md),
+sección 8): la configuración se lee al arrancar. Para probarlo en Bitrix antes de que lo vea un socio,
+incluso con un caso real copiado: [`pruebas-en-bitrix.md`](pruebas-en-bitrix.md).

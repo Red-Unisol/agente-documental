@@ -45,6 +45,7 @@ async function conversar(inicial: Conversacion, configuracion: ConfiguracionDelA
     bloques: configuracion.bloques,
     escenarios: configuracion.escenarios,
     ficha: inicial.ficha,
+    negociacion: await estadoDeLaNegociacion(inicial, dependencias),
     hoy: dependencias.reloj.ahora(),
     diaDeGracia: configuracion.reglas.diaDeGracia,
   });
@@ -70,6 +71,15 @@ async function conversar(inicial: Conversacion, configuracion: ConfiguracionDelA
     }
   }
   return { tipo: "silencio", motivo: "El modelo no llegó a una respuesta", conversacion };
+}
+
+// Si el CRM no contesta, el agente sigue atendiendo con la ficha: sólo no puede responder consultas sobre la negociación.
+async function estadoDeLaNegociacion(conversacion: Conversacion, dependencias: Dependencias) {
+  try {
+    return await dependencias.crm.estadoDeNegociacion(conversacion.ficha.negociacionId);
+  } catch {
+    return undefined;
+  }
 }
 
 // Si el modelo derivó y no dijo nada, el socio igual tiene que enterarse de que alguien lo va a seguir.

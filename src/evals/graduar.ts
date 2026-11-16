@@ -7,6 +7,8 @@ export const esquemaDeEsperado = z.object({
   escenarios: z.array(z.string()).default([]),
   derivadoA: z.enum(["vendedor", "analista"]).optional(),
   respuestasNoContienen: z.array(z.string()).default([]),
+  // Lo que alguna respuesta tiene que decir (por ejemplo, el dato de la negociación que el socio preguntó).
+  respuestasContienen: z.array(z.string()).default([]),
   // true: tiene que haber marcado FALTA DOCUMENTACIÓN; false: no tiene que haberlo hecho.
   faltaDocumentacion: z.boolean().optional(),
 });
@@ -27,6 +29,7 @@ export function graduar(conversacion: Conversacion, esperado: Esperado): Criteri
     ...derivacion(conversacion, esperado),
     ...faltaDocumentacion(conversacion, esperado),
     ...fugas(conversacion, esperado),
+    ...menciones(conversacion, esperado),
   ];
 }
 
@@ -58,8 +61,20 @@ function faltaDocumentacion(conversacion: Conversacion, esperado: Esperado): Cri
   return [{ nombre: "marca FALTA DOCUMENTACIÓN", ok: marco === esperado.faltaDocumentacion, detalle: marco ? "la marcó" : "no la marcó" }];
 }
 
+function menciones(conversacion: Conversacion, esperado: Esperado): Criterio[] {
+  const respuestas = respuestasDelAgente(conversacion);
+  return esperado.respuestasContienen.map((patron) => {
+    const coincide = new RegExp(patron, "i").test(respuestas);
+    return { nombre: `dice "${patron}"`, ok: coincide, detalle: coincide ? "correcto" : "no lo dijo" };
+  });
+}
+
+function respuestasDelAgente(conversacion: Conversacion): string {
+  return conversacion.mensajes.filter((m) => m.direccion === "saliente").map((m) => m.texto).join("\n");
+}
+
 function fugas(conversacion: Conversacion, esperado: Esperado): Criterio[] {
-  const respuestas = conversacion.mensajes.filter((m) => m.direccion === "saliente").map((m) => m.texto).join("\n");
+  const respuestas = respuestasDelAgente(conversacion);
   return esperado.respuestasNoContienen.map((patron) => {
     const coincide = new RegExp(patron, "i").exec(respuestas);
     return { nombre: `no dice "${patron}"`, ok: !coincide, detalle: coincide ? `dijo "${coincide[0]}"` : "correcto" };

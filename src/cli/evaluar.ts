@@ -23,6 +23,8 @@ const esquemaDeEval = z.object({
     empleadorDeclarado: z.string(),
     situacionDeclarada: z.string().optional(),
   }),
+  // Lo que la negociación tiene cargado en el CRM, para los casos en que el socio pregunta por su solicitud.
+  negociacion: z.object({ hayQuePedirElRecibo: z.boolean().default(true), datos: z.array(z.object({ etiqueta: z.string(), valor: z.string() })).default([]) }).optional(),
   turnos: z.array(z.object({ texto: z.string(), archivo: z.string().optional() })),
   esperado: esquemaDeEsperado,
 });
@@ -51,7 +53,7 @@ async function correr(archivo: string): Promise<CasoCorrido> {
   const evaluacion = esquemaDeEval.parse(JSON.parse(await readFile(join(CARPETA_DE_CASOS, archivo), "utf8")));
   const { situacionDeclarada, ...resto } = evaluacion.ficha;
   const ficha = { ...resto, ...(situacionDeclarada && { situacionDeclarada }) };
-  const simulacion = await iniciarSimulacion(ficha, evaluacion.hoy ? new Date(`${evaluacion.hoy}T12:00:00`) : undefined);
+  const simulacion = await iniciarSimulacion(ficha, evaluacion.hoy ? new Date(`${evaluacion.hoy}T12:00:00`) : undefined, evaluacion.negociacion);
   for (const turno of evaluacion.turnos) await simulacion.enviar(turno.texto, turno.archivo);
 
   const conversacion = await simulacion.conversacion();

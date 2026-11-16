@@ -1,7 +1,7 @@
 import type { Escenario } from "../../dominio/agente/escenarios.js";
 import { definicionesDeHerramientas } from "../../dominio/agente/herramientas.js";
 import { armarPromptDelSistema, type BloquesDelPrompt } from "../../dominio/agente/prompt.js";
-import type { Ficha } from "../../dominio/tipos.js";
+import type { EstadoDeNegociacion, Ficha } from "../../dominio/tipos.js";
 import { escapar, type Html } from "../html.js";
 import { seccionHtml } from "./plantilla.js";
 
@@ -9,6 +9,7 @@ interface Entrada {
   bloques: BloquesDelPrompt;
   escenarios: Escenario[];
   fichaDeEjemplo: Ficha;
+  negociacionDeEjemplo: EstadoDeNegociacion;
   hoy: Date;
   diaDeGracia: number;
 }
@@ -16,7 +17,7 @@ interface Entrada {
 const BLOQUES: { clave: keyof BloquesDelPrompt; titulo: string; para: string }[] = [
   { clave: "rol", titulo: "Rol", para: "Quién es y en nombre de quién habla." },
   { clave: "objetivo", titulo: "Objetivo", para: "Lo único que tiene que lograr en este paso." },
-  { clave: "limites", titulo: "Qué no hace", para: "Las fronteras: ni aprueba, ni decide, ni ve más que la ficha." },
+  { clave: "limites", titulo: "Qué no hace", para: "Las fronteras: ni aprueba, ni decide, ni ve más que la ficha y los datos de la negociación." },
   { clave: "respuesta", titulo: "Forma de responder", para: "Tono, largo y orden de cada mensaje." },
 ];
 
@@ -40,6 +41,7 @@ export function vistaDelPrompt(entrada: Entrada): Html {
     bloques: entrada.bloques,
     escenarios: entrada.escenarios,
     ficha: entrada.fichaDeEjemplo,
+    negociacion: entrada.negociacionDeEjemplo,
     hoy: entrada.hoy,
     diaDeGracia: entrada.diaDeGracia,
   });

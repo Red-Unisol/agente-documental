@@ -3,7 +3,7 @@ import { CrmSimulado } from "../adaptadores/memoria/crm-simulado.js";
 import { ConfiguracionEnMemoria, ConversacionesEnMemoria, RelojFijo } from "../adaptadores/memoria/repositorios.js";
 import { nuevaConversacion } from "../dominio/conversacion/conversacion.js";
 import { usoVacio } from "../dominio/costos/uso.js";
-import type { LecturaDeDocumento, Liquidacion } from "../dominio/tipos.js";
+import type { EstadoDeNegociacion, LecturaDeDocumento, Liquidacion } from "../dominio/tipos.js";
 import type { EleccionDelModelo, ModeloConversacional, PeticionAlModelo, RespuestaDelModelo } from "../puertos/modelo-conversacional.js";
 import { atenderMensaje } from "./atender-mensaje.js";
 import { configuracionInicial } from "./configuracion-inicial.js";
@@ -48,11 +48,11 @@ class ModeloGuionado implements ModeloConversacional {
   }
 }
 
-async function armar(respuestas: EleccionDelModelo[], lectura: LecturaDeDocumento = reciboCorrecto) {
+async function armar(respuestas: EleccionDelModelo[], lectura: LecturaDeDocumento = reciboCorrecto, negociacion?: EstadoDeNegociacion) {
   const conversaciones = new ConversacionesEnMemoria();
   await conversaciones.guardar(nuevaConversacion("c1", "chat-1", ficha));
   const modelo = new ModeloGuionado(respuestas);
-  const crm = new CrmSimulado();
+  const crm = new CrmSimulado(negociacion);
   const dependencias: Dependencias = {
     modelo,
     lector: { leer: async () => ({ lectura, uso: usoVacio("guionado") }) },
@@ -65,6 +65,76 @@ async function armar(respuestas: EleccionDelModelo[], lectura: LecturaDeDocument
 }
 
 const archivo = { id: "a1", nombre: "recibo.png", tipoMime: "image/png", bytes: new Uint8Array() };
+
+const saludo: EleccionDelModelo[] = [
+  { tipo: "llamadas", llamadas: [{ id: "1", nombre: "cargar_escenario", argumentos: { clave: "E1" } }] },
+  { tipo: "texto", texto: "Hola Mariana." },
+];
+
+describe("datos de la negociación en el prompt", () => {
+  it("le pasa al modelo lo que la negociación tiene cargado en el CRM", async () => {
+    const negociacion = { hayQuePedirElRecibo: true, datos: [{ etiqueta: "Cantidad de créditos activos", valor: "2" }] };
+    const { modelo, dependencias } = await armar([...saludo], reciboCorrecto, negociacion);
+    await atenderMensaje({ conversacionId: "c1", texto: "tengo créditos activos?" }, dependencias);
+
+    const sistema = modelo.peticiones[0]?.sistema ?? "";
+    expect(sistema).toContain("DATOS DE SU NEGOCIACIÓN (lo que figura hoy");
+    expect(sistema).toContain("Cantidad de créditos activos: 2");
+    expect(sistema).toContain("Recibo que necesitamos: el de");
+  });
+
+  it("si el recibo ya está o la negociación pasó la documentación, le dice que no lo pida", async () => {
+    const negociacion = { hayQuePedirElRecibo: false, datos: [{ etiqueta: "Etapa de la solicitud", valor: "OFERTA" }] };
+    const { modelo, dependencias } = await armar([...saludo], reciboCorrecto, negociacion);
+    await atenderMensaje({ conversacionId: "c1", texto: "hola" }, dependencias);
+
+    const sistema = modelo.peticiones[0]?.sistema ?? "";
+    expect(sistema).toContain("hoy NO hay que pedírselo");
+    expect(sistema).not.toContain("Recibo que necesitamos");
+  });
+
+  it("sin datos en la negociación, el prompt no trae la sección", async () => {
+    const { modelo, dependencias } = await armar([...saludo]);
+    await atenderMensaje({ conversacionId: "c1", texto: "hola" }, dependencias);
+    expect(modelo.peticiones[0]?.sistema).not.toContain("DATOS DE SU NEGOCIACIÓN (lo que figura hoy");
+  });
+
+  it("si el CRM no responde, atiende igual con la ficha", async () => {
+    const { modelo, dependencias } = await armar([...saludo]);
+    dependencias.crm.estadoDeNegociacion = async () => {
+      throw new Error("Bitrix no responde");
+    };
+    const resultado = await atenderMensaje({ conversacionId: "c1", texto: "hola" }, dependencias);
+
+    expect(resultado.tipo).toBe("respondio");
+    expect(modelo.peticiones[0]?.sistema).toContain("Recibo que necesitamos");
+  });
+
+  it("nunca pone el DNI de la ficha en el prompt", async () => {
+    const { modelo, dependencias } = await armar([...saludo], reciboCorrecto, { hayQuePedirElRecibo: true, datos: [{ etiqueta: "Línea", valor: "Premium" }] });
+    await atenderMensaje({ conversacionId: "c1", texto: "hola" }, dependencias);
+    expect(modelo.peticiones[0]?.sistema).not.toContain(ficha.dni);
+  });
+});
+
+describe("recibo que llega con la negociación fuera de documentación", () => {
+  it("lo carga, y como la etapa no se mueve le dice al modelo que no anuncie que pasó a análisis", async () => {
+    const { modelo, crm, dependencias } = await armar([
+      { tipo: "llamadas", llamadas: [{ id: "1", nombre: "cargar_escenario", argumentos: { clave: "E4" } }] },
+      { tipo: "llamadas", llamadas: [{ id: "2", nombre: "revisar_recibo", argumentos: {} }] },
+      { tipo: "texto", texto: "Quedó cargado; tu solicitud sigue con el equipo." },
+    ]);
+    crm.moverEtapa = async () => false;
+    const resultado = await atenderMensaje({ conversacionId: "c1", texto: "te dejo el recibo nuevo", archivos: [archivo] }, dependencias);
+
+    expect(resultado.conversacion.estado).toBe("documentacion_cargada");
+    expect(crm.acciones).toEqual([{ tipo: "recibo_cargado", negociacionId: "N-1", archivo: "recibo.png" }]);
+    const loQueVioElModelo = JSON.stringify(modelo.peticiones.at(-1)?.mensajes);
+    expect(loQueVioElModelo).toContain("No digas que pasó a análisis");
+    const cargado = resultado.conversacion.auditoria.find((e) => e.tipo === "accion_crm");
+    expect(cargado?.detalle).toEqual({ accion: "cargar_recibo", archivo: "recibo.png" });
+  });
+});
 
 describe("atenderMensaje", () => {
   it("obliga a cargar un escenario antes de responder y guarda la respuesta", async () => {

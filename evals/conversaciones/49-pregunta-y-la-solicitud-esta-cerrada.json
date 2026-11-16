@@ -1,0 +1,46 @@
+{
+  "nombre": "Pregunta por su solicitud y figura cerrada: no adivina el motivo y lo pasa con una persona",
+  "hoy": "2026-11-16",
+  "ficha": {
+    "negociacionId": "SIM-49",
+    "nombre": "Daniel",
+    "dni": "30555444",
+    "provincia": "Córdoba",
+    "convenio": "Linea Propia",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Salud de Córdoba",
+    "situacionDeclarada": "Empleado Publico Provincial"
+  },
+  "negociacion": {
+    "hayQuePedirElRecibo": false,
+    "datos": [
+      {
+        "etiqueta": "Etapa de la solicitud",
+        "valor": "cerrada sin avanzar (el motivo lo informa una persona)"
+      },
+      {
+        "etiqueta": "Recibo cargado en la negociación",
+        "valor": "sí"
+      }
+    ]
+  },
+  "turnos": [
+    {
+      "texto": "buen dia, queria saber como va mi prestamo, hace dias que no me dicen nada"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "derivada",
+    "decisiones": [],
+    "escenarios": [
+      "E19"
+    ],
+    "derivadoA": "vendedor",
+    "respuestasNoContienen": [
+      "BCRA",
+      "mora",
+      "rechazad",
+      "aprobad[oa]"
+    ]
+  }
+}

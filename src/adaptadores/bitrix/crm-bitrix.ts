@@ -1,6 +1,8 @@
 import type { Archivo, Etapa, Mensaje } from "../../dominio/conversacion/conversacion.js";
+import type { EstadoDeNegociacion } from "../../dominio/tipos.js";
 import type { ClienteCrm, DestinoDeDerivacion } from "../../puertos/cliente-crm.js";
 import type { ClienteBitrix } from "./cliente-rest.js";
+import { type DefinicionesDeCampos, type EtapaDelEmbudo, estadoDeNegociacion, nombresParaElSocio } from "./datos-de-negociacion.js";
 import type { MapeoDeBitrix } from "./mapeo.js";
 
 // CRM real sobre la aplicación local. Cada método es una operación de negocio del
@@ -17,6 +19,9 @@ export class CrmBitrix implements ClienteCrm {
   private readonly negociacionPorChat = new Map<string, string>();
   private readonly transferenciasPendientes = new Map<string, DestinoDeDerivacion>();
   private readonly comentarioDeConversacion = new Map<string, number>();
+  // Las definiciones de campos y los nombres de las etapas no cambian mientras el proceso corre.
+  private definiciones: Promise<DefinicionesDeCampos> | undefined;
+  private nombresDeEtapas: Promise<Map<string, string>> | undefined;
 
   constructor(
     private readonly cliente: ClienteBitrix,
@@ -26,6 +31,8 @@ export class CrmBitrix implements ClienteCrm {
   // El chat de Canales Abiertos y la negociación se conocen al abrir la conversación;
   // el motivo de una derivación se anota en la negociación, no en el chat.
   vincularChat(chatId: string, negociacionId: string): void {
+    // Si el chat cambia de negociación (modo de prueba), la copia de la conversación va a un comentario nuevo en la nueva.
+    if (this.negociacionPorChat.get(chatId) !== negociacionId) this.comentarioDeConversacion.delete(chatId);
     this.negociacionPorChat.set(chatId, negociacionId);
   }
 
@@ -39,6 +46,15 @@ export class CrmBitrix implements ClienteCrm {
     return { responsableId: Number(negociacion.ASSIGNED_BY_ID ?? 0), esDelEmbudo: Number(negociacion.CATEGORY_ID) === this.mapeo.embudo };
   }
 
+  async estadoDeNegociacion(negociacionId: string): Promise<EstadoDeNegociacion> {
+    this.definiciones ??= this.cliente.llamar<DefinicionesDeCampos>("crm.deal.fields");
+    this.nombresDeEtapas ??= this.cliente
+      .llamar<EtapaDelEmbudo[]>("crm.status.list", { filter: { ENTITY_ID: this.mapeo.embudo === 0 ? "DEAL_STAGE" : `DEAL_STAGE_${this.mapeo.embudo}` } })
+      .then(nombresParaElSocio);
+    const negociacion = await this.cliente.llamar<Record<string, unknown>>("crm.deal.get", { id: negociacionId });
+    return estadoDeNegociacion(negociacion, await this.definiciones, await this.nombresDeEtapas, this.mapeo);
+  }
+
   async cargarRecibo(negociacionId: string, archivo: Archivo): Promise<void> {
     await this.cliente.llamar("crm.deal.update", {
       id: negociacionId,
@@ -46,9 +62,18 @@ export class CrmBitrix implements ClienteCrm {
     });
   }
 
-  async moverEtapa(negociacionId: string, etapa: Etapa, motivo?: string): Promise<void> {
+  // El agente mueve la negociación sólo entre sus etapas de documentación. Si está en cualquier otra
+  // (oferta, validación, una etapa de cierre), no la toca: el socio puede escribir en cualquier momento
+  // y una consulta o un recibo nuevo no tienen que hacerla retroceder ni reabrirla. Deja la nota y nada más.
+  async moverEtapa(negociacionId: string, etapa: Etapa, motivo?: string): Promise<boolean> {
+    const { STAGE_ID: actual } = await this.cliente.llamar<{ STAGE_ID?: string }>("crm.deal.get", { id: negociacionId });
+    if (!Object.values(this.mapeo.etapas).includes(actual ?? "")) {
+      if (motivo) await this.comentar(negociacionId, `Agente documental: ${motivo} La negociación no está en una etapa de documentación, así que no se movió de etapa.`);
+      return false;
+    }
     await this.cliente.llamar("crm.deal.update", { id: negociacionId, fields: { STAGE_ID: this.mapeo.etapas[etapa] } });
     if (motivo) await this.comentar(negociacionId, `Agente documental: pasa a ${NOMBRE_DE_ETAPA[etapa]}. ${motivo}`);
+    return true;
   }
 
   // El motivo se anota ya; la transferencia queda pendiente hasta que el bot mande su última

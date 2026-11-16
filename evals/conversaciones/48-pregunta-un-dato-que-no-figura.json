@@ -1,0 +1,49 @@
+{
+  "nombre": "Pregunta cuántos créditos tiene y cuánto debe, y no figura: no inventa",
+  "hoy": "2026-11-16",
+  "ficha": {
+    "negociacionId": "SIM-48",
+    "nombre": "Daniel",
+    "dni": "30555444",
+    "provincia": "Córdoba",
+    "convenio": "Linea Propia",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "Ministerio de Salud de Córdoba",
+    "situacionDeclarada": "Empleado Publico Provincial"
+  },
+  "negociacion": {
+    "hayQuePedirElRecibo": true,
+    "datos": [
+      {
+        "etiqueta": "Etapa de la solicitud",
+        "valor": "DOCUMENTACION"
+      },
+      {
+        "etiqueta": "Recibo cargado en la negociación",
+        "valor": "no"
+      },
+      {
+        "etiqueta": "Línea",
+        "valor": "Linea Propia"
+      }
+    ]
+  },
+  "turnos": [
+    {
+      "texto": "hola, cuantos creditos tengo activos y cuanto me falta pagar?"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": [
+      "activa",
+      "derivada"
+    ],
+    "decisiones": [],
+    "escenarios": [],
+    "respuestasNoContienen": [
+      "\\$\\s?\\d",
+      "ten[ée]s \\d+ cr[ée]dito",
+      "no ten[ée]s (ning[úu]n )?cr[ée]dito"
+    ]
+  }
+}

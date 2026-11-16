@@ -10,7 +10,7 @@ import { configuracionInicial } from "../aplicacion/configuracion-inicial.js";
 import type { Dependencias } from "../aplicacion/dependencias.js";
 import { leerEntorno } from "../configuracion/entorno.js";
 import { type Archivo, type Conversacion, nuevaConversacion } from "../dominio/conversacion/conversacion.js";
-import type { Ficha } from "../dominio/tipos.js";
+import type { EstadoDeNegociacion, Ficha } from "../dominio/tipos.js";
 
 const TIPOS_MIME: Record<string, string> = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".pdf": "application/pdf" };
 
@@ -21,10 +21,10 @@ export interface Simulacion {
   conversacion(): Promise<Conversacion>;
 }
 
-export async function iniciarSimulacion(ficha: Ficha, hoy?: Date): Promise<Simulacion> {
+export async function iniciarSimulacion(ficha: Ficha, hoy?: Date, negociacion?: EstadoDeNegociacion): Promise<Simulacion> {
   const entorno = leerEntorno();
   const cliente = crearClienteOpenAI(entorno.OPENAI_API_KEY);
-  const crm = new CrmSimulado();
+  const crm = new CrmSimulado(negociacion);
   const conversaciones = new ConversacionesEnMemoria();
   const dependencias: Dependencias = {
     modelo: new ModeloConversacionalOpenAI(cliente, entorno.OPENAI_MODELO_CONVERSACION),

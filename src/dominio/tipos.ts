@@ -14,6 +14,21 @@ export interface Ficha {
   situacionDeclarada?: string;
 }
 
+// Un dato de la negociación tal como figura en el CRM ("Etapa de la solicitud: DOCUMENTACION",
+// "Cantidad de créditos activos: 2"). El agente puede contárselo al socio si pregunta por su solicitud.
+export interface DatoDeNegociacion {
+  etiqueta: string;
+  valor: string;
+}
+
+// Cómo está hoy la negociación en el CRM. Se lee en cada mensaje.
+export interface EstadoDeNegociacion {
+  // false cuando el recibo ya está cargado o la negociación está en una etapa posterior a la documentación:
+  // el socio puede escribir igual, y el agente no se lo tiene que reclamar.
+  hayQuePedirElRecibo: boolean;
+  datos: DatoDeNegociacion[];
+}
+
 export interface Periodo {
   anio: number;
   mes: number;

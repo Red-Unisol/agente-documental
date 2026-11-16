@@ -81,10 +81,11 @@ async function revisarRecibo({ conversacion, configuracion, dependencias }: Cont
   const decisivo = verificacionQueDecide(revisados);
   if (!decisivo) return { conversacion: actualizada, resultado: { error: "No se pudo revisar ningún archivo." } };
   const { archivo, verificacion } = decisivo;
-  actualizada = await aplicarDecision({ ...actualizada, ultimaVerificacion: verificacion }, archivo, dependencias);
+  const aplicada = await aplicarDecision({ ...actualizada, ultimaVerificacion: verificacion }, archivo, dependencias);
+  actualizada = aplicada.conversacion;
 
   const chequeos = verificacion.chequeos.map((c) => `${c.ok ? "OK" : "FALLA"} ${c.nombre}: ${c.detalle}`);
-  const resultado = { decision: verificacion.decision, chequeos, motivos: verificacion.motivos, ...(revisados.length > 1 && { archivosRevisados: revisados.length }), ...efectoDe(verificacion.decision) };
+  const resultado = { decision: verificacion.decision, chequeos, motivos: verificacion.motivos, ...(revisados.length > 1 && { archivosRevisados: revisados.length }), ...efectoDe(verificacion.decision, aplicada.etapaMovida) };
   return { conversacion: actualizada, resultado };
 }
 
@@ -111,10 +112,12 @@ function resumenParaAuditoria({ lectura, liquidacion, conSegundaLectura }: Revis
   };
 }
 
-function efectoDe(decision: Verificacion["decision"]): Record<string, string> {
+function efectoDe(decision: Verificacion["decision"], etapaMovida: boolean): Record<string, string> {
   switch (decision) {
     case "aceptar":
-      return { efecto: "El recibo ya quedó cargado y la solicitud pasó a análisis. Avisale al socio." };
+      return etapaMovida
+        ? { efecto: "El recibo ya quedó cargado y la solicitud pasó a análisis. Avisale al socio." }
+        : { efecto: "El recibo ya quedó cargado. La solicitud ya estaba en una etapa posterior a la documentación y sigue donde estaba: avisale que quedó cargado y que su solicitud sigue con el equipo de Red Unisol. No digas que pasó a análisis." };
     case "derivar":
       return { efecto: "La conversación ya fue derivada a un analista. Mandá un solo mensaje de cierre sin explicar el motivo interno." };
     case "pedir_de_nuevo":
@@ -122,29 +125,30 @@ function efectoDe(decision: Verificacion["decision"]): Record<string, string> {
   }
 }
 
-async function aplicarDecision(conversacion: Conversacion, archivo: Archivo, dependencias: Dependencias): Promise<Conversacion> {
+async function aplicarDecision(conversacion: Conversacion, archivo: Archivo, dependencias: Dependencias): Promise<{ conversacion: Conversacion; etapaMovida: boolean }> {
   const verificacion = conversacion.ultimaVerificacion;
-  if (!verificacion) return conversacion;
+  if (!verificacion) return { conversacion, etapaMovida: false };
   const { negociacionId } = conversacion.ficha;
   const at = dependencias.reloj.ahora();
 
   if (verificacion.decision === "aceptar") {
     await dependencias.crm.cargarRecibo(negociacionId, archivo);
-    await dependencias.crm.moverEtapa(negociacionId, "DOCU_RECIBIDA", `Recibo verificado y guardado (${archivo.nombre}).`);
-    const evento = { at, tipo: "accion_crm" as const, detalle: { accion: "cargar_recibo", etapa: "DOCU_RECIBIDA", archivo: archivo.nombre } };
-    return { ...conEvento(conversacion, evento), estado: "documentacion_cargada" };
+    const etapaMovida = await dependencias.crm.moverEtapa(negociacionId, "DOCU_RECIBIDA", `Recibo verificado y guardado (${archivo.nombre}).`);
+    const evento = { at, tipo: "accion_crm" as const, detalle: { accion: "cargar_recibo", ...(etapaMovida && { etapa: "DOCU_RECIBIDA" }), archivo: archivo.nombre } };
+    return { conversacion: { ...conEvento(conversacion, evento), estado: "documentacion_cargada" }, etapaMovida };
   }
   if (verificacion.decision === "derivar") {
     const motivo = verificacion.motivos.join("; ");
-    await dependencias.crm.moverEtapa(negociacionId, "REVISION_DOCUMENTAL");
+    const etapaMovida = await dependencias.crm.moverEtapa(negociacionId, "REVISION_DOCUMENTAL");
     await dependencias.crm.transferirConversacion(conversacion.chatId, "analista", motivo);
-    return { ...conEvento(conversacion, { at, tipo: "derivacion", detalle: { destino: "analista", motivo } }), estado: "derivada" };
+    return { conversacion: { ...conEvento(conversacion, { at, tipo: "derivacion", detalle: { destino: "analista", motivo } }), estado: "derivada" }, etapaMovida };
   }
-  return conversacion;
+  return { conversacion, etapaMovida: false };
 }
 
 async function marcarFaltaDocumentacion({ conversacion, dependencias }: Contexto, { motivo }: ArgumentosDe<"marcar_falta_documentacion">): Promise<ResultadoDeHerramienta> {
-  await dependencias.crm.moverEtapa(conversacion.ficha.negociacionId, "FALTA_DOCUMENTACION", `Motivo: ${motivo}`);
+  const etapaMovida = await dependencias.crm.moverEtapa(conversacion.ficha.negociacionId, "FALTA_DOCUMENTACION", `Motivo: ${motivo}`);
+  if (!etapaMovida) return { conversacion, resultado: { ok: true, nota: "La solicitud está en una etapa posterior a la documentación: no se cambió de etapa. El motivo quedó anotado." } };
   const evento = { at: dependencias.reloj.ahora(), tipo: "accion_crm" as const, detalle: { accion: "mover_etapa", etapa: "FALTA_DOCUMENTACION", motivo } };
   return { conversacion: conEvento(conversacion, evento), resultado: { ok: true, etapa: "FALTA DOCUMENTACION" } };
 }

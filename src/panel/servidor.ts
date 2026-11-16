@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { configuracionInicial } from "../aplicacion/configuracion-inicial.js";
-import type { Ficha } from "../dominio/tipos.js";
+import type { EstadoDeNegociacion, Ficha } from "../dominio/tipos.js";
 import { leerCorridas } from "./datos.js";
 import type { Html } from "./html.js";
 import { vistaDeConversaciones } from "./vistas/conversaciones.js";
@@ -24,6 +24,17 @@ const FICHA_DE_EJEMPLO: Ficha = {
   convenio: "EMPLEADOS_PUBLICOS_CATAMARCA",
   sectorDeclarado: "publico",
   empleadorDeclarado: "Ministerio de Educación de Catamarca",
+};
+
+// Datos ficticios de la negociación, como los que el agente lee del CRM en cada mensaje.
+const NEGOCIACION_DE_EJEMPLO: EstadoDeNegociacion = {
+  hayQuePedirElRecibo: true,
+  datos: [
+    { etiqueta: "Etapa de la solicitud", valor: "DOCUMENTACION" },
+    { etiqueta: "Recibo cargado en la negociación", valor: "no" },
+    { etiqueta: "Es socio", valor: "Si" },
+    { etiqueta: "Cantidad de créditos activos", valor: "1" },
+  ],
 };
 
 async function atender(peticion: IncomingMessage, respuesta: ServerResponse): Promise<void> {
@@ -62,7 +73,7 @@ async function renderizar(seccion: Seccion, parametros: URLSearchParams): Promis
           seccion,
           titulo: "Prompt base",
           subtitulo: "Lo que el agente sabe antes de leer el primer mensaje. Es corto a propósito: lo específico de cada situación vive en los escenarios y entra sólo cuando hace falta.",
-          cuerpo: vistaDelPrompt({ bloques: configuracion.bloques, escenarios: configuracion.escenarios, fichaDeEjemplo: FICHA_DE_EJEMPLO, hoy, diaDeGracia: configuracion.reglas.diaDeGracia }),
+          cuerpo: vistaDelPrompt({ bloques: configuracion.bloques, escenarios: configuracion.escenarios, fichaDeEjemplo: FICHA_DE_EJEMPLO, negociacionDeEjemplo: NEGOCIACION_DE_EJEMPLO, hoy, diaDeGracia: configuracion.reglas.diaDeGracia }),
           contadores,
         },
         entorno,
