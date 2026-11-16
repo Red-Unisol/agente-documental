@@ -1,10 +1,11 @@
 import { buscarEscenario, indiceDeEscenarios, textoDeEscenario } from "../dominio/agente/escenarios.js";
 import { type ArgumentosDe, definicionesDeHerramientas, esNombreDeHerramienta } from "../dominio/agente/herramientas.js";
-import { type Archivo, type Conversacion, conEvento, ultimoArchivo } from "../dominio/conversacion/conversacion.js";
-import { type Verificacion, verificarRecibo } from "../dominio/verificacion/verificar.js";
+import { type Archivo, type Conversacion, conEvento } from "../dominio/conversacion/conversacion.js";
+import { type Verificacion, verificacionQueDecide } from "../dominio/verificacion/verificar.js";
 import type { LlamadaAHerramienta } from "../puertos/modelo-conversacional.js";
 import type { ConfiguracionDelAgente } from "../puertos/repositorios.js";
 import type { Dependencias } from "./dependencias.js";
+import { type RevisionDeArchivo, revisarArchivo } from "./revisar-archivo.js";
 
 interface Contexto {
   conversacion: Conversacion;
@@ -48,28 +49,66 @@ function cargarEscenario({ conversacion, configuracion, dependencias }: Contexto
   return { conversacion: conEvento(conversacion, evento), resultado: { escenario: textoDeEscenario(escenario) } };
 }
 
+// Tope de archivos que se leen en una misma revisión, para que un socio que manda veinte fotos no dispare veinte lecturas.
+const MAXIMO_DE_ARCHIVOS_POR_REVISION = 5;
+
+// Revisa todo lo que el socio mandó y todavía no se revisó (puede haber mandado el DNI en un archivo
+// y el recibo en otro). Vale el primero que sirve; si ninguno sirve, decide `verificacionQueDecide`.
 async function revisarRecibo({ conversacion, configuracion, dependencias }: Contexto): Promise<ResultadoDeHerramienta> {
-  const archivo = ultimoArchivo(conversacion);
-  if (!archivo) return { conversacion, resultado: { error: "El socio todavía no mandó ningún archivo." } };
+  if (conversacion.archivos.length === 0) return { conversacion, resultado: { error: "El socio todavía no mandó ningún archivo." } };
   if (conversacion.estado === "documentacion_cargada") {
     return { conversacion, resultado: { yaCargado: true, efecto: "Esta solicitud ya tiene un recibo aceptado y cargado. No se revisa otro archivo: confirmale que ya está y que lo va a contactar una persona de Red Unisol." } };
   }
-  const previa = conversacion.auditoria.find((e) => e.tipo === "verificacion" && e.detalle.archivoId === archivo.id);
-  if (previa) {
-    return { conversacion, resultado: { yaRevisado: true, decision: previa.detalle.decision, motivos: previa.detalle.motivos, efecto: "Ese archivo ya se revisó con el resultado indicado; no se vuelve a revisar. Respondé según ese resultado, sin pedirle nada nuevo salvo que mande otro archivo." } };
+  const pendientes = archivosSinRevisar(conversacion).slice(-MAXIMO_DE_ARCHIVOS_POR_REVISION);
+  if (pendientes.length === 0) {
+    const previa = conversacion.auditoria.filter((e) => e.tipo === "verificacion").at(-1);
+    return { conversacion, resultado: { yaRevisado: true, decision: previa?.detalle.decision, motivos: previa?.detalle.motivos, efecto: "Ese archivo ya se revisó con el resultado indicado; no se vuelve a revisar. Respondé según ese resultado, sin pedirle nada nuevo salvo que mande otro archivo." } };
   }
 
   const ahora = dependencias.reloj.ahora();
-  const { lectura, uso } = await dependencias.lector.leer(archivo);
-  const verificacion = verificarRecibo({ lectura, ficha: conversacion.ficha, reglas: configuracion.reglas, hoy: ahora });
+  const revisados: { archivo: Archivo; verificacion: Verificacion }[] = [];
+  let actualizada = conversacion;
+  for (const archivo of pendientes) {
+    const revision = await revisarArchivo(archivo, { lector: dependencias.lector, lectorDeRespaldo: dependencias.lectorDeRespaldo, ficha: conversacion.ficha, reglas: configuracion.reglas, hoy: ahora });
+    const { verificacion } = revision;
+    for (const uso of revision.usos) actualizada = conEvento(actualizada, { at: ahora, tipo: "uso_de_modelo", detalle: { proposito: "lectura", ...uso } });
+    actualizada = conEvento(actualizada, { at: ahora, tipo: "lectura_de_recibo", detalle: { archivo: archivo.nombre, ...resumenParaAuditoria(revision) } });
+    actualizada = conEvento(actualizada, { at: ahora, tipo: "verificacion", detalle: { archivoId: archivo.id, decision: verificacion.decision, motivos: verificacion.motivos, chequeos: verificacion.chequeos } });
+    revisados.push({ archivo, verificacion });
+    if (verificacion.decision === "aceptar") break;
+  }
 
-  let actualizada = conEvento(conversacion, { at: ahora, tipo: "uso_de_modelo", detalle: { proposito: "lectura", ...uso } });
-  actualizada = conEvento(actualizada, { at: ahora, tipo: "lectura_de_recibo", detalle: { archivo: archivo.nombre, ...lectura, cuil: lectura.cuil ? "leído" : "ausente" } });
-  actualizada = conEvento(actualizada, { at: ahora, tipo: "verificacion", detalle: { archivoId: archivo.id, decision: verificacion.decision, motivos: verificacion.motivos, chequeos: verificacion.chequeos } });
+  const decisivo = verificacionQueDecide(revisados);
+  if (!decisivo) return { conversacion: actualizada, resultado: { error: "No se pudo revisar ningún archivo." } };
+  const { archivo, verificacion } = decisivo;
   actualizada = await aplicarDecision({ ...actualizada, ultimaVerificacion: verificacion }, archivo, dependencias);
 
   const chequeos = verificacion.chequeos.map((c) => `${c.ok ? "OK" : "FALLA"} ${c.nombre}: ${c.detalle}`);
-  return { conversacion: actualizada, resultado: { decision: verificacion.decision, chequeos, motivos: verificacion.motivos, ...efectoDe(verificacion.decision) } };
+  const resultado = { decision: verificacion.decision, chequeos, motivos: verificacion.motivos, ...(revisados.length > 1 && { archivosRevisados: revisados.length }), ...efectoDe(verificacion.decision) };
+  return { conversacion: actualizada, resultado };
+}
+
+function archivosSinRevisar(conversacion: Conversacion): Archivo[] {
+  const revisados = new Set(conversacion.auditoria.filter((e) => e.tipo === "verificacion").map((e) => e.detalle.archivoId));
+  return conversacion.archivos.filter((archivo) => !revisados.has(archivo.id));
+}
+
+// Lo que queda en la auditoría de una lectura. El CUIL y el DNI no se guardan: sólo si se leyeron.
+function resumenParaAuditoria({ lectura, liquidacion, conSegundaLectura }: RevisionDeArchivo): Record<string, unknown> {
+  return {
+    ...(conSegundaLectura && { segundaLectura: true }),
+    esReciboDeSueldo: liquidacion !== undefined,
+    legible: lectura.legible,
+    liquidaciones: lectura.liquidaciones.length,
+    otrosDocumentos: lectura.otrosDocumentos,
+    empleador: liquidacion?.empleador,
+    periodo: liquidacion?.periodo,
+    provincia: liquidacion?.provincia,
+    sector: liquidacion?.sector ?? "desconocido",
+    conHaberes: liquidacion?.conHaberes ?? false,
+    cuil: liquidacion?.cuil ? "leído" : "ausente",
+    dni: liquidacion?.dni ? "leído" : "ausente",
+  };
 }
 
 function efectoDe(decision: Verificacion["decision"]): Record<string, string> {

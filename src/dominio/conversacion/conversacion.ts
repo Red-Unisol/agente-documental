@@ -67,10 +67,6 @@ export function conEvento(conversacion: Conversacion, evento: EventoDeAuditoria)
   return { ...conversacion, auditoria: [...conversacion.auditoria, evento] };
 }
 
-export function ultimoArchivo(conversacion: Conversacion): Archivo | undefined {
-  return conversacion.archivos.at(-1);
-}
-
 export function conResumen(conversacion: Conversacion, resumen: ResumenDelHistorial): Conversacion {
   return { ...conversacion, resumen };
 }

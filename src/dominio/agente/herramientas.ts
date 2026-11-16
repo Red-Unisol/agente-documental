@@ -8,7 +8,7 @@ export const definicionesDeHerramientas = {
     argumentos: z.object({ clave: z.string().describe("Clave del escenario, por ejemplo E3") }),
   },
   revisar_recibo: {
-    descripcion: "Lee y verifica el último archivo que mandó el socio y aplica el resultado: si sirve, lo carga en el sistema; si hay una discrepancia, deriva a un analista; si falta algo, te dice qué. Vos sólo comunicás el resultado.",
+    descripcion: "Lee y verifica lo que mandó el socio y todavía no se revisó (un archivo o varios; el recibo puede venir junto con el DNI u otros documentos) y aplica el resultado: si sirve, lo carga en el sistema; si hay una discrepancia, deriva a un analista; si falta algo, te dice qué. Vos sólo comunicás el resultado.",
     argumentos: z.object({}),
   },
   marcar_falta_documentacion: {

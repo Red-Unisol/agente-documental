@@ -12,7 +12,8 @@ const MAXIMO_DE_VUELTAS = 6;
 export interface MensajeEntrante {
   conversacionId: string;
   texto: string;
-  archivo?: Archivo;
+  // Un mensaje puede traer más de un archivo (el DNI por un lado y el recibo por otro).
+  archivos?: Archivo[];
 }
 
 export type ResultadoDeAtencion =
@@ -33,9 +34,10 @@ export async function atenderMensaje(entrante: MensajeEntrante, dependencias: De
 }
 
 function registrarEntrante(conversacion: Conversacion, entrante: MensajeEntrante, at: Date): Conversacion {
-  const conArchivoSiHay = entrante.archivo ? conArchivo(conversacion, entrante.archivo) : conversacion;
-  const mensaje = { direccion: "entrante" as const, texto: entrante.texto, at, ...(entrante.archivo && { archivoId: entrante.archivo.id }) };
-  return conMensaje(conArchivoSiHay, mensaje);
+  const archivos = entrante.archivos ?? [];
+  const conArchivos = archivos.reduce(conArchivo, conversacion);
+  const ultimo = archivos.at(-1);
+  return conMensaje(conArchivos, { direccion: "entrante" as const, texto: entrante.texto, at, ...(ultimo && { archivoId: ultimo.id }) });
 }
 
 async function conversar(inicial: Conversacion, configuracion: ConfiguracionDelAgente, dependencias: Dependencias): Promise<ResultadoDeAtencion> {

@@ -5,6 +5,8 @@ const esquema = z.object({
   // Elegidos con los evals (evals/corridas): misma tasa de acierto que gpt-4.1 a una fracción del costo.
   OPENAI_MODELO_CONVERSACION: z.string().default("gpt-6-luna"),
   OPENAI_MODELO_LECTURA: z.string().default("gpt-6-luna"),
+  // Relee los archivos que la primera lectura no dejó aceptar (fotos de baja calidad, sobre todo). Vacío = sin segunda lectura.
+  OPENAI_MODELO_LECTURA_RESPALDO: z.string().default("gpt-6.1-terra"),
 });
 
 export type Entorno = z.infer<typeof esquema>;

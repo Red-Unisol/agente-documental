@@ -7,7 +7,8 @@ export interface Ficha {
   provincia: string;
   convenio: string;
   sectorDeclarado: Sector;
-  empleadorDeclarado: string;
+  // En el CRM casi nunca viene cargado; cuando falta, el empleador del recibo no se compara por nombre.
+  empleadorDeclarado?: string;
   // Tal como está en el CRM: "Jubilado Provincial", "Docente", "Policia", "Pensionado"... Le dice al
   // agente si habla con un activo o con un jubilado, y de qué tipo.
   situacionDeclarada?: string;
@@ -18,15 +19,27 @@ export interface Periodo {
   mes: number;
 }
 
-export interface LecturaDeRecibo {
-  esReciboDeSueldo: boolean;
-  legible: boolean;
+// Una liquidación de haberes tal como figura en el archivo. Sólo lo que se lee; lo que no está, undefined.
+export interface Liquidacion {
+  periodo: Periodo | undefined;
   empleador: string | undefined;
   cuil: string | undefined;
-  periodo: Periodo | undefined;
+  // Número de documento impreso en la liquidación, para los recibos que no traen CUIL.
+  dni: string | undefined;
   provincia: string | undefined;
   sector: Sector | "desconocido";
-  faltantes: string[];
+  // Si se ve el detalle de haberes y descuentos con sus importes: una foto cortada que sólo muestra el encabezado no sirve.
+  conHaberes: boolean;
+}
+
+export type OtroDocumento = "dni" | "factura_de_servicio" | "constancia_bancaria" | "otro";
+
+// Lo que se leyó de un archivo. Un archivo puede ser un recibo solo, varias liquidaciones juntas o un
+// paquete (DNI, factura de un servicio, constancia de CBU y el recibo en el mismo PDF).
+export interface LecturaDeDocumento {
+  legible: boolean;
+  liquidaciones: Liquidacion[];
+  otrosDocumentos: OtroDocumento[];
 }
 
 export interface Exclusion {

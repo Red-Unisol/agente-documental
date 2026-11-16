@@ -25,5 +25,33 @@ export function dniDeCuil(cuil: string): string {
 }
 
 export function cuilCorrespondeADni(cuil: string, dni: string): boolean {
-  return dniDeCuil(cuil) === String(Number(soloDigitos(dni)));
+  return mismoDocumento(dniDeCuil(cuil), dni);
+}
+
+export function mismoDocumento(a: string, b: string): boolean {
+  return Number(soloDigitos(a)) > 0 && Number(soloDigitos(a)) === Number(soloDigitos(b));
+}
+
+// Mismo largo y a lo sumo dos dígitos distintos: lo que pasa cuando una foto borrosa hace leer un 3 por un 8.
+export function casiElMismoDocumento(a: string, b: string): boolean {
+  const [x, y] = [String(Number(soloDigitos(a))), String(Number(soloDigitos(b)))];
+  if (x.length !== y.length) return false;
+  const distintos = [...x].filter((digito, i) => digito !== y[i]).length;
+  return distintos > 0 && distintos <= 2;
+}
+
+export interface DocumentoLeido {
+  numero: string;
+  tipo: "cuil_valido" | "cuil_dudoso" | "dni";
+}
+
+// Los números de documento que trae una liquidación, vengan en el campo que vengan: hay recibos que
+// rotulan "DOC: CUIL" y el número va sin guiones, y el lector lo puede dejar en cualquiera de los dos.
+export function documentosLeidos(liquidacion: { cuil: string | undefined; dni: string | undefined }): DocumentoLeido[] {
+  return [liquidacion.cuil, liquidacion.dni].flatMap((texto): DocumentoLeido[] => {
+    const digitos = soloDigitos(texto ?? "");
+    if (digitos.length >= 10 && digitos.length <= 11) return [{ numero: dniDeCuil(digitos), tipo: cuilEsValido(digitos) ? "cuil_valido" : "cuil_dudoso" }];
+    if (digitos.length >= 7 && digitos.length <= 8) return [{ numero: digitos, tipo: "dni" }];
+    return [];
+  });
 }

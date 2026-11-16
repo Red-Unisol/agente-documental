@@ -29,6 +29,7 @@ export async function iniciarSimulacion(ficha: Ficha, hoy?: Date): Promise<Simul
   const dependencias: Dependencias = {
     modelo: new ModeloConversacionalOpenAI(cliente, entorno.OPENAI_MODELO_CONVERSACION),
     lector: new LectorDeReciboOpenAI(cliente, entorno.OPENAI_MODELO_LECTURA),
+    ...(entorno.OPENAI_MODELO_LECTURA_RESPALDO && { lectorDeRespaldo: new LectorDeReciboOpenAI(cliente, entorno.OPENAI_MODELO_LECTURA_RESPALDO) }),
     crm,
     conversaciones,
     configuracion: new ConfiguracionEnMemoria(configuracionInicial),
@@ -42,7 +43,7 @@ export async function iniciarSimulacion(ficha: Ficha, hoy?: Date): Promise<Simul
     crm,
     async enviar(texto, rutaDeArchivo) {
       const archivo = rutaDeArchivo ? await cargarArchivo(rutaDeArchivo) : undefined;
-      return atenderMensaje({ conversacionId, texto, ...(archivo && { archivo }) }, dependencias);
+      return atenderMensaje({ conversacionId, texto, ...(archivo && { archivos: [archivo] }) }, dependencias);
     },
     async conversacion() {
       const actual = await conversaciones.obtener(conversacionId);

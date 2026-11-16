@@ -7,7 +7,7 @@ export function transcripcionEnMarkdown(titulo: string, conversacion: Conversaci
   return [
     `# ${titulo}`,
     "",
-    `Ficha: ${conversacion.ficha.nombre} · ${conversacion.ficha.sectorDeclarado} · ${conversacion.ficha.empleadorDeclarado} · ${conversacion.ficha.provincia} · convenio ${conversacion.ficha.convenio}`,
+    `Ficha: ${conversacion.ficha.nombre} · ${conversacion.ficha.sectorDeclarado} · ${conversacion.ficha.empleadorDeclarado ?? "empleador sin informar"} · ${conversacion.ficha.provincia} · convenio ${conversacion.ficha.convenio}`,
     "",
     "## Conversación",
     "",
@@ -64,6 +64,7 @@ function resumenDeLectura(detalle: Record<string, unknown>): string {
   const periodo = detalle.periodo as { anio: number; mes: number } | undefined;
   return [
     detalle.esReciboDeSueldo ? "es recibo" : "no es recibo",
+    ...acompaniantes(detalle),
     detalle.legible ? "legible" : "ilegible",
     detalle.empleador ? `empleador "${detalle.empleador}"` : "sin empleador",
     periodo ? `período ${periodo.mes}/${periodo.anio}` : "sin período",
@@ -87,4 +88,10 @@ function lineaDeAccion(accion: AccionSimulada): string {
     case "transferencia":
       return `- Chat transferido a ${accion.destino}: ${accion.motivo}`;
   }
+}
+
+function acompaniantes(detalle: Record<string, unknown>): string[] {
+  const otros = (detalle.otrosDocumentos as string[] | undefined) ?? [];
+  const liquidaciones = Number(detalle.liquidaciones ?? 1);
+  return [...(liquidaciones > 1 ? [`${liquidaciones} liquidaciones`] : []), ...(otros.length ? [`además trae ${otros.join(", ")}`] : [])];
 }

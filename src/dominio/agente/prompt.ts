@@ -39,7 +39,7 @@ function textoDeFicha({ ficha, hoy, diaDeGracia }: Entrada): string {
     `Nombre: ${ficha.nombre}`,
     `Provincia: ${ficha.provincia}`,
     `Convenio: ${ficha.convenio}`,
-    `Situación declarada: ${ficha.situacionDeclarada ?? (ficha.sectorDeclarado === "publico" ? "empleo público" : "empleo privado")}, en ${ficha.empleadorDeclarado}`,
+    `Situación declarada: ${ficha.situacionDeclarada ?? (ficha.sectorDeclarado === "publico" ? "empleo público" : "empleo privado")}${ficha.empleadorDeclarado ? `, en ${ficha.empleadorDeclarado}` : ""}`,
     esJubilado(ficha) ? "Es jubilado/a o pensionado/a: hablá de «recibo de haberes», no de «recibo de sueldo» ni de «empleador» ni de «trabajás en»." : "Es personal activo.",
     `Recibo que necesitamos: el de ${admitidos}`,
     "El DNI y el CUIL los verifica el sistema, no vos: nunca los pidas ni los repitas.",
@@ -47,7 +47,7 @@ function textoDeFicha({ ficha, hoy, diaDeGracia }: Entrada): string {
 }
 
 function esJubilado(ficha: Ficha): boolean {
-  return /jubilad|pensionad|haberes pasivos|caja de jubilaciones|anses/i.test(`${ficha.situacionDeclarada ?? ""} ${ficha.empleadorDeclarado}`);
+  return /jubilad|pensionad|haberes pasivos|caja de jubilaciones|anses/i.test(`${ficha.situacionDeclarada ?? ""} ${ficha.empleadorDeclarado ?? ""}`);
 }
 
 function textoDeIndice(escenarios: Escenario[]): string {

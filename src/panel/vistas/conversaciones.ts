@@ -36,7 +36,7 @@ function detalle(caso: CasoCorrido): Html {
   ${seccionHtml(caso.archivo.slice(0, 2), caso.nombre, caso.paso ? chip("ok", "eval pasa") : chip("rojo", "eval falla"))}
   <div class="ficha">
     <div><small>Socio</small><b>${escapar(ficha.nombre)}</b></div>
-    <div><small>Empleo declarado</small><b>${sector} · ${escapar(ficha.empleadorDeclarado)}</b></div>
+    <div><small>Empleo declarado</small><b>${sector} · ${escapar(ficha.empleadorDeclarado ?? "sin informar")}</b></div>
     <div><small>Provincia · convenio</small><b>${escapar(ficha.provincia)} · ${escapar(ficha.convenio)}</b></div>
     <div><small>Estado final</small><b>${ETIQUETA_DE_ESTADO[caso.estadoFinal]}</b></div>
   </div>
@@ -90,6 +90,8 @@ function resumenDeLectura(d: Record<string, unknown>): Html {
   return escapar(
     [
       d.esReciboDeSueldo ? "Recibo de sueldo" : "No es un recibo",
+      ...(Number(d.liquidaciones ?? 1) > 1 ? [`${String(d.liquidaciones)} liquidaciones en el archivo`] : []),
+      ...((d.otrosDocumentos as string[] | undefined)?.length ? [`además trae ${(d.otrosDocumentos as string[]).join(", ")}`] : []),
       d.legible ? "legible" : "ilegible",
       d.empleador ? String(d.empleador) : "sin empleador",
       periodo ? `${periodo.mes}/${periodo.anio}` : "sin período",

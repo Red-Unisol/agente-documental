@@ -91,9 +91,9 @@ export class BotDeBitrix {
       return `cedido a una persona: ${decision.motivo}`;
     }
     await this.asegurarConversacion(chatId, negociacionId, hoja(parametros, "MESSAGE_ID"));
-    const adjunto = await this.primerArchivo(rama(parametros, "FILES"), credencial);
-    const texto = hoja(parametros, "MESSAGE") || adjunto.marca || "";
-    const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(adjunto.archivo && { archivo: adjunto.archivo }) }, this.colaboradores.dependencias);
+    const adjuntos = await this.archivosDelMensaje(rama(parametros, "FILES"), credencial);
+    const texto = hoja(parametros, "MESSAGE") || adjuntos.marca || "";
+    const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(adjuntos.archivos.length > 0 && { archivos: adjuntos.archivos }) }, this.colaboradores.dependencias);
     try {
       if (resultado.tipo === "respondio") await this.responder(dialogo, resultado.texto);
     } finally {
@@ -178,16 +178,26 @@ export class BotDeBitrix {
     }, conversacion);
   }
 
-  // Si el archivo no es foto ni PDF, o no se pudo bajar, el mensaje igual entra a la conversación
-  // con una marca: el agente le pide al socio que lo mande de nuevo, en vez de quedarse callado.
-  private async primerArchivo(archivos: Anidado, credencial?: CredencialDelEvento): Promise<{ archivo?: Archivo; marca?: string }> {
-    const primero = Object.values(archivos).find((a): a is Anidado => typeof a === "object");
-    if (!primero) return {};
-    const nombre = hoja(primero, "name") || "archivo";
+  // Un mensaje puede traer varios archivos. Si alguno no es foto ni PDF, o no se pudo bajar, el
+  // mensaje igual entra a la conversación con una marca: el agente le pide al socio que lo mande
+  // de nuevo, en vez de quedarse callado.
+  private async archivosDelMensaje(adjuntos: Anidado, credencial?: CredencialDelEvento): Promise<{ archivos: Archivo[]; marca?: string }> {
+    const archivos: Archivo[] = [];
+    let marca: string | undefined;
+    for (const adjunto of Object.values(adjuntos).filter((a): a is Anidado => typeof a === "object")) {
+      const resultado = await this.bajarArchivo(adjunto, credencial);
+      if (resultado.archivo) archivos.push(resultado.archivo);
+      marca = resultado.archivo ? (marca ?? resultado.marca) : resultado.marca;
+    }
+    return { archivos, ...(marca && { marca }) };
+  }
+
+  private async bajarArchivo(adjunto: Anidado, credencial?: CredencialDelEvento): Promise<{ archivo?: Archivo; marca: string }> {
+    const nombre = hoja(adjunto, "name") || "archivo";
     const extension = nombre.split(".").pop()?.toLowerCase() ?? "";
     const tipoMime = TIPOS_MIME[extension];
     if (!tipoMime) return { marca: `(mandó un archivo que no es foto ni PDF: ${extension || "tipo desconocido"})` };
-    const id = hoja(primero, "id");
+    const id = hoja(adjunto, "id");
     try {
       const bytes = await this.colaboradores.cliente.descargarArchivo(id, credencial);
       return { archivo: { id, nombre, tipoMime, bytes }, marca: "(archivo)" };

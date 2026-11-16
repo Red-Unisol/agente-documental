@@ -10,8 +10,10 @@ export interface MapeoDeBitrix {
   campos: {
     recibo: string;
     dni: string;
+    cuil: string; // en el embudo real el DNI casi nunca está cargado y el CUIL casi siempre
     provincia: string;
-    convenio: string; // la mutual o línea (Celesol, Fiat, Amejuca...)
+    convenio: string; // la mutual (Celesol, Fiat, Amejuca...); se completa recién al acreditar
+    linea: string; // texto libre: "AMEJUCA Premium", "Caja Nuevo"... sirve cuando el convenio todavía está vacío
     situacionLaboral: string; // lista: Empleado Publico Provincial, Docente, Jubilado, Empleado Privado...
     empleador: string;
     organismo: string;
@@ -32,8 +34,10 @@ export function mapeoDelEmbudoDePrueba(usuarioDePrueba: number): MapeoDeBitrix {
     campos: {
       recibo: "UF_CRM_1692197958",
       dni: "UF_CRM_6601C9A69747F",
+      cuil: "UF_CRM_64FF4F9B5C195",
       provincia: "UF_CRM_1684346013612",
       convenio: "UF_CRM_1685450067166",
+      linea: "UF_CRM_659EBB0445E8E",
       situacionLaboral: "UF_CRM_662B9D2685477",
       empleador: "UF_CRM_6A43D31EBC847",
       organismo: "UF_CRM_WA_ORGANISMO",

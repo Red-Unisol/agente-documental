@@ -1,9 +1,10 @@
 import type { Ficha, Sector } from "../../dominio/tipos.js";
+import { dniDeCuil, soloDigitos } from "../../dominio/verificacion/identidad.js";
 import type { ClienteBitrix } from "./cliente-rest.js";
 import type { MapeoDeBitrix } from "./mapeo.js";
 
-type Negociacion = Record<string, unknown> & { ID: string; CONTACT_ID?: string | null };
-type Enumeraciones = Record<string, Map<string, string>>; // campo → (id del valor → etiqueta)
+export type Negociacion = Record<string, unknown> & { ID: string; CONTACT_ID?: string | null };
+export type Enumeraciones = Record<string, Map<string, string>>; // campo → (id del valor → etiqueta)
 
 // Valores de "Sit Laboral" que son sector público (empleo estatal, docencia, fuerzas, salud, pasivos).
 const SITUACIONES_DEL_SECTOR_PUBLICO = /p[uú]blic|estatal|municipal|provinc|nacional|docente|polic|jubil|pensio|salud|\bUNC\b|DASPU/i;
@@ -20,20 +21,7 @@ export class FichasDesdeBitrix {
 
   async deNegociacion(negociacionId: string): Promise<Ficha> {
     const negociacion = await this.cliente.llamar<Negociacion>("crm.deal.get", { id: negociacionId });
-    const etiquetas = await this.etiquetas();
-    const nombre = await this.nombreDelContacto(negociacion);
-    const situacionLaboral = etiqueta(etiquetas, this.mapeo.campos.situacionLaboral, negociacion[this.mapeo.campos.situacionLaboral]);
-    const empleador = texto(negociacion[this.mapeo.campos.empleador]) || texto(negociacion[this.mapeo.campos.organismo]);
-    return {
-      negociacionId: negociacion.ID,
-      nombre,
-      dni: texto(negociacion[this.mapeo.campos.dni]).replace(/\D/g, ""),
-      provincia: etiqueta(etiquetas, this.mapeo.campos.provincia, negociacion[this.mapeo.campos.provincia]),
-      convenio: etiqueta(etiquetas, this.mapeo.campos.convenio, negociacion[this.mapeo.campos.convenio]) || "sin informar",
-      sectorDeclarado: sectorDeLaSituacionLaboral(situacionLaboral),
-      empleadorDeclarado: empleador || "sin informar",
-      ...(situacionLaboral && { situacionDeclarada: situacionLaboral }),
-    };
+    return fichaDeNegociacion(negociacion, await this.nombreDelContacto(negociacion), await this.etiquetas(), this.mapeo.campos);
   }
 
   private async nombreDelContacto(negociacion: Negociacion): Promise<string> {
@@ -53,6 +41,32 @@ export class FichasDesdeBitrix {
     );
     return this.enumeraciones;
   }
+}
+
+// En el embudo real de ventas la ficha llega incompleta: el DNI casi nunca está y el CUIL casi
+// siempre; el convenio se completa al acreditar; el empleador casi nunca. La ficha se arma con lo
+// que haya, y lo que falta queda vacío para que la verificación no compare contra un dato inventado.
+export function fichaDeNegociacion(negociacion: Negociacion, nombre: string, etiquetas: Enumeraciones, campos: MapeoDeBitrix["campos"]): Ficha {
+  const situacionLaboral = etiqueta(etiquetas, campos.situacionLaboral, negociacion[campos.situacionLaboral]);
+  const empleador = texto(negociacion[campos.empleador]) || texto(negociacion[campos.organismo]);
+  return {
+    negociacionId: negociacion.ID,
+    nombre,
+    dni: documentoDe(texto(negociacion[campos.dni]), texto(negociacion[campos.cuil])),
+    provincia: etiqueta(etiquetas, campos.provincia, negociacion[campos.provincia]),
+    convenio: etiqueta(etiquetas, campos.convenio, negociacion[campos.convenio]) || texto(negociacion[campos.linea]) || "sin informar",
+    sectorDeclarado: sectorDeLaSituacionLaboral(situacionLaboral),
+    ...(empleador && { empleadorDeclarado: empleador }),
+    ...(situacionLaboral && { situacionDeclarada: situacionLaboral }),
+  };
+}
+
+// El número de documento contra el que se compara el recibo: el DNI si está cargado; si no, el que va adentro del CUIL.
+function documentoDe(dni: string, cuil: string): string {
+  const delDni = soloDigitos(dni);
+  if (Number(delDni) > 0) return delDni;
+  const delCuil = soloDigitos(cuil.split(/[.,]/)[0] ?? "");
+  return delCuil.length >= 10 && delCuil.length <= 11 ? dniDeCuil(delCuil) : "";
 }
 
 function etiqueta(enumeraciones: Enumeraciones, campo: string, valor: unknown): string {

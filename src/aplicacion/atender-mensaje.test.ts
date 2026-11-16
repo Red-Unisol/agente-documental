@@ -3,7 +3,7 @@ import { CrmSimulado } from "../adaptadores/memoria/crm-simulado.js";
 import { ConfiguracionEnMemoria, ConversacionesEnMemoria, RelojFijo } from "../adaptadores/memoria/repositorios.js";
 import { nuevaConversacion } from "../dominio/conversacion/conversacion.js";
 import { usoVacio } from "../dominio/costos/uso.js";
-import type { LecturaDeRecibo } from "../dominio/tipos.js";
+import type { LecturaDeDocumento, Liquidacion } from "../dominio/tipos.js";
 import type { EleccionDelModelo, ModeloConversacional, PeticionAlModelo, RespuestaDelModelo } from "../puertos/modelo-conversacional.js";
 import { atenderMensaje } from "./atender-mensaje.js";
 import { configuracionInicial } from "./configuracion-inicial.js";
@@ -19,16 +19,22 @@ const ficha = {
   empleadorDeclarado: "Ministerio de Educación de Catamarca",
 };
 
-const reciboCorrecto: LecturaDeRecibo = {
-  esReciboDeSueldo: true,
-  legible: true,
+const liquidacionCorrecta: Liquidacion = {
   empleador: "Ministerio de Educación de Catamarca",
   cuil: "27-12345678-0",
+  dni: undefined,
   periodo: { anio: 2026, mes: 9 },
   provincia: "Catamarca",
   sector: "publico",
-  faltantes: [],
+  conHaberes: true,
 };
+
+function recibo(cambios: Partial<Liquidacion> = {}): LecturaDeDocumento {
+  return { legible: true, otrosDocumentos: [], liquidaciones: [{ ...liquidacionCorrecta, ...cambios }] };
+}
+
+const reciboCorrecto = recibo();
+const dniSuelto: LecturaDeDocumento = { legible: true, otrosDocumentos: ["dni"], liquidaciones: [] };
 
 class ModeloGuionado implements ModeloConversacional {
   readonly peticiones: PeticionAlModelo[] = [];
@@ -42,7 +48,7 @@ class ModeloGuionado implements ModeloConversacional {
   }
 }
 
-async function armar(respuestas: EleccionDelModelo[], lectura: LecturaDeRecibo = reciboCorrecto) {
+async function armar(respuestas: EleccionDelModelo[], lectura: LecturaDeDocumento = reciboCorrecto) {
   const conversaciones = new ConversacionesEnMemoria();
   await conversaciones.guardar(nuevaConversacion("c1", "chat-1", ficha));
   const modelo = new ModeloGuionado(respuestas);
@@ -81,7 +87,7 @@ describe("atenderMensaje", () => {
       { tipo: "llamadas", llamadas: [{ id: "2", nombre: "revisar_recibo", argumentos: {} }] },
       { tipo: "texto", texto: "Quedó cargado, pasa a análisis." },
     ]);
-    const resultado = await atenderMensaje({ conversacionId: "c1", texto: "aca va", archivo }, dependencias);
+    const resultado = await atenderMensaje({ conversacionId: "c1", texto: "aca va", archivos: [archivo] }, dependencias);
 
     expect(resultado.conversacion.estado).toBe("documentacion_cargada");
     expect(crm.acciones).toEqual([
@@ -97,9 +103,9 @@ describe("atenderMensaje", () => {
         { tipo: "llamadas", llamadas: [{ id: "2", nombre: "revisar_recibo", argumentos: {} }] },
         { tipo: "texto", texto: "Te va a contactar una persona." },
       ],
-      { ...reciboCorrecto, cuil: "20-87654321-5" },
+      recibo({ cuil: "20-87654321-5" }),
     );
-    const primero = await atenderMensaje({ conversacionId: "c1", texto: "aca va", archivo }, dependencias);
+    const primero = await atenderMensaje({ conversacionId: "c1", texto: "aca va", archivos: [archivo] }, dependencias);
     const segundo = await atenderMensaje({ conversacionId: "c1", texto: "por qué?" }, dependencias);
 
     expect(primero.tipo).toBe("respondio");
@@ -118,13 +124,48 @@ describe("atenderMensaje", () => {
       { tipo: "texto", texto: "Ya está cargado, no hace falta más." },
     ]);
     dependencias.lector = { leer: async () => { lecturas += 1; return { lectura: reciboCorrecto, uso: usoVacio("guionado") }; } };
-    await atenderMensaje({ conversacionId: "c1", texto: "", archivo }, dependencias);
-    const segundo = await atenderMensaje({ conversacionId: "c1", texto: "por las dudas", archivo: { ...archivo, id: "a2", nombre: "dni.png" } }, dependencias);
+    await atenderMensaje({ conversacionId: "c1", texto: "", archivos: [archivo] }, dependencias);
+    const segundo = await atenderMensaje({ conversacionId: "c1", texto: "por las dudas", archivos: [{ ...archivo, id: "a2", nombre: "dni.png" }] }, dependencias);
 
     expect(lecturas).toBe(1);
     expect(segundo.tipo).toBe("respondio");
     expect(crm.acciones.filter((a) => a.tipo === "etapa")).toHaveLength(1);
     expect(segundo.conversacion.auditoria.filter((e) => e.tipo === "verificacion")).toHaveLength(1);
+  });
+
+  it("si manda el DNI y el recibo en archivos separados, lee los dos y carga el recibo", async () => {
+    const { crm, dependencias } = await armar([
+      { tipo: "llamadas", llamadas: [{ id: "1", nombre: "cargar_escenario", argumentos: { clave: "E4" } }] },
+      { tipo: "llamadas", llamadas: [{ id: "2", nombre: "revisar_recibo", argumentos: {} }] },
+      { tipo: "texto", texto: "Quedó cargado." },
+    ]);
+    const leidos: string[] = [];
+    dependencias.lector = { leer: async (a) => { leidos.push(a.nombre); return { lectura: a.nombre === "dni.png" ? dniSuelto : reciboCorrecto, uso: usoVacio("guionado") }; } };
+    const archivos = [{ ...archivo, id: "a1", nombre: "dni.png" }, { ...archivo, id: "a2", nombre: "recibo.pdf" }];
+    const resultado = await atenderMensaje({ conversacionId: "c1", texto: "van los dos", archivos }, dependencias);
+
+    expect(leidos).toEqual(["dni.png", "recibo.pdf"]);
+    expect(resultado.conversacion.estado).toBe("documentacion_cargada");
+    expect(crm.acciones[0]).toEqual({ tipo: "recibo_cargado", negociacionId: "N-1", archivo: "recibo.pdf" });
+  });
+
+  it("si primero mandó el DNI y después el recibo, el segundo archivo se revisa solo", async () => {
+    const { dependencias } = await armar([
+      { tipo: "llamadas", llamadas: [{ id: "1", nombre: "cargar_escenario", argumentos: { clave: "E4" } }] },
+      { tipo: "llamadas", llamadas: [{ id: "2", nombre: "revisar_recibo", argumentos: {} }] },
+      { tipo: "texto", texto: "Eso es el DNI, me falta el recibo." },
+      { tipo: "llamadas", llamadas: [{ id: "3", nombre: "cargar_escenario", argumentos: { clave: "E4" } }] },
+      { tipo: "llamadas", llamadas: [{ id: "4", nombre: "revisar_recibo", argumentos: {} }] },
+      { tipo: "texto", texto: "Quedó cargado." },
+    ]);
+    const leidos: string[] = [];
+    dependencias.lector = { leer: async (a) => { leidos.push(a.nombre); return { lectura: a.nombre === "dni.png" ? dniSuelto : reciboCorrecto, uso: usoVacio("guionado") }; } };
+    const primero = await atenderMensaje({ conversacionId: "c1", texto: "", archivos: [{ ...archivo, id: "a1", nombre: "dni.png" }] }, dependencias);
+    const segundo = await atenderMensaje({ conversacionId: "c1", texto: "", archivos: [{ ...archivo, id: "a2", nombre: "recibo.pdf" }] }, dependencias);
+
+    expect(primero.conversacion.estado).toBe("activa");
+    expect(segundo.conversacion.estado).toBe("documentacion_cargada");
+    expect(leidos).toEqual(["dni.png", "recibo.pdf"]);
   });
 
   it("le cuenta al modelo qué pasó con cada archivo del historial", async () => {
@@ -136,9 +177,9 @@ describe("atenderMensaje", () => {
         { tipo: "llamadas", llamadas: [{ id: "3", nombre: "cargar_escenario", argumentos: { clave: "E4" } }] },
         { tipo: "texto", texto: "Sí, lo vi: es de junio." },
       ],
-      { ...reciboCorrecto, periodo: { anio: 2026, mes: 6 } },
+      recibo({ periodo: { anio: 2026, mes: 6 } }),
     );
-    await atenderMensaje({ conversacionId: "c1", texto: "", archivo }, dependencias);
+    await atenderMensaje({ conversacionId: "c1", texto: "", archivos: [archivo] }, dependencias);
     await atenderMensaje({ conversacionId: "c1", texto: "pero ya te lo mandé!" }, dependencias);
 
     const primerMensaje = modelo.peticiones.at(-1)!.mensajes[0];

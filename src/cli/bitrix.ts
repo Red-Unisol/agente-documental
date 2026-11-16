@@ -123,6 +123,7 @@ function armarDependencias(crmReal: CrmBitrix): Dependencias {
   return {
     modelo: new ModeloConversacionalOpenAI(openai, entorno.OPENAI_MODELO_CONVERSACION),
     lector: new LectorDeReciboOpenAI(openai, entorno.OPENAI_MODELO_LECTURA),
+    ...(entorno.OPENAI_MODELO_LECTURA_RESPALDO && { lectorDeRespaldo: new LectorDeReciboOpenAI(openai, entorno.OPENAI_MODELO_LECTURA_RESPALDO) }),
     crm: crmReal,
     conversaciones: new ConversacionesEnArchivos(entornoBitrix.AGENTE_DATOS_CARPETA),
     configuracion: new ConfiguracionEnMemoria(configuracionInicial),
