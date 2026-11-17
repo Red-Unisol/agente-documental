@@ -132,10 +132,12 @@ ahí el test y se corre el eval de lectura con documentos reales (`npm run evals
 En cada mensaje el agente lee la negociación y recibe dos cosas
 (`src/adaptadores/bitrix/datos-de-negociacion.ts`):
 
-**Si hay que pedirle el recibo.** Sí, cuando la negociación está en DOCUMENTACIÓN o FALTA
-DOCUMENTACIÓN y no tiene recibo cargado. No, cuando el recibo ya está o la negociación está en otra
-etapa: el socio puede escribir en cualquier momento y el agente no se lo reclama. Lo decide el código,
-no el modelo; el prompt sólo recibe el resultado.
+**Si hay que pedirle el recibo.** Sí, cuando la negociación no tiene recibo cargado y todavía no
+pasó la documentación: está en DOCUMENTACIÓN, en FALTA DOCUMENTACIÓN o en una etapa anterior del
+embudo (presentación, respuesta). No, cuando el recibo ya está, cuando la negociación está en
+revisión o más adelante (oferta, validación) o cuando está cerrada: el socio puede escribir en
+cualquier momento y el agente no se lo reclama. Qué etapa es anterior sale del orden de las etapas en
+el embudo de Bitrix. Lo decide el código, no el modelo; el prompt sólo recibe el resultado.
 
 **Los datos que puede contarle al socio**, como una lista de `etiqueta: valor`:
 
@@ -164,8 +166,8 @@ edita E19 o se agrega un escenario; no hace falta tocar código.
 
 Dos reglas quedan en el código y no dependen del prompt: el agente sólo escribe en negociaciones de
 su embudo, y sólo mueve la etapa cuando la negociación está en una de sus cuatro etapas de
-documentación. Un recibo que llega con la negociación en OFERTA se carga y queda anotado en la línea
-de tiempo, pero la etapa no cambia.
+documentación. Un recibo que llega con la negociación en PRESENTACIÓN o en OFERTA se carga y queda
+anotado en la línea de tiempo, pero la etapa no cambia.
 
 ## 6. Evals: las conversaciones de prueba
 
@@ -216,7 +218,7 @@ Bitrix.
 recibo sintético (sección 7). La `ficha` tiene los mismos campos que llegan desde Bitrix.
 
 Para probar una consulta sobre la solicitud, el eval dice qué tiene cargado la negociación con el
-campo opcional `negociacion`, al lado de `ficha` (ejemplos en los casos 46 a 50):
+campo opcional `negociacion`, al lado de `ficha` (ejemplos en los casos 46 a 52):
 
 ```json
 "negociacion": {

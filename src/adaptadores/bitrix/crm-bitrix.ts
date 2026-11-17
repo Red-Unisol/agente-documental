@@ -2,7 +2,7 @@ import type { Archivo, Etapa, Mensaje } from "../../dominio/conversacion/convers
 import type { EstadoDeNegociacion } from "../../dominio/tipos.js";
 import type { ClienteCrm, DestinoDeDerivacion } from "../../puertos/cliente-crm.js";
 import type { ClienteBitrix } from "./cliente-rest.js";
-import { type DefinicionesDeCampos, type EtapaDelEmbudo, estadoDeNegociacion, nombresParaElSocio } from "./datos-de-negociacion.js";
+import { type DefinicionesDeCampos, type EtapaDelEmbudo, estadoDeNegociacion } from "./datos-de-negociacion.js";
 import type { MapeoDeBitrix } from "./mapeo.js";
 
 // CRM real sobre la aplicación local. Cada método es una operación de negocio del
@@ -19,9 +19,9 @@ export class CrmBitrix implements ClienteCrm {
   private readonly negociacionPorChat = new Map<string, string>();
   private readonly transferenciasPendientes = new Map<string, DestinoDeDerivacion>();
   private readonly comentarioDeConversacion = new Map<string, number>();
-  // Las definiciones de campos y los nombres de las etapas no cambian mientras el proceso corre.
+  // Las definiciones de campos y las etapas del embudo no cambian mientras el proceso corre.
   private definiciones: Promise<DefinicionesDeCampos> | undefined;
-  private nombresDeEtapas: Promise<Map<string, string>> | undefined;
+  private etapas: Promise<EtapaDelEmbudo[]> | undefined;
 
   constructor(
     private readonly cliente: ClienteBitrix,
@@ -48,11 +48,15 @@ export class CrmBitrix implements ClienteCrm {
 
   async estadoDeNegociacion(negociacionId: string): Promise<EstadoDeNegociacion> {
     this.definiciones ??= this.cliente.llamar<DefinicionesDeCampos>("crm.deal.fields");
-    this.nombresDeEtapas ??= this.cliente
-      .llamar<EtapaDelEmbudo[]>("crm.status.list", { filter: { ENTITY_ID: this.mapeo.embudo === 0 ? "DEAL_STAGE" : `DEAL_STAGE_${this.mapeo.embudo}` } })
-      .then(nombresParaElSocio);
     const negociacion = await this.cliente.llamar<Record<string, unknown>>("crm.deal.get", { id: negociacionId });
-    return estadoDeNegociacion(negociacion, await this.definiciones, await this.nombresDeEtapas, this.mapeo);
+    return estadoDeNegociacion(negociacion, await this.definiciones, await this.etapasDelEmbudo(), this.mapeo);
+  }
+
+  private etapasDelEmbudo(): Promise<EtapaDelEmbudo[]> {
+    this.etapas ??= this.cliente.llamar<EtapaDelEmbudo[]>("crm.status.list", {
+      filter: { ENTITY_ID: this.mapeo.embudo === 0 ? "DEAL_STAGE" : `DEAL_STAGE_${this.mapeo.embudo}` },
+    });
+    return this.etapas;
   }
 
   async cargarRecibo(negociacionId: string, archivo: Archivo): Promise<void> {
@@ -63,8 +67,9 @@ export class CrmBitrix implements ClienteCrm {
   }
 
   // El agente mueve la negociación sólo entre sus etapas de documentación. Si está en cualquier otra
-  // (oferta, validación, una etapa de cierre), no la toca: el socio puede escribir en cualquier momento
-  // y una consulta o un recibo nuevo no tienen que hacerla retroceder ni reabrirla. Deja la nota y nada más.
+  // (una anterior como presentación, oferta, validación, una etapa de cierre), no la toca: el socio
+  // puede escribir en cualquier momento y una consulta o un recibo no tienen que hacerla saltar,
+  // retroceder ni reabrirla. Deja la nota y nada más.
   async moverEtapa(negociacionId: string, etapa: Etapa, motivo?: string): Promise<boolean> {
     const { STAGE_ID: actual } = await this.cliente.llamar<{ STAGE_ID?: string }>("crm.deal.get", { id: negociacionId });
     if (!Object.values(this.mapeo.etapas).includes(actual ?? "")) {

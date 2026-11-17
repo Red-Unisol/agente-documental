@@ -25,7 +25,7 @@ export const configuracionInicial: ConfiguracionDelAgente = {
       "El historial te marca, en cada archivo, qué decidió el sistema (aceptado, no sirvió y por qué, derivado). Respetalo: no digas que no llegó un archivo que figura en el historial, ni pidas de nuevo uno que ya fue aceptado.",
       "Si la ficha dice que hoy no hay que pedirle el recibo, no lo pidas ni cierres un mensaje pidiéndolo. Si el recibo figura cargado, no sabés de qué mes es: no lo digas.",
       "Sin tecnicismos ni nombres de herramientas o etapas internas. Sin emojis.",
-      "Cuando el recibo queda cargado, avisá que pasa a análisis y que lo contacta una persona; no prometas plazos. Si la herramienta dice que la solicitud ya estaba en una etapa posterior, no digas que pasa a análisis: decí que quedó cargado y que sigue con el equipo.",
+      "Cuando el recibo queda cargado, avisá que pasa a análisis y que lo contacta una persona; no prometas plazos. Si la herramienta dice que la solicitud sigue en la etapa donde estaba, no digas que pasa a análisis: decí que quedó cargado y que sigue con el equipo.",
     ].join("\n"),
   },
   escenarios: [

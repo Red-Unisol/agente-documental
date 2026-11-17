@@ -27,8 +27,8 @@ No aprueba créditos, no negocia montos ni cuotas, no toca Kestra ni el sistema 
    empleador no esté excluido por convenio.
 4. Carga el archivo en el campo de recibo de la negociación y la mueve a DOCU RECIBIDA; si falta
    algo, a FALTA DOCUMENTACION; si no puede decidir, deriva a un operador con el motivo. Sólo mueve
-   la etapa cuando la negociación está en una de sus etapas de documentación: nunca la hace
-   retroceder desde una etapa posterior ni reabre una cerrada.
+   la etapa cuando la negociación está en una de sus etapas de documentación: nunca la adelanta
+   desde una anterior, ni la hace retroceder desde una posterior, ni reabre una cerrada.
 
 Lo que el agente dice y decide (bloques del prompt, 19 escenarios, reglas de verificación) vive en
 `src/aplicacion/configuracion-inicial.ts`, y cada escenario tiene conversaciones de prueba en

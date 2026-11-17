@@ -12,6 +12,8 @@ export type DefinicionesDeCampos = Record<string, DefinicionDeCampo>;
 export interface EtapaDelEmbudo {
   STATUS_ID: string;
   NAME: string;
+  // Posición en el embudo: las etapas se recorren de menor a mayor.
+  SORT?: string | number;
   // "F" en las etapas de cierre sin éxito (SIN CUPO, SIT. NEG. EN BCRA, LISTA NEGRA...), "S" en la de éxito.
   SEMANTICS?: string | null;
 }
@@ -24,6 +26,19 @@ export function nombresParaElSocio(etapas: EtapaDelEmbudo[]): Map<string, string
   return new Map(etapas.map((etapa) => [etapa.STATUS_ID, etapa.SEMANTICS === "F" ? ETAPA_CERRADA : etapa.NAME]));
 }
 
+// Las etapas del embudo que vienen antes del paso de documentación (presentación, respuesta, la
+// calificación automática). Ahí el socio todavía no mandó el recibo, así que el agente lo pide. Lo que
+// viene después de la documentación, las etapas de cierre y una etapa que el embudo no conoce quedan
+// afuera: ahí no lo pide.
+export function etapasAnterioresALaDocumentacion(etapas: EtapaDelEmbudo[], deDocumentacion: MapeoDeBitrix["etapas"]): Set<string> {
+  const propias = new Set(Object.values(deDocumentacion));
+  const orden = (etapa: EtapaDelEmbudo) => Number(etapa.SORT) || 0;
+  const deLaDocumentacion = etapas.filter((etapa) => propias.has(etapa.STATUS_ID));
+  if (!deLaDocumentacion.length) return new Set();
+  const primera = Math.min(...deLaDocumentacion.map(orden));
+  return new Set(etapas.filter((etapa) => !propias.has(etapa.STATUS_ID) && !etapa.SEMANTICS && orden(etapa) < primera).map((etapa) => etapa.STATUS_ID));
+}
+
 const LARGO_MAXIMO = 400;
 const FECHA = new Intl.DateTimeFormat("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "America/Argentina/Cordoba" });
 const PESOS = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 });
@@ -34,15 +49,18 @@ const PESOS = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 });
 export function estadoDeNegociacion(
   negociacion: Record<string, unknown>,
   definiciones: DefinicionesDeCampos,
-  nombresDeEtapas: Map<string, string>,
+  etapasDelEmbudo: EtapaDelEmbudo[],
   mapeo: Pick<MapeoDeBitrix, "campos" | "datosParaElSocio" | "etapas">,
 ): EstadoDeNegociacion {
+  const nombresDeEtapas = nombresParaElSocio(etapasDelEmbudo);
   const etapa = texto(negociacion.STAGE_ID);
   const monto = Number(negociacion.OPPORTUNITY);
   const reciboCargado = tieneValor(negociacion[mapeo.campos.recibo]);
-  // El recibo se pide mientras la negociación espera documentación. Más adelante (oferta, validación,
-  // acreditación) o cerrada, el socio puede escribir igual y el agente no tiene que reclamárselo.
-  const esperaDocumentacion = !etapa || etapa === mapeo.etapas.DOCUMENTACION || etapa === mapeo.etapas.FALTA_DOCUMENTACION;
+  // El recibo se pide mientras la negociación no pasó la documentación: en una etapa anterior o
+  // esperándola. Más adelante (oferta, validación, acreditación) o cerrada, el socio puede escribir
+  // igual y el agente no tiene que reclamárselo.
+  const esperaDocumentacion =
+    !etapa || etapa === mapeo.etapas.DOCUMENTACION || etapa === mapeo.etapas.FALTA_DOCUMENTACION || etapasAnterioresALaDocumentacion(etapasDelEmbudo, mapeo.etapas).has(etapa);
   const fijos: DatoDeNegociacion[] = [
     ...(etapa ? [{ etiqueta: "Etapa de la solicitud", valor: nombresDeEtapas.get(etapa) ?? etapa }] : []),
     { etiqueta: "Recibo cargado en la negociación", valor: reciboCargado ? "sí" : "no" },

@@ -1,0 +1,51 @@
+{
+  "nombre": "Llega con el mensaje del formulario pidiendo asesoramiento: es el comienzo de la solicitud, pide el recibo y no deriva",
+  "hoy": "2026-11-17",
+  "ficha": {
+    "negociacionId": "SIM-52",
+    "nombre": "Marta",
+    "dni": "12333444",
+    "provincia": "Cordoba",
+    "convenio": "Red Mutual",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "ANSES",
+    "situacionDeclarada": "Jubilado Nacional"
+  },
+  "negociacion": {
+    "hayQuePedirElRecibo": true,
+    "datos": [
+      {
+        "etiqueta": "Etapa de la solicitud",
+        "valor": "PRESENTACION"
+      },
+      {
+        "etiqueta": "Recibo cargado en la negociación",
+        "valor": "no"
+      },
+      {
+        "etiqueta": "Fecha de inicio de la solicitud",
+        "valor": "17/11/2026"
+      }
+    ]
+  },
+  "turnos": [
+    {
+      "texto": "Quiero solicitar un préstamo\nHola, acabo de completar el formulario en la web de Red Unisol por un préstamo. ¿Podrían asesorarme por acá? (solicitud: Zx81Qw90LmN2)\nQuiero un préstamo"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E1"
+    ],
+    "respuestasContienen": [
+      "haberes",
+      "octubre"
+    ],
+    "respuestasNoContienen": [
+      "PRESENTACION",
+      "te paso con"
+    ]
+  }
+}

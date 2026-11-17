@@ -19,7 +19,13 @@ const definiciones: DefinicionesDeCampos = {
   UF_SOCIO: { type: "enumeration", items: [{ ID: "1", VALUE: "Si" }, { ID: "2", VALUE: "No" }] },
   UF_MOTIVO: { type: "enumeration", items: [{ ID: "9", VALUE: "OTRO BANCO" }] },
 };
-const etapas = new Map([["C19:UC_53P7WJ", "DOCUMENTACION"]]);
+const etapas = [
+  { STATUS_ID: "C19:NEW", NAME: "PRESENTACION", SORT: "50" },
+  { STATUS_ID: "C19:UC_53P7WJ", NAME: "DOCUMENTACION", SORT: "80" },
+  { STATUS_ID: "C19:FALTA", NAME: "FALTA DOCUMENTACION", SORT: "100" },
+  { STATUS_ID: "C19:EXECUTING", NAME: "OFERTA", SORT: "110" },
+  { STATUS_ID: "C19:5", NAME: "SIT. NEG. EN BCRA", SORT: "240", SEMANTICS: "F" },
+];
 
 describe("datos de la negociación para el socio", () => {
   it("arma la etapa por su nombre, si hay recibo, el monto y los campos elegidos que tienen valor", () => {
@@ -48,12 +54,16 @@ describe("datos de la negociación para el socio", () => {
     ]);
   });
 
-  it("el recibo se pide sólo mientras la negociación espera documentación y no lo tiene", () => {
+  it("el recibo se pide mientras la negociación no pasó la documentación y no lo tiene", () => {
     const hayQuePedirlo = (negociacion: Record<string, unknown>) => estadoDeNegociacion(negociacion, definiciones, etapas, mapeo).hayQuePedirElRecibo;
     expect(hayQuePedirlo({ STAGE_ID: "C19:UC_53P7WJ" })).toBe(true);
     expect(hayQuePedirlo({ STAGE_ID: "C19:FALTA" })).toBe(true);
     expect(hayQuePedirlo({ STAGE_ID: "C19:UC_53P7WJ", UF_RECIBO: { id: 1 } })).toBe(false);
+    expect(hayQuePedirlo({ STAGE_ID: "C19:NEW" })).toBe(true);
+    expect(hayQuePedirlo({ STAGE_ID: "C19:NEW", UF_RECIBO: { id: 1 } })).toBe(false);
     expect(hayQuePedirlo({ STAGE_ID: "C19:EXECUTING" })).toBe(false);
+    expect(hayQuePedirlo({ STAGE_ID: "C19:5" })).toBe(false);
+    expect(hayQuePedirlo({ STAGE_ID: "C19:DESCONOCIDA" })).toBe(false);
     expect(hayQuePedirlo({})).toBe(true);
   });
 

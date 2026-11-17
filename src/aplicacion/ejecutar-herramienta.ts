@@ -117,7 +117,7 @@ function efectoDe(decision: Verificacion["decision"], etapaMovida: boolean): Rec
     case "aceptar":
       return etapaMovida
         ? { efecto: "El recibo ya quedó cargado y la solicitud pasó a análisis. Avisale al socio." }
-        : { efecto: "El recibo ya quedó cargado. La solicitud ya estaba en una etapa posterior a la documentación y sigue donde estaba: avisale que quedó cargado y que su solicitud sigue con el equipo de Red Unisol. No digas que pasó a análisis." };
+        : { efecto: "El recibo ya quedó cargado. La solicitud no estaba en la etapa de documentación y sigue en la etapa donde estaba: avisale que quedó cargado y que su solicitud sigue con el equipo de Red Unisol. No digas que pasó a análisis." };
     case "derivar":
       return { efecto: "La conversación ya fue derivada a un analista. Mandá un solo mensaje de cierre sin explicar el motivo interno." };
     case "pedir_de_nuevo":
@@ -148,7 +148,7 @@ async function aplicarDecision(conversacion: Conversacion, archivo: Archivo, dep
 
 async function marcarFaltaDocumentacion({ conversacion, dependencias }: Contexto, { motivo }: ArgumentosDe<"marcar_falta_documentacion">): Promise<ResultadoDeHerramienta> {
   const etapaMovida = await dependencias.crm.moverEtapa(conversacion.ficha.negociacionId, "FALTA_DOCUMENTACION", `Motivo: ${motivo}`);
-  if (!etapaMovida) return { conversacion, resultado: { ok: true, nota: "La solicitud está en una etapa posterior a la documentación: no se cambió de etapa. El motivo quedó anotado." } };
+  if (!etapaMovida) return { conversacion, resultado: { ok: true, nota: "La solicitud no está en la etapa de documentación: no se cambió de etapa. El motivo quedó anotado." } };
   const evento = { at: dependencias.reloj.ahora(), tipo: "accion_crm" as const, detalle: { accion: "mover_etapa", etapa: "FALTA_DOCUMENTACION", motivo } };
   return { conversacion: conEvento(conversacion, evento), resultado: { ok: true, etapa: "FALTA DOCUMENTACION" } };
 }

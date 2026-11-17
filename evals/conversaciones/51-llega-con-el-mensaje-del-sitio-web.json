@@ -1,0 +1,55 @@
+{
+  "nombre": "Llega con el mensaje automático del sitio web, antes de la documentación: saluda y pide el recibo de haberes",
+  "hoy": "2026-11-17",
+  "ficha": {
+    "negociacionId": "SIM-51",
+    "nombre": "Rubén",
+    "dni": "16555444",
+    "provincia": "Catamarca",
+    "convenio": "Red Mutual",
+    "sectorDeclarado": "publico",
+    "empleadorDeclarado": "anses",
+    "situacionDeclarada": "Jubilado Nacional"
+  },
+  "negociacion": {
+    "hayQuePedirElRecibo": true,
+    "datos": [
+      {
+        "etiqueta": "Etapa de la solicitud",
+        "valor": "PRESENTACION"
+      },
+      {
+        "etiqueta": "Recibo cargado en la negociación",
+        "valor": "no"
+      },
+      {
+        "etiqueta": "Fecha de inicio de la solicitud",
+        "valor": "17/11/2026"
+      }
+    ]
+  },
+  "turnos": [
+    {
+      "texto": "Hola, vengo del sitio web de Red Unisol y quiero consultar por un préstamo. Acepto recibir mensajes de Red Unisol por WhatsApp relacionados con mi consulta. (ref: AB12cd34EF)"
+    },
+    {
+      "texto": "soy de catamarca"
+    }
+  ],
+  "esperado": {
+    "estadoFinal": "activa",
+    "decisiones": [],
+    "escenarios": [
+      "E1"
+    ],
+    "respuestasContienen": [
+      "haberes",
+      "octubre"
+    ],
+    "respuestasNoContienen": [
+      "PRESENTACION",
+      "trabaj[aá]s en",
+      "recibo de sueldo"
+    ]
+  }
+}

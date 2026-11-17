@@ -27,7 +27,7 @@ describe("mover de etapa", () => {
     ]);
   });
 
-  it.each(["C19:EXECUTING", "C19:WON", "C19:5", ""])("si la negociación está en otra etapa (%s), no la mueve: sólo deja la nota", async (etapa) => {
+  it.each(["C19:NEW", "C19:EXECUTING", "C19:WON", "C19:5", ""])("si la negociación está en otra etapa (%s), no la mueve: sólo deja la nota", async (etapa) => {
     const { crm, escrituras } = crmConNegociacionEn(etapa);
     await crm.moverEtapa("10", "DOCU_RECIBIDA", "Recibo verificado y guardado (recibo.pdf).");
     expect(escrituras().map((llamada) => llamada.metodo)).toEqual(["crm.timeline.comment.add"]);
