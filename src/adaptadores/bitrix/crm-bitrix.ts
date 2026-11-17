@@ -120,6 +120,12 @@ export class CrmBitrix implements ClienteCrm {
     });
   }
 
+  // En una conversación de prueba la derivación queda anotada pero el chat no se transfiere: quien
+  // prueba sigue con el agente para poder arrancar otra prueba en el mismo chat.
+  descartarTransferencia(chatId: string): void {
+    this.transferenciasPendientes.delete(chatId);
+  }
+
   async completarTransferencia(chatId: string): Promise<void> {
     const destino = this.transferenciasPendientes.get(chatId);
     if (!destino) return;

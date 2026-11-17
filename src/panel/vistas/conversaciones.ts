@@ -76,6 +76,8 @@ function paso(evento: EventoDeAuditoria, numero: number): Html {
       return bloque(n, `Herramienta rechazada: <span class="cod">${escapar(d.herramienta)}</span>`, escapar(d.error));
     case "dato_sensible_omitido":
       return bloque(n, "Filtro de salida", `Omitió ${escapar((d.tipos as string[]).join(", "))} de la respuesta antes de enviarla.`);
+    case "modo_de_prueba":
+      return bloque(n, "Modo de prueba", `Negociación ${escapar(d.negociacionOriginal)} probada sobre la ${escapar(d.negociacionDePrueba)}.`);
     case "uso_de_modelo":
       return "";
   }

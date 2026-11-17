@@ -29,7 +29,9 @@ export interface EventoDeAuditoria {
     | "derivacion"
     | "herramienta_rechazada"
     | "dato_sensible_omitido"
-    | "uso_de_modelo";
+    | "uso_de_modelo"
+    // La conversación arrancó en modo de prueba, sobre la copia de una negociación.
+    | "modo_de_prueba";
   detalle: Record<string, unknown>;
 }
 

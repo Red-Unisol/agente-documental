@@ -1,6 +1,8 @@
 import { atenderMensaje } from "../../aplicacion/atender-mensaje.js";
 import type { Dependencias } from "../../aplicacion/dependencias.js";
-import { type Archivo, type Conversacion, conMensaje, nuevaConversacion } from "../../dominio/conversacion/conversacion.js";
+import { type Archivo, type Conversacion, conEvento, conMensaje, nuevaConversacion } from "../../dominio/conversacion/conversacion.js";
+import { esDePrueba, notaDeConversacionDerivada, notaDeLoQueTiene, notaDelTurno } from "../../dominio/conversacion/nota-de-prueba.js";
+import type { EstadoDeNegociacion } from "../../dominio/tipos.js";
 import type { ClienteBitrix } from "./cliente-rest.js";
 import { type CopiaDeNegociacion, pedidoDePrueba } from "./copia-de-negociacion.js";
 import type { CrmBitrix } from "./crm-bitrix.js";
@@ -97,15 +99,19 @@ export class BotDeBitrix {
     }
     const pedido = pedidoDePrueba(hoja(parametros, "MESSAGE"), this.opciones.claveDePruebas);
     if (pedido) return this.probarConNegociacion(chatId, dialogo, pedido.negociacionId);
-    await this.asegurarConversacion(chatId, negociacionId, hoja(parametros, "MESSAGE_ID"));
+    const previa = await this.asegurarConversacion(chatId, negociacionId, hoja(parametros, "MESSAGE_ID"));
+    const dePrueba = esDePrueba(previa);
+    const loQueVio = dePrueba ? await this.estadoParaLaNota(previa.ficha.negociacionId) : undefined;
     const adjuntos = await this.archivosDelMensaje(rama(parametros, "FILES"), credencial);
     const texto = hoja(parametros, "MESSAGE") || adjuntos.marca || "";
     const resultado = await atenderMensaje({ conversacionId: chatId, texto, ...(adjuntos.archivos.length > 0 && { archivos: adjuntos.archivos }) }, this.colaboradores.dependencias);
     try {
       if (resultado.tipo === "respondio") await this.responder(dialogo, resultado.texto);
+      if (dePrueba) await this.anotarLaPrueba(dialogo, previa, resultado.conversacion, loQueVio);
     } finally {
       // Aunque falle el envío, una derivación pendiente tiene que completarse: si no, el chat queda con el bot.
-      await this.colaboradores.crm.completarTransferencia(chatId);
+      if (dePrueba) this.colaboradores.crm.descartarTransferencia(chatId);
+      else await this.colaboradores.crm.completarTransferencia(chatId);
     }
     // Un chat atado a la negociación ya se ve en su línea de tiempo. Si no lo está (chat público de
     // prueba, visitante anónimo), el agente copia la conversación ahí para que quien mire la negociación la tenga.
@@ -125,12 +131,35 @@ export class BotDeBitrix {
     }
     const ficha = await this.colaboradores.fichas.deNegociacion(copia.negociacionId);
     this.colaboradores.crm.vincularChat(chatId, copia.negociacionId);
-    const conversacion = copia.mensajes.reduce(conMensaje, nuevaConversacion(chatId, chatId, ficha));
+    const marca = { at: this.colaboradores.dependencias.reloj.ahora(), tipo: "modo_de_prueba" as const, detalle: { negociacionOriginal: negociacionId, negociacionDePrueba: copia.negociacionId } };
+    const conversacion = conEvento(copia.mensajes.reduce(conMensaje, nuevaConversacion(chatId, chatId, ficha)), marca);
     await this.colaboradores.dependencias.conversaciones.guardar(conversacion);
     const origen = copia.esCopia ? `Copié la negociación ${negociacionId} en la negociación de prueba ${copia.negociacionId}; la original no se modificó.` : `La negociación ${negociacionId} ya es de prueba: sigo sobre esa.`;
     const historial = copia.mensajes.length ? `Traje los últimos ${copia.mensajes.length} mensajes de su conversación.` : "No encontré una conversación anterior: arranca sin historial.";
-    await this.responder(dialogo, `Modo de prueba. ${origen} Etapa: ${copia.etapa}. ${historial} Desde el próximo mensaje, escribí como si fueras el socio.`);
+    const comoSeguir = "Desde el próximo mensaje, escribí como si fueras el socio. Después de cada respuesta va una nota con lo que hizo el agente. Para empezar de cero o probar otra negociación, mandá de nuevo un enlace con la clave.";
+    await this.responder(dialogo, `Modo de prueba. ${origen} Etapa: ${copia.etapa}. ${historial} ${comoSeguir}`);
+    await this.responder(dialogo, notaDeLoQueTiene(ficha, await this.estadoParaLaNota(copia.negociacionId)));
     return `modo de prueba: negociación ${negociacionId} → ${copia.negociacionId} (${copia.mensajes.length} mensajes anteriores)`;
+  }
+
+  // La nota de prueba va en un mensaje aparte y no entra a la conversación: el modelo no la ve. Si no
+  // se puede mandar, la prueba sigue igual.
+  private async anotarLaPrueba(dialogo: string, previa: Conversacion, actual: Conversacion, loQueVio: EstadoDeNegociacion | undefined): Promise<void> {
+    const yaEstabaDerivada = previa.estado === "derivada";
+    const nota = yaEstabaDerivada ? notaDeConversacionDerivada() : notaDelTurno(loQueVio, actual.auditoria.slice(previa.auditoria.length), actual);
+    try {
+      await this.responder(dialogo, nota);
+    } catch (error) {
+      console.log(`  no se pudo mandar la nota de prueba: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  private async estadoParaLaNota(negociacionId: string): Promise<EstadoDeNegociacion | undefined> {
+    try {
+      return await this.colaboradores.crm.estadoDeNegociacion(negociacionId);
+    } catch {
+      return undefined;
+    }
   }
 
   // Disparador por asignación: si la negociación pasa al usuario del agente, el bot entra a sus chats
@@ -173,17 +202,18 @@ export class BotDeBitrix {
     await this.colaboradores.cliente.llamar("imopenlines.bot.session.operator", { CHAT_ID: Number(chatId) });
   }
 
-  private async asegurarConversacion(chatId: string, negociacionId: string | undefined, mensajeActualId: string): Promise<void> {
+  private async asegurarConversacion(chatId: string, negociacionId: string | undefined, mensajeActualId: string): Promise<Conversacion> {
     const guardada = await this.colaboradores.dependencias.conversaciones.obtener(chatId);
     if (guardada) {
       this.colaboradores.crm.vincularChat(chatId, guardada.ficha.negociacionId);
-      return;
+      return guardada;
     }
     if (!negociacionId) throw new Error(`El chat ${chatId} no está atado a una negociación y no hay negociación de prueba configurada`);
     const ficha = await this.colaboradores.fichas.deNegociacion(negociacionId);
     this.colaboradores.crm.vincularChat(chatId, negociacionId);
     const conversacion = await this.conHistorialDeBitrix(nuevaConversacion(chatId, chatId, ficha), mensajeActualId);
     await this.colaboradores.dependencias.conversaciones.guardar(conversacion);
+    return conversacion;
   }
 
   // Si no hay nada guardado pero el chat ya tiene mensajes en Bitrix (el agente se reinició y perdió

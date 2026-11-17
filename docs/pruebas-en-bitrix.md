@@ -15,6 +15,8 @@ vivo*). Ese chat no viene atado a ninguna negociación, así que el agente usa
   de prueba en Bitrix (la etapa, la cantidad de créditos activos, una oferta) y se vuelve a escribir.
 - Para repetir la prueba del recibo: volver la negociación a DOCUMENTACIÓN y quitarle el recibo
   cargado. Con el recibo ya cargado, o en una etapa posterior, el agente no lo vuelve a pedir.
+- Si el agente deriva, el chat pasa a una persona y el agente deja de contestar en esa ventana. Para
+  seguir probando, abrir otra ventana de incógnito.
 - Como el chat no está atado a la negociación, el agente copia la conversación en un comentario de
   la negociación para que se vea en su línea de tiempo.
 
@@ -39,6 +41,19 @@ El agente contesta algo así:
 
 A partir de ahí, lo que se escriba en ese chat es el socio de esa negociación.
 
+**Qué ve quien prueba.** Al arrancar, el agente manda una nota con todo lo que tiene de esa
+negociación: provincia, convenio, situación laboral y empleador declarados, la etapa, si el recibo
+está cargado, los datos que puede contar y si tiene que pedir el recibo. Después de cada respuesta
+manda otra con lo que hizo en ese mensaje: qué escenario cargó, qué leyó del archivo, qué decidió la
+verificación y por qué, qué cambió en Bitrix y, si derivó, el motivo interno. Las notas empiezan con
+`NOTA DE PRUEBA`, van en un mensaje aparte y el modelo no las ve. Si una respuesta parece inventada,
+la nota dice de qué dato salió.
+
+**Empezar de cero.** Mandar de nuevo un enlace con la clave, el mismo u otro, en el mismo chat: se
+arma una copia nueva y la conversación arranca limpia. No hace falta cerrar la ventana ni borrar
+datos del navegador. En modo de prueba una derivación queda anotada en la negociación pero el chat
+no se transfiere a nadie, justamente para poder seguir probando ahí.
+
 Qué hace, en orden (`src/adaptadores/bitrix/copia-de-negociacion.ts`):
 
 1. Lee la negociación indicada. Sólo lectura.
@@ -55,8 +70,8 @@ Lo que **no** se copia: el recibo y cualquier otro archivo, el teléfono, el mai
 responsable originales, y los campos que no están en el mapeo (BCRA, decisiones internas, atribución).
 Si la negociación real tenía el recibo cargado, la copia figura sin recibo.
 
-Para probar otra negociación se manda otro enlace en el mismo chat. Si el enlace ya es de una
-negociación del embudo de prueba, se usa esa misma sin copiar. Desde la consola,
+Si el enlace ya es de una negociación del embudo de prueba, se usa esa misma sin copiar (y sin
+volverla a su estado inicial). Desde la consola,
 `npm run bitrix copiar-negociacion <id o enlace>` hace sólo la copia.
 
 Cuidados:

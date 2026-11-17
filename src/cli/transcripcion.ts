@@ -55,6 +55,8 @@ function lineaDeEvento(evento: EventoDeAuditoria): string {
       return `- Herramienta rechazada: ${evento.detalle.herramienta} (${evento.detalle.error})`;
     case "dato_sensible_omitido":
       return `- Filtro de salida: omitió ${(evento.detalle.tipos as string[]).join(", ")} de la respuesta`;
+    case "modo_de_prueba":
+      return `- Modo de prueba: negociación ${evento.detalle.negociacionOriginal} probada sobre la ${evento.detalle.negociacionDePrueba}`;
     case "uso_de_modelo":
       return "";
   }
